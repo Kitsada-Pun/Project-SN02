@@ -1,137 +1,25 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Bangkok');
-
-// --- ตรวจสอบการล็อกอิน ---
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'designer') {
     header("Location: ../login.php");
     exit();
 }
 
-// --- การเชื่อมต่อฐานข้อมูล ---
+$user_id = $_SESSION['user_id'];
+
+// Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "pixellink";
+
 $condb = new mysqli($servername, $username, $password, $dbname);
-if ($condb->connect_error) { die("Connection Failed: " . $condb->connect_error); }
-$condb->set_charset("utf8mb4");
-
-$user_id = $_SESSION['user_id'];
-$error_message = '';
-$designer_name = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
-
-// --- ดึงข้อมูลโปรไฟล์ปัจจุบัน ---
-$sql_fetch = "SELECT u.first_name, u.last_name, u.email, u.phone_number, p.company_name, p.bio, p.skills, p.profile_picture_url 
-              FROM users u
-              LEFT JOIN profiles p ON u.user_id = p.user_id
-              WHERE u.user_id = ?";
-$stmt_fetch = $condb->prepare($sql_fetch);
-$stmt_fetch->bind_param("i", $user_id);
-$stmt_fetch->execute();
-$profile_data = $stmt_fetch->get_result()->fetch_assoc();
-$stmt_fetch->close();
-
-if (!$profile_data) {
-    $error_message = "ไม่พบข้อมูลโปรไฟล์ของคุณ";
-}
-
-
-// --- Logic การอัปเดตข้อมูล ---
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // รับข้อมูลจากฟอร์ม
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
-    $phone_number = $_POST['phone_number'];
-    $company_name = $_POST['company_name'];
-    $bio = $_POST['bio'];
-    $skills = $_POST['skills'];
-
-    // --- ตรวจสอบว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่ ---
-    $has_changed = false;
-    if ($first_name !== $profile_data['first_name'] ||
-        $last_name !== $profile_data['last_name'] ||
-        $email !== $profile_data['email'] ||
-        $phone_number !== $profile_data['phone_number'] ||
-        $company_name !== $profile_data['company_name'] ||
-        $bio !== $profile_data['bio'] ||
-        $skills !== $profile_data['skills'] ||
-        (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == UPLOAD_ERR_OK)) {
-        $has_changed = true;
-    }
-
-    if (!$has_changed) {
-        // ถ้าไม่มีการเปลี่ยนแปลง ให้ redirect กลับพร้อมสถานะ nochange
-        header("Location: view_profile.php?user_id=" . $user_id . "&update_status=nochange");
-        exit();
-    }
-
-    // ถ้ามีการเปลี่ยนแปลง ให้เริ่มกระบวนการบันทึก
-    $condb->begin_transaction();
-    try {
-        // อัปเดตตาราง users
-        $sql_update_user = "UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE user_id = ?";
-        $stmt_user = $condb->prepare($sql_update_user);
-        $stmt_user->bind_param("ssssi", $first_name, $last_name, $email, $phone_number, $user_id);
-        if (!$stmt_user->execute()) { throw new Exception("Error updating users table: " . $stmt_user->error); }
-        $stmt_user->close();
-        
-        // จัดการการอัปโหลดรูปโปรไฟล์ (ถ้ามี)
-        $upload_path = $profile_data['profile_picture_url']; //ใช้ path เดิมเป็นค่าเริ่มต้น
-        if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == UPLOAD_ERR_OK) {
-            $file_info = $_FILES['profile_picture'];
-            $file_ext = strtolower(pathinfo($file_info['name'], PATHINFO_EXTENSION));
-            $new_file_name = 'profile_' . $user_id . '_' . time() . '.' . $file_ext;
-            $upload_dir = '../uploads/profile_pictures/';
-            
-            if (!is_dir($upload_dir)) { mkdir($upload_dir, 0777, true); }
-
-            $upload_path = $upload_dir . $new_file_name;
-
-            if (!move_uploaded_file($file_info['tmp_name'], $upload_path)) {
-                throw new Exception("ไม่สามารถอัปโหลดรูปโปรไฟล์ได้");
-            }
-        }
-        
-        // อัปเดตข้อมูลตาราง profiles
-        $sql_update_profile = "UPDATE profiles SET company_name = ?, bio = ?, skills = ?, profile_picture_url = ? WHERE user_id = ?";
-        $stmt_profile = $condb->prepare($sql_update_profile);
-        $stmt_profile->bind_param("ssssi", $company_name, $bio, $skills, $upload_path, $user_id);
-        if (!$stmt_profile->execute()) { throw new Exception("Error updating profiles table: " . $stmt_profile->error); }
-        $stmt_profile->close();
-        
-        $condb->commit();
-        
-        $_SESSION['full_name'] = trim($first_name . ' ' . $last_name);
-
-        header("Location: view_profile.php?user_id=" . $user_id . "&update_status=success");
-        exit();
-
-    } catch (Exception $e) {
-        $condb->rollback();
-        $error_message = $e->getMessage();
-    }
-}
-// --- ดึงข้อมูลโปรไฟล์ปัจจุบันมาแสดงในฟอร์ม ---
-$sql_fetch = "SELECT u.first_name, u.last_name, u.email, u.phone_number, p.company_name, p.bio, p.skills 
-              FROM users u
-              LEFT JOIN profiles p ON u.user_id = p.user_id
-              WHERE u.user_id = ?";
-$stmt_fetch = $condb->prepare($sql_fetch);
-$stmt_fetch->bind_param("i", $user_id);
-$stmt_fetch->execute();
-$profile_data = $stmt_fetch->get_result()->fetch_assoc();
-$stmt_fetch->close();
-
-if (!$profile_data) {
-    $error_message = "ไม่พบข้อมูลโปรไฟล์ของคุณ";
+if ($condb->connect_error) {
+    die("Connection failed: " . $condb->connect_error);
 }
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
-$loggedInUserName = ''; // Initialize variable for logged-in user's name
 
-// Fetch logged-in user's name if session is active
+// --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
 if (isset($_SESSION['user_id'])) {
     $loggedInUserName = $_SESSION['username'] ?? $_SESSION['full_name'] ?? '';
     if (empty($loggedInUserName)) {
@@ -150,6 +38,90 @@ if (isset($_SESSION['user_id'])) {
         }
     }
 }
+$condb->set_charset("utf8mb4");
+
+$message = '';
+$error = '';
+$changes_made = false;
+
+// --- (แก้ไข) ดึงข้อมูล tiktok_url แทน linkedin_url ---
+$sql_fetch = "SELECT u.first_name, u.last_name, u.email, u.phone_number, p.company_name, p.bio, p.skills, p.profile_picture_url, p.facebook_url, p.instagram_url, p.tiktok_url
+              FROM users u
+              LEFT JOIN profiles p ON u.user_id = p.user_id
+              WHERE u.user_id = ?";
+$stmt_fetch = $condb->prepare($sql_fetch);
+$stmt_fetch->bind_param("i", $user_id);
+$stmt_fetch->execute();
+$profile = $stmt_fetch->get_result()->fetch_assoc();
+$stmt_fetch->close();
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // ไม่รับค่า first_name และ last_name จากฟอร์มแล้ว
+    $email = $_POST['email'] ?? '';
+    $phone_number = $_POST['phone_number'] ?? '';
+    $company_name = $_POST['company_name'] ?? '';
+    $bio = $_POST['bio'] ?? '';
+    $skills = $_POST['skills'] ?? '';
+    
+    // --- (แก้ไข) รับข้อมูล tiktok_url แทน linkedin_url ---
+    $facebook_url = $_POST['facebook_url'] ?? '';
+    $instagram_url = $_POST['instagram_url'] ?? '';
+    $tiktok_url = $_POST['tiktok_url'] ?? '';
+
+    // --- (แก้ไข) นำ first_name, last_name ออกจากการตรวจสอบการเปลี่ยนแปลง ---
+    if ($email !== $profile['email'] || $phone_number !== $profile['phone_number'] || $company_name !== $profile['company_name'] || $bio !== $profile['bio'] || $skills !== $profile['skills'] || !empty($_FILES['profile_picture']['name']) || $facebook_url !== $profile['facebook_url'] || $instagram_url !== $profile['instagram_url'] || $tiktok_url !== $profile['tiktok_url']) {
+        $changes_made = true;
+    }
+
+    if ($changes_made) {
+        // --- (แก้ไข) นำ first_name, last_name ออกจากการอัปเดต ---
+        $sql_users = "UPDATE users SET email = ?, phone_number = ? WHERE user_id = ?";
+        $stmt_users = $condb->prepare($sql_users);
+        $stmt_users->bind_param("ssi", $email, $phone_number, $user_id);
+        $stmt_users->execute();
+        $stmt_users->close();
+
+        // Handle profile picture upload
+        $profile_picture_path = $profile['profile_picture_url'];
+        if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
+            $upload_dir = '../uploads/profile_pictures/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            $file_extension = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
+            $new_filename = 'profile_' . $user_id . '_' . time() . '.' . $file_extension;
+            $destination = $upload_dir . $new_filename;
+
+            if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $destination)) {
+                if (!empty($profile_picture_path) && strpos($profile_picture_path, 'user_placeholder.jpg') === false && file_exists('..' . $profile_picture_path)) {
+                    unlink('..' . $profile_picture_path);
+                }
+                $profile_picture_path = str_replace('..', '', $destination);
+            } else {
+                $error = "เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ";
+            }
+        }
+
+        // --- (แก้ไข) อัปเดต tiktok_url แทน linkedin_url ---
+        $sql_profiles = "UPDATE profiles SET company_name = ?, bio = ?, skills = ?, profile_picture_url = ?, facebook_url = ?, instagram_url = ?, tiktok_url = ? WHERE user_id = ?";
+        $stmt_profiles = $condb->prepare($sql_profiles);
+        $stmt_profiles->bind_param("sssssssi", $company_name, $bio, $skills, $profile_picture_path, $facebook_url, $instagram_url, $tiktok_url, $user_id);
+
+        if (empty($error) && $stmt_profiles->execute()) {
+            header("Location: view_profile.php?user_id=" . $user_id . "&update_status=success");
+            exit();
+        } else {
+            $error = $error ?: "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์: " . $stmt_profiles->error;
+        }
+        $stmt_profiles->close();
+
+    } else {
+        header("Location: view_profile.php?user_id=" . $user_id . "&update_status=nochange");
+        exit();
+    }
+}
+
 $condb->close();
 ?>
 <!DOCTYPE html>
@@ -160,13 +132,73 @@ $condb->close();
     <title>แก้ไขโปรไฟล์ | PixelLink</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body { font-family: 'Kanit', sans-serif; background-image: url('../dist/img/cover.png'); background-size: cover; background-position: center; background-attachment: fixed; }
-        .btn-primary { background: linear-gradient(45deg, #0a5f97 0%, #0d96d2 100%); color: white; transition: all 0.3s ease; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 150, 210, 0.4); }
-        .btn-danger { background-color: #ef4444; color: white; transition: all 0.3s ease; }
-        .btn-danger:hover { background-color: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); }
+        * {
+            font-family: 'Kanit', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%);
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #0a5f97 0%, #0d96d2 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 150, 210, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0d96d2 0%, #0a5f97 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 150, 210, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #0a5f97, #0d96d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pixellink-logo,
         .pixellink-logo-footer {
             font-weight: 700;
             font-size: 2.25rem;
@@ -174,152 +206,154 @@ $condb->close();
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .pixellink-logo b,
+        .pixellink-logo-footer b {
+            color: #0d96d2;
+        }
+
+        .card-item {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .hero-section {
+            background-image: url('dist/img/cover.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            z-index: 1;
+            padding: 8rem 0;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased">
-
-    <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
+<body class="bg-slate-100">
+<nav class="bg-white/90 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="main.php">
-                <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
-            </a>
+            <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>"><img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105"></a>
             <div class="space-x-4 flex items-center">
                 <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
                 <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
-                
                 <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
             </div>
         </div>
     </nav>
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="mx-auto max-w-2xl">
-            <?php if (!empty($error_message)): ?>
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md mb-6" role="alert">
-                    <p class="font-bold">เกิดข้อผิดพลาด</p>
-                    <p><?= htmlspecialchars($error_message) ?></p>
-                </div>
-            <?php endif; ?>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">แก้ไขโปรไฟล์</h1>
+        
+        <?php if ($error): ?>
+            <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form action="edit_profile.php" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+            <div class="text-center">
+                <img id="profile_pic_preview" src="<?= !empty($profile['profile_picture_url']) ? '..' . htmlspecialchars($profile['profile_picture_url']) : '../dist/img/user8.jpg' ?>" alt="รูปโปรไฟล์" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white mx-auto mb-4">
+                <label for="profile_picture" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
+                    <i class="fas fa-camera mr-2"></i>เปลี่ยนรูปโปรไฟล์
+                    <input type="file" id="profile_picture" name="profile_picture" class="hidden" onchange="previewImage(event)">
+                </label>
+            </div>
             
-            <?php if ($profile_data): ?>
-                <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-200/75">
-                    <div class="p-8 sm:p-12">
-                        <div class="text-center">
-                            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">แก้ไขโปรไฟล์ของคุณ</h1>
-                            <p class="mt-2 text-sm text-slate-500">อัปเดตข้อมูลของคุณให้เป็นปัจจุบันอยู่เสมอ</p>
-                        </div>
-
-                        <form action="edit_profile.php" method="POST" enctype="multipart/form-data" class="mt-10 space-y-6">
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="first_name" class="block text-gray-700 text-lg font-semibold mb-2">ชื่อจริง:</label>
-                                    <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($profile_data['first_name']) ?>" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50" required>
-                                </div>
-                                <div>
-                                    <label for="last_name" class="block text-gray-700 text-lg font-semibold mb-2">นามสกุล:</label>
-                                    <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($profile_data['last_name']) ?>" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50" required>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="email" class="block text-gray-700 text-lg font-semibold mb-2">อีเมล:</label>
-                                <input type="email" id="email" name="email" value="<?= htmlspecialchars($profile_data['email']) ?>" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50" required>
-                            </div>
-                            
-                            <div>
-                                <label for="phone_number" class="block text-gray-700 text-lg font-semibold mb-2">เบอร์โทรศัพท์:</label>
-                                <input type="text" id="phone_number" name="phone_number" value="<?= htmlspecialchars($profile_data['phone_number']) ?>" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50">
-                            </div>
-
-                            <div>
-                                <label for="company_name" class="block text-gray-700 text-lg font-semibold mb-2">บริษัท/สตูดิโอ (ถ้ามี):</label>
-                                <input type="text" id="company_name" name="company_name" value="<?= htmlspecialchars($profile_data['company_name']) ?>" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50">
-                            </div>
-                            
-                            <div>
-                                <label for="bio" class="block text-gray-700 text-lg font-semibold mb-2">เกี่ยวกับฉัน:</label>
-                                <textarea id="bio" name="bio" rows="5" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"><?= htmlspecialchars($profile_data['bio']) ?></textarea>
-                            </div>
-
-                            <div>
-                                <label for="skills" class="block text-gray-700 text-lg font-semibold mb-2">ทักษะ (คั่นด้วย ,):</label>
-                                <input type="text" id="skills" name="skills" value="<?= htmlspecialchars($profile_data['skills']) ?>" placeholder="เช่น Photoshop, Illustrator, UI/UX" class="block w-full p-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50">
-                            </div>
-                            
-                            <div>
-                                 <label for="profile_picture" class="block text-gray-700 text-lg font-semibold mb-2">เปลี่ยนรูปโปรไฟล์ (ถ้าต้องการ):</label>
-                                 <div id="imagePreviewContainer" class="mt-2 flex justify-center items-center rounded-xl border-2 border-dashed border-gray-300 px-6 pt-8 pb-10 cursor-pointer hover:border-blue-400">
-                                     <div class="text-center" id="placeholderContent">
-                                         <i class="fa-solid fa-image text-4xl text-gray-300"></i>
-                                         <p class="mt-4 text-sm text-slate-600">อัปโหลดไฟล์ใหม่ หรือลากมาวาง</p>
-                                         <p class="text-xs text-slate-500">PNG, JPG, GIF ขนาดไม่เกิน 5MB</p>
-                                     </div>
-                                     <img id="imagePreview" src="#" alt="Image Preview" class="hidden max-h-48 rounded-lg">
-                                 </div>
-                                 <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="sr-only">
-                            </div>
-
-                            <div class="flex justify-end pt-4 space-x-4">
-                                <a href="view_profile.php?user_id=<?= $user_id ?>" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-lg font-semibold transition-colors">ยกเลิก</a>
-                                <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                                    <i class="fas fa-save mr-2"></i> บันทึกการเปลี่ยนแปลง
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="first_name" class="block text-gray-700 font-medium mb-2">ชื่อจริง</label>
+                    <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($profile['first_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
                 </div>
-            <?php endif; ?>
-        </div>
-    </main>
-<footer class="bg-gray-900 text-gray-300 py-8 mt-auto">
-        <div class="container mx-auto px-4 md:px-6 text-center">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-                <a href="main.php" class="pixellink-logo-footer mb-4 md:mb-0 transition duration-300 hover:opacity-80">Pixel<b>Link</b></a>
-                <div class="flex flex-wrap justify-center space-x-2 md:space-x-6 text-sm md:text-base">
-                    <a href="#" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เกี่ยวกับเรา</a>
-                    <a href="#" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">ติดต่อเรา</a>
-                    <a href="#" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เงื่อนไขการใช้งาน</a>
-                    <a href="#" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">นโยบายความเป็นส่วนตัว</a>
+                <div>
+                    <label for="last_name" class="block text-gray-700 font-medium mb-2">นามสกุล</label>
+                    <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($profile['last_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
+                </div>
+                <div>
+                    <label for="email" class="block text-gray-700 font-medium mb-2">อีเมล</label>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($profile['email'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="phone_number" class="block text-gray-700 font-medium mb-2">เบอร์โทรศัพท์</label>
+                    <input type="text" id="phone_number" name="phone_number" value="<?= htmlspecialchars($profile['phone_number'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
             </div>
-            <hr class="border-gray-700 my-6">
-            <p class="text-xs md:text-sm font-light">&copy; <?php echo date('Y'); ?> PixelLink. All rights reserved.</p>
-        </div>
-    </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const fileInput = document.getElementById('profile_picture');
-            const imagePreview = document.getElementById('imagePreview');
-            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            const placeholderContent = document.getElementById('placeholderContent');
 
-            function handleFiles(files) {
-                const file = files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        placeholderContent.classList.add('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
+            <div>
+                <label for="company_name" class="block text-gray-700 font-medium mb-2">บริษัท/สังกัด (ถ้ามี)</label>
+                <input type="text" id="company_name" name="company_name" value="<?= htmlspecialchars($profile['company_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="bio" class="block text-gray-700 font-medium mb-2">เกี่ยวกับฉัน (Bio)</label>
+                <textarea id="bio" name="bio" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($profile['bio'] ?? '') ?></textarea>
+            </div>
+            <div>
+                <label for="skills" class="block text-gray-700 font-medium mb-2">ทักษะ (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                <input type="text" id="skills" name="skills" value="<?= htmlspecialchars($profile['skills'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="เช่น Photoshop, Illustrator, UI/UX Design">
+            </div>
 
-            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-            imagePreviewContainer.addEventListener('click', () => fileInput.click());
-            imagePreviewContainer.addEventListener('dragover', (e) => { e.preventDefault(); imagePreviewContainer.classList.add('border-blue-400'); });
-            imagePreviewContainer.addEventListener('dragleave', () => { imagePreviewContainer.classList.remove('border-blue-400'); });
-            imagePreviewContainer.addEventListener('drop', (e) => {
-                e.preventDefault();
-                imagePreviewContainer.classList.remove('border-blue-400');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    fileInput.files = files;
-                    handleFiles(files);
-                }
-            });
-        });
-    </script>
+            <div class="border-t pt-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">ลิงก์โซเชียลมีเดีย</h2>
+                <div class="space-y-4">
+                     <div>
+                        <label for="facebook_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-facebook-square text-blue-600 mr-2"></i>Facebook URL</label>
+                        <input type="url" id="facebook_url" name="facebook_url" value="<?= htmlspecialchars($profile['facebook_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.facebook.com/yourprofile">
+                    </div>
+                     <div>
+                        <label for="instagram_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-instagram-square text-pink-500 mr-2"></i>Instagram URL</label>
+                        <input type="url" id="instagram_url" name="instagram_url" value="<?= htmlspecialchars($profile['instagram_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.instagram.com/yourprofile">
+                    </div>
+                     <div>
+                        <label for="tiktok_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-tiktok text-black mr-2"></i>TikTok URL</label>
+                        <input type="url" id="tiktok_url" name="tiktok_url" value="<?= htmlspecialchars($profile['tiktok_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.tiktok.com/@yourprofile">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 pt-4">
+                <a href="view_profile.php?user_id=<?= $user_id ?>" class="text-gray-600 bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg font-medium text-sm transition-colors">ยกเลิก</a>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
+                    <i class="fas fa-save mr-2"></i>บันทึกการเปลี่ยนแปลง
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('profile_pic_preview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+<?php include '../includes/footer.php'; ?>
 </body>
 </html>

@@ -369,9 +369,11 @@ $condb->close();
 
                         <div class="flex items-center space-x-4 mb-6">
                             <?php
-                            $profile_pic = 'dist/img/avatar.png'; // ภาพโปรไฟล์เริ่มต้น
-                            if (!empty($job_data['profile_picture_url'])) {
-                                $correct_path = preg_replace('/^\.\.\//', '', $job_data['profile_picture_url']);
+                            // ========== (แก้ไข) ตรรกะการแสดงรูปโปรไฟล์ ==========
+                            $profile_pic = 'dist/img/user8.jpg'; // Default image
+                            $raw_pic_path = $job_data['profile_picture_url'] ?? '';
+                            if (!empty($raw_pic_path)) {
+                                $correct_path = ltrim($raw_pic_path, '/');
                                 if (file_exists($correct_path)) {
                                     $profile_pic = htmlspecialchars($correct_path);
                                 }
@@ -380,7 +382,7 @@ $condb->close();
                             <img src="<?= $profile_pic ?>" alt="โปรไฟล์" class="w-16 h-16 rounded-full object-cover">
                             <div>
                                 <h3 class="text-xl font-bold text-slate-800"><?= htmlspecialchars($job_data['first_name'] . ' ' . $job_data['last_name']) ?></h3>
-                                <a href="designer/view_profile.php?user_id=<?= $job_data['owner_id'] ?>" class="text-sm text-blue-600 hover:underline">ดูโปรไฟล์ทั้งหมด</a>
+                                <a href="client/view_profile.php?user_id=<?= $job_data['owner_id'] ?>" class="text-sm text-blue-600 hover:underline">ดูโปรไฟล์ทั้งหมด</a>
                             </div>
                         </div>
 

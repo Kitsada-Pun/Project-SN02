@@ -369,9 +369,11 @@ $condb->close();
 
                         <div class="flex items-center space-x-4 mb-6">
                             <?php
-                            $profile_pic = 'dist/img/avatar.png'; // ภาพโปรไฟล์เริ่มต้น
-                            if (!empty($job_data['profile_picture_url'])) {
-                                $correct_path = preg_replace('/^\.\.\//', '', $job_data['profile_picture_url']);
+                            // ========== (แก้ไข) ตรรกะการแสดงรูปโปรไฟล์ ==========
+                            $profile_pic = 'dist/img/user8.jpg'; // Default image
+                            $raw_pic_path = $job_data['profile_picture_url'] ?? '';
+                            if (!empty($raw_pic_path)) {
+                                $correct_path = ltrim($raw_pic_path, '/');
                                 if (file_exists($correct_path)) {
                                     $profile_pic = htmlspecialchars($correct_path);
                                 }

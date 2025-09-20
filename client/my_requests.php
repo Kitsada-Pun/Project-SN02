@@ -88,7 +88,7 @@ function getStatusInfoClient($status)
         case 'pending_deposit':
             return ['text' => 'รอชำระเงินมัดจำ', 'color' => 'bg-orange-100 text-orange-800', 'tab' => 'pending_deposit'];
         case 'awaiting_deposit_verification':
-            return ['text' => 'รอตรวจสอบการชำระเงิน', 'color' => 'bg-orange-100 text-orange-800', 'tab' => 'awaiting_deposit_verification'];  
+            return ['text' => 'รอตรวจสอบการชำระเงิน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'awaiting_deposit_verification'];  
         case 'assigned':
             return ['text' => 'กำลังดำเนินการ', 'color' => 'bg-blue-100 text-blue-800', 'tab' => 'assigned'];
         case 'awaiting_final_payment':
@@ -276,10 +276,10 @@ function getStatusInfoClient($status)
                         <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-xs font-bold text-white"><?= $counts['pending_deposit'] ?></span>
                     <?php endif; ?>
                 </button>
-                <button @click="tab = 'awaiting_deposit_verification'" :class="tab === 'awaiting_deposit_verification' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                <button @click="tab = 'awaiting_deposit_verification'" :class="tab === 'awaiting_deposit_verification' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
                     <i class="fa-solid fa-hourglass-half mr-1.5"></i> รอตรวจสอบการชำระเงิน
                     <?php if ($counts['awaiting_deposit_verification'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-xs font-bold text-white"><?= $counts['awaiting_deposit_verification'] ?></span>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-purple-500 text-xs font-bold text-white"><?= $counts['awaiting_deposit_verification'] ?></span>
                     <?php endif; ?>
                 <button @click="tab = 'assigned'" :class="tab === 'assigned' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
                     <i class="fa-solid fa-person-digging mr-1.5"></i> กำลังดำเนินการ

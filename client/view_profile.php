@@ -276,7 +276,7 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
             <a href="<?= htmlspecialchars($home_link) ?>"><img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105"></a>
             <div class="space-x-4 flex items-center">
                 <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
-                <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
+                <!-- <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a> -->
                 <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
             </div>
         </div>
@@ -361,7 +361,7 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                 <?php endif; ?>
 
                 <div class="mb-8">
-                    <h2 class="text-2xl font-semibold text-gradient mb-4">โพสต์ประกาศงานของคุณ</h2>
+                    <h2 class="text-2xl font-semibold text-gradient mb-4">โพสต์ประกาศงานของนักออกแบบ</h2>
                     <?php if (empty($job_postings_for_profile)): ?>
                         <div class="bg-blue-100 text-blue-700 px-4 py-3 rounded-lg text-center">ยังไม่มีงานที่ประกาศ</div>
                     <?php else: ?>
@@ -386,7 +386,7 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                                                 <p class="text-lg font-semibold text-green-700">ราคา: <?= htmlspecialchars($job['price_range'] ?? 'สอบถาม') ?></p>
                                                 <p class="text-xs text-gray-500">ประกาศเมื่อ: <?= date('d M Y', strtotime($job['posted_date'])) ?></p>
                                                 <div class="mt-2 flex space-x-2">
-                                                    <a href="../job_detail.php?id=<?= $job['post_id'] ?>&type=posting" class="flex-1 btn-primary text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg text-center">ดูรายละเอียด</a>
+                                                    <a href="../job_detail_client.php?id=<?= $job['post_id'] ?>&type=posting" class="flex-1 btn-primary text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg text-center">ดูรายละเอียด</a>
                                                     <?php if ($user_id_to_view == $current_user_id): ?>
                                                         <a href="edit_job_post.php?id=<?= $job['post_id'] ?>" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg font-medium text-sm shadow-lg transition-colors"><i class="fas fa-pencil-alt"></i></a>
                                                         <a href="delete_job_post.php?id=<?= $job['post_id'] ?>" onclick="confirmDelete(event, <?= $job['post_id'] ?>)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg font-medium text-sm shadow-lg transition-colors"><i class="fas fa-trash"></i></a>

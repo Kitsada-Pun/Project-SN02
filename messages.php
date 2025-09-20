@@ -420,7 +420,17 @@ if (isset($_SESSION['user_id'])) {
         <div class="chat-area">
             <?php if ($to_user_info): ?>
                 <div id="chat-header">
-                    <img src="<?php echo htmlspecialchars(str_replace('../', '', $to_user_info['profile_picture_url'] ?? 'dist/img/avatar.png')); ?>" alt="User Avatar">
+                    <?php
+                    $chat_partner_pic = 'dist/img/user8.jpg'; // Default
+                    $raw_pic_path = $to_user_info['profile_picture_url'] ?? '';
+                    if (!empty($raw_pic_path)) {
+                        $correct_path = ltrim($raw_pic_path, '/');
+                        if (file_exists($correct_path)) {
+                            $chat_partner_pic = htmlspecialchars($correct_path);
+                        }
+                    }
+                    ?>
+                    <img src="<?= $chat_partner_pic; ?>" alt="User Avatar">
                     <strong><?php echo htmlspecialchars($to_user_info['username']); ?></strong>
                 </div>
                 <div id="chat-box"></div>
@@ -428,7 +438,6 @@ if (isset($_SESSION['user_id'])) {
                     <?php if ($current_user_type === 'client' && isset($to_user_info['user_type']) && $to_user_info['user_type'] === 'designer'): ?>
                         <button id="offer-btn" title="ยื่นข้อเสนอ"><i class="fas fa-file-signature"></i></button>
                     <?php endif; ?>
-
                     <textarea id="message-input" placeholder="Type a message..." rows="1"></textarea>
                     <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -439,7 +448,6 @@ if (isset($_SESSION['user_id'])) {
             <?php endif; ?>
         </div>
     </div>
-
     <div id="offerModal" class="modal hidden fixed z-[100] inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -556,14 +564,24 @@ if (isset($_SESSION['user_id'])) {
                         userList.empty();
                         users.forEach(user => {
                             const activeClass = user.user_id == toUserId ? 'active' : '';
-                            const profilePic = user.profile_picture_url ? user.profile_picture_url.replace('../', '') : 'dist/img/avatar.png';
+
+                            // ========== (แก้ไข) ตรรกะการแสดงรูปโปรไฟล์ใน User List ==========
+                            let profilePic = 'dist/img/user8.jpg'; // Default
+                            if (user.profile_picture_url) {
+                                // ลบเฉพาะ '../' ที่อาจหลงเหลือมา
+                                let correctedPath = user.profile_picture_url.startsWith('../') ? user.profile_picture_url.substring(3) : user.profile_picture_url;
+                                // ลบ '/' ข้างหน้าสุดถ้ามี
+                                correctedPath = correctedPath.startsWith('/') ? correctedPath.substring(1) : correctedPath;
+                                profilePic = correctedPath;
+                            }
+
                             const unreadBadge = user.unread_count > 0 ? `<span class="unread-badge">${user.unread_count}</span>` : '';
                             const userElement = `
-                        <div class="user-item ${activeClass}" data-userid="${user.user_id}">
-                            <img src="${profilePic}" alt="${user.username}">
-                            <span>${user.username}</span>
-                            ${unreadBadge}
-                        </div>`;
+                            <div class="user-item ${activeClass}" data-userid="${user.user_id}">
+                                <img src="${profilePic}" alt="${user.username}">
+                                <span>${user.username}</span>
+                                ${unreadBadge}
+                            </div>`;
                             userList.append(userElement);
                         });
                     }
