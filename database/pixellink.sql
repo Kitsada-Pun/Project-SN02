@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 20, 2025 at 12:50 PM
+-- Generation Time: Sep 22, 2025 at 12:24 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -128,9 +128,10 @@ INSERT INTO `client_job_requests` (`request_id`, `client_id`, `designer_id`, `ti
 (80, 3, 2, '111111111', '11111111111111', 'uploads/job_attachments/job_68ce6b2ce493e_1758358316.png', 4, '3000', '2025-09-27', '2025-09-20 08:51:56', 'pending_deposit'),
 (81, 3, 2, '22222222222', '222222222222222', 'uploads/job_attachments/job_68ce6b4aab7c9_1758358346.png', 6, '4000', '2025-10-03', '2025-09-20 08:52:26', 'awaiting_deposit_verification'),
 (82, 3, 2, '33333', '3333', NULL, 5, '5000', '2025-10-05', '2025-09-20 08:52:47', 'awaiting_deposit_verification'),
-(83, 3, 2, 'เห้ยยยยยยย', 'หดเ้่แเา้สิ', 'uploads/job_attachments/job_68ce73a19e7a4_1758360481.png', 5, '800', '2025-10-03', '2025-09-20 09:28:01', 'awaiting_deposit_verification'),
+(83, 3, 2, 'เห้ยยยยยยย', 'หดเ้่แเา้สิ', 'uploads/job_attachments/job_68ce73a19e7a4_1758360481.png', 5, '800', '2025-10-03', '2025-09-20 09:28:01', 'assigned'),
 (84, 3, 2, 'work', '555555', 'uploads/job_attachments/job_68ce789712dca_1758361751.png', 6, '400', '2025-09-27', '2025-09-20 09:49:11', 'pending_deposit'),
-(85, 3, 2, 'สยสยสยสยสยสย', 'สยสยสยสยสยสย', 'uploads/job_attachments/job_68ce868f8350a_1758365327.png', 2, '3000', '2025-09-27', '2025-09-20 10:48:47', 'cancelled');
+(85, 3, 2, 'สยสยสยสยสยสย', 'สยสยสยสยสยสย', 'uploads/job_attachments/job_68ce868f8350a_1758365327.png', 2, '3000', '2025-09-27', '2025-09-20 10:48:47', 'cancelled'),
+(86, 3, 2, 'ง่วงมาก', 'ฟหกฟหก', 'uploads/job_attachments/job_68cf183982cd7_1758402617.png', 6, '350', '2025-09-27', '2025-09-20 21:10:17', 'open');
 
 -- --------------------------------------------------------
 
@@ -173,6 +174,21 @@ INSERT INTO `contracts` (`contract_id`, `request_id`, `designer_id`, `client_id`
 (15, 63, 2, 3, 3000.00, '2025-09-17', NULL, 'pending', 'pending', '2025-09-18 00:24:57'),
 (16, 62, 2, 3, 3000.00, '2025-09-17', NULL, 'pending', 'pending', '2025-09-18 00:26:08'),
 (17, 61, 2, 3, 30000.00, '2025-09-17', NULL, 'pending', 'pending', '2025-09-18 00:38:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `designer_portfolio`
+--
+
+CREATE TABLE `designer_portfolio` (
+  `portfolio_id` int(11) NOT NULL,
+  `designer_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `image_url` varchar(255) NOT NULL,
+  `project_url` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -298,7 +314,7 @@ INSERT INTO `job_postings` (`post_id`, `designer_id`, `title`, `description`, `c
 (20, 10, 'ถ่ายสินค้าเพื่อขายออนไลน์', 'ถ่ายภาพสินค้าพร้อมแต่งภาพ เหมาะกับตลาดออนไลน์', 4, '3,000–7,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (21, 2, 'ออกแบบ UI เว็บไซต์', 'ดีไซน์หน้าเว็บให้สวยงาม น่าใช้งาน และตอบโจทย์ UX', 5, '10,000–25,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (22, 4, 'พัฒนาเว็บไซต์ด้วย HTML/CSS', 'รับสร้างเว็บไซต์พื้นฐานด้วย HTML/CSS ตามแบบที่ลูกค้าต้องการ', 6, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 58),
-(23, 2, 'ออกแบบป้ายงานบวช', 'รับออกแบบป้าย ทันสมัย,สีสันสดสวย,คุ้มราคา100%', 1, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 55);
+(23, 2, 'ออกแบบป้าย', 'รับออกแบบป้าย ทันสมัย,สีสันสดสวย,คุ้มราคา100%', 1, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 61);
 
 -- --------------------------------------------------------
 
@@ -956,7 +972,37 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (633, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-20 16:49:53'),
 (634, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-20 17:48:13'),
 (635, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-20 17:48:59'),
-(636, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-20 17:49:46');
+(636, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-20 17:49:46'),
+(637, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-20 23:50:02'),
+(638, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-21 00:33:10'),
+(639, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-21 01:50:32'),
+(640, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 03:20:57'),
+(641, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-21 03:23:13'),
+(642, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 03:46:37'),
+(643, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-21 04:03:28'),
+(644, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 04:04:37'),
+(645, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-21 04:10:36'),
+(646, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 04:11:11'),
+(647, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-21 04:19:55'),
+(648, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-21 04:22:07'),
+(649, 3, 'Login Attempt Failed', 'Incorrect password for: beer888', '::1', '2025-09-21 04:24:19'),
+(650, 3, 'Login Attempt Failed', 'Incorrect password for: beer888', '::1', '2025-09-21 04:24:28'),
+(651, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 04:24:32'),
+(652, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-21 17:56:19'),
+(653, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 01:16:43'),
+(654, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 01:16:55'),
+(655, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 02:06:43'),
+(656, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 02:07:03'),
+(657, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 02:26:29'),
+(658, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 02:27:18'),
+(659, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 02:27:43'),
+(660, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 02:28:18'),
+(661, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 04:31:57'),
+(662, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 04:33:20'),
+(663, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 04:59:09'),
+(664, 10, 'Login Successful', 'User logged in: party888', '::1', '2025-09-22 05:02:32'),
+(665, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-22 05:03:06'),
+(666, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 05:04:13');
 
 -- --------------------------------------------------------
 
@@ -1236,7 +1282,8 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (279, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"33333\",\"request_id\":82}', '2025-09-20 08:52:47', 1),
 (280, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e40\\u0e2b\\u0e49\\u0e22\\u0e22\\u0e22\\u0e22\\u0e22\\u0e22\\u0e22\",\"request_id\":83}', '2025-09-20 09:28:01', 1),
 (281, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"work\",\"request_id\":84}', '2025-09-20 09:49:11', 1),
-(282, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\",\"request_id\":85}', '2025-09-20 10:48:47', 1);
+(282, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\\u0e2a\\u0e22\",\"request_id\":85}', '2025-09-20 10:48:47', 1),
+(283, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e07\\u0e48\\u0e27\\u0e07\\u0e21\\u0e32\\u0e01\",\"request_id\":86}', '2025-09-20 21:10:17', 1);
 
 -- --------------------------------------------------------
 
@@ -1250,20 +1297,25 @@ CREATE TABLE `profiles` (
   `address` text DEFAULT NULL,
   `company_name` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
-  `portfolio_url` varchar(255) DEFAULT NULL,
   `skills` text DEFAULT NULL,
-  `profile_picture_url` varchar(255) DEFAULT NULL
+  `profile_picture_url` varchar(255) DEFAULT NULL,
+  `facebook_url` varchar(255) DEFAULT NULL,
+  `instagram_url` varchar(255) DEFAULT NULL,
+  `tiktok_url` varchar(255) DEFAULT NULL,
+  `payment_qr_code_url` varchar(255) DEFAULT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `account_number` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `profiles`
 --
 
-INSERT INTO `profiles` (`profile_id`, `user_id`, `address`, `company_name`, `bio`, `portfolio_url`, `skills`, `profile_picture_url`) VALUES
-(1, 2, '123 Design St, BKK', 'PixelLink co. ltd', 'Passionate UI/UX designer and dev.', 'https://www.twitch.tv/', 'UX/UI, Figma, Photoshop, AI,Canva', '../uploads/profile_pictures/profile_2_1757324946.jpg'),
-(2, 3, '456 Business Rd, Nonthaburi', 'Acme Corp', NULL, NULL, NULL, '/uploads/bob.jpg'),
-(3, 4, '789 Art Ave, Chiang Mai', '', 'Junior graphic designer looking for freelance work.', 'anna.artstation.com', 'Photoshop, Illustrator', '../uploads/profile_pictures/profile_4_1757327851.jpg'),
-(4, 5, '101 Tech Tower, Bangkok', 'Tech Corp', NULL, NULL, NULL, NULL);
+INSERT INTO `profiles` (`profile_id`, `user_id`, `address`, `company_name`, `bio`, `skills`, `profile_picture_url`, `facebook_url`, `instagram_url`, `tiktok_url`, `payment_qr_code_url`, `bank_name`, `account_number`) VALUES
+(1, 2, '123 Design St, BKK', 'PixelLink co. ltd', 'Passionate UI/UX designer and dev.', 'UX/UI, Figma, Photoshop, AI,Canva', '/uploads/profile_pictures/profile_2_1758401049.jpg', 'https://www.facebook.com/', 'https://www.instagram.com/', 'https://www.tiktok.com/th-TH/', '/uploads/qr_codes/qr_2_1758398445.jfif', 'กรุงไทย', '6790013520'),
+(2, 3, '456 Business Rd, Nonthaburi', 'Acme Corp', NULL, NULL, '/uploads/profile_pictures/profile_3_1758482656.jpg', NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 4, '789 Art Ave, Chiang Mai', '', 'Junior graphic designer looking for freelance work.', 'Photoshop, Illustrator', '/uploads/profile_pictures/profile_4_1758402259.jpg', '', '', '', NULL, NULL, NULL),
+(4, 5, '101 Tech Tower, Bangkok', 'Tech Corp', NULL, NULL, '/uploads/profile_pictures/profile_5_1758492204.jpg', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1412,7 +1464,9 @@ INSERT INTO `uploaded_files` (`file_id`, `contract_id`, `job_post_id`, `uploader
 (56, NULL, NULL, 4, 'job_img_68cb1c41a14a01758141505.png', '../uploads/job_images/job_img_68cb1c41a14a01758141505.png', '2025-09-17 20:38:25', 547297, NULL, 'image/png', '2025-09-18 03:38:25'),
 (57, NULL, NULL, 4, 'job_img_68cb1c50cbd7e1758141520.png', '../uploads/job_images/job_img_68cb1c50cbd7e1758141520.png', '2025-09-17 20:38:40', 607406, NULL, 'image/png', '2025-09-18 03:38:40'),
 (58, NULL, NULL, 4, 'job_img_68cb1c5b252131758141531.png', '../uploads/job_images/job_img_68cb1c5b252131758141531.png', '2025-09-17 20:38:51', 287932, NULL, 'image/png', '2025-09-18 03:38:51'),
-(59, NULL, NULL, 4, 'job_img_68cb1c69767cb1758141545.png', '../uploads/job_images/job_img_68cb1c69767cb1758141545.png', '2025-09-17 20:39:05', 431342, NULL, 'image/png', '2025-09-18 03:39:05');
+(59, NULL, NULL, 4, 'job_img_68cb1c69767cb1758141545.png', '../uploads/job_images/job_img_68cb1c69767cb1758141545.png', '2025-09-17 20:39:05', 431342, NULL, 'image/png', '2025-09-18 03:39:05'),
+(60, NULL, NULL, 2, 'job_img_68cef0de54e1e1758392542.png', '../uploads/job_images/job_img_68cef0de54e1e1758392542.png', '2025-09-20 18:22:22', 143688, NULL, 'image/png', '2025-09-21 01:22:22'),
+(61, NULL, NULL, 2, 'job_img_68cf122ecc3e91758401070.png', '../uploads/job_images/job_img_68cf122ecc3e91758401070.png', '2025-09-20 20:44:30', 55987, NULL, 'image/png', '2025-09-21 03:44:30');
 
 -- --------------------------------------------------------
 
@@ -1433,6 +1487,7 @@ CREATE TABLE `users` (
   `is_approved` tinyint(1) DEFAULT 0,
   `last_activity` datetime DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT 1,
+  `is_verified` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0=Not Verified, 1=Verified',
   `last_login` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1440,16 +1495,39 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `last_login`) VALUES
-(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, NULL),
-(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-09-16 23:30:42', 1, NULL),
-(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-20 17:48:25', 1, NULL),
-(4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, NULL),
-(5, 'tech_corp', 'tech_pass', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, NULL, 1, NULL),
-(6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, NULL),
-(7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, NULL),
-(10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, NULL),
-(12, 'TESTTTTT', 'Test_lll123456789@', 'KKKKKKK@gmail.com', 'TEST12332', 'PROJECT1', '0999999999', 'designer', '2025-07-07 14:54:31', 1, NULL, 1, NULL);
+INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `is_verified`, `last_login`) VALUES
+(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, NULL),
+(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-09-16 23:30:42', 1, 0, NULL),
+(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-22 02:27:11', 1, 0, NULL),
+(4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 0, NULL),
+(5, 'tech_corp', 'tech_pass', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, NULL, 1, 0, NULL),
+(6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, 0, NULL),
+(7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, 0, NULL),
+(10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL),
+(12, 'TESTTTTT', 'Test_lll123456789@', 'KKKKKKK@gmail.com', 'TEST12332', 'PROJECT1', '0999999999', 'designer', '2025-07-07 14:54:31', 1, NULL, 1, 0, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `verification_submissions`
+--
+
+CREATE TABLE `verification_submissions` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `document_path` varchar(255) NOT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `verification_submissions`
+--
+
+INSERT INTO `verification_submissions` (`id`, `user_id`, `document_path`, `status`, `submitted_at`) VALUES
+(1, 2, '/uploads/verification_docs/verify_designer_2_1758491828.png', 'pending', '2025-09-21 21:57:08'),
+(2, 3, '/uploads/verification_docs/verify_client_3_1758492014.png', 'pending', '2025-09-21 22:00:14'),
+(3, 5, '/uploads/verification_docs/verify_client_5_1758492212.png', 'pending', '2025-09-21 22:03:32');
 
 --
 -- Indexes for dumped tables
@@ -1472,6 +1550,13 @@ ALTER TABLE `contracts`
   ADD UNIQUE KEY `request_id` (`request_id`),
   ADD KEY `designer_id` (`designer_id`),
   ADD KEY `client_id` (`client_id`);
+
+--
+-- Indexes for table `designer_portfolio`
+--
+ALTER TABLE `designer_portfolio`
+  ADD PRIMARY KEY (`portfolio_id`),
+  ADD KEY `designer_id` (`designer_id`);
 
 --
 -- Indexes for table `job_applications`
@@ -1571,6 +1656,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `verification_submissions`
+--
+ALTER TABLE `verification_submissions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -1578,13 +1670,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `client_job_requests`
 --
 ALTER TABLE `client_job_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `contracts`
 --
 ALTER TABLE `contracts`
   MODIFY `contract_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `designer_portfolio`
+--
+ALTER TABLE `designer_portfolio`
+  MODIFY `portfolio_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `job_applications`
@@ -1608,13 +1706,13 @@ ALTER TABLE `job_postings`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=637;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=667;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=284;
 
 --
 -- AUTO_INCREMENT for table `profiles`
@@ -1650,13 +1748,19 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `uploaded_files`
 --
 ALTER TABLE `uploaded_files`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `verification_submissions`
+--
+ALTER TABLE `verification_submissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -1677,6 +1781,12 @@ ALTER TABLE `contracts`
   ADD CONSTRAINT `contracts_ibfk_1` FOREIGN KEY (`request_id`) REFERENCES `client_job_requests` (`request_id`),
   ADD CONSTRAINT `contracts_ibfk_2` FOREIGN KEY (`designer_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `contracts_ibfk_3` FOREIGN KEY (`client_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `designer_portfolio`
+--
+ALTER TABLE `designer_portfolio`
+  ADD CONSTRAINT `designer_portfolio_ibfk_1` FOREIGN KEY (`designer_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `job_applications`
@@ -1736,6 +1846,12 @@ ALTER TABLE `transactions`
 ALTER TABLE `uploaded_files`
   ADD CONSTRAINT `fk_job_post_id` FOREIGN KEY (`job_post_id`) REFERENCES `job_postings` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `uploaded_files_ibfk_2` FOREIGN KEY (`uploader_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `verification_submissions`
+--
+ALTER TABLE `verification_submissions`
+  ADD CONSTRAINT `verification_submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
