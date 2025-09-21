@@ -155,10 +155,10 @@ include '../includes/header.php';
                 </div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300">
-                <div class="bg-purple-100 text-purple-600 p-4 rounded-full"><i class="fas fa-user-edit fa-lg"></i></div>
+                <div class="bg-purple-100 text-purple-600 p-4 rounded-full"><i class="fas fa-user-circle fa-lg"></i></div>
                 <div>
                     <h3 class="font-bold text-gray-800">โปรไฟล์ของคุณ</h3>
-                    <a href="edit_profile.php" class="text-sm text-blue-600 hover:underline">แก้ไขข้อมูลส่วนตัว &rarr;</a>
+                    <a href="view_profile_client.php" class="text-sm text-blue-600 hover:underline">ดูและแก้ไขข้อมูลส่วนตัว &rarr;</a>
                 </div>
             </div>
         </div>

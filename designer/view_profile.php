@@ -73,21 +73,36 @@ if (isset($_SESSION['user_id'])) {
 $profile_data = null;
 $job_postings_for_profile = [];
 $portfolio_items = [];
+$verification_status = 'not_submitted';
 
 if ($user_id_to_view > 0) {
     // ========== (แก้ไข) เปลี่ยน linkedin_url เป็น tiktok_url ==========
-    $sql_profile = "SELECT p.*, u.first_name, u.last_name, u.email, u.phone_number, u.username,
-                           p.facebook_url, p.instagram_url, p.tiktok_url,
-                           p.payment_qr_code_url, p.bank_name, p.account_number
-                    FROM profiles p
-                    JOIN users u ON p.user_id = u.user_id
-                    WHERE p.user_id = ?";
+    $sql_profile = "SELECT p.*, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.is_verified,
+                       p.facebook_url, p.instagram_url, p.tiktok_url,
+                       p.payment_qr_code_url, p.bank_name, p.account_number
+                 FROM profiles p
+                 JOIN users u ON p.user_id = u.user_id
+                 WHERE p.user_id = ?";
     $stmt_profile = $condb->prepare($sql_profile);
     if ($stmt_profile) {
         $stmt_profile->bind_param("i", $user_id_to_view);
         $stmt_profile->execute();
         $profile_data = $stmt_profile->get_result()->fetch_assoc();
         $stmt_profile->close();
+    }
+    // ตรวจสอบสถานะการยื่นเอกสาร
+    if (!$profile_data['is_verified']) { // ตรวจสอบต่อเมื่อยังไม่ได้รับการยืนยันตัวตน
+        $sql_verify_status = "SELECT status FROM verification_submissions WHERE user_id = ? ORDER BY submitted_at DESC LIMIT 1";
+        $stmt_verify = $condb->prepare($sql_verify_status);
+        if ($stmt_verify) {
+            $stmt_verify->bind_param("i", $user_id_to_view);
+            $stmt_verify->execute();
+            $verify_result = $stmt_verify->get_result()->fetch_assoc();
+            if ($verify_result && $verify_result['status'] === 'pending') {
+                $verification_status = 'pending';
+            }
+            $stmt_verify->close();
+        }
     }
     // ดึงโพสต์งานพร้อม Path รูปภาพ
     $sql_job_postings_for_profile = "SELECT
@@ -115,6 +130,7 @@ $condb->close();
 
 // กำหนดค่าเริ่มต้นสำหรับแสดงผล
 $display_name = trim(($profile_data['first_name'] ?? '') . ' ' . ($profile_data['last_name'] ?? '')) ?: ($profile_data['username'] ?? 'ไม่ระบุชื่อ');
+$is_verified = $profile_data['is_verified'] ?? 0;
 $display_email = $profile_data['email'] ?? 'ไม่ระบุอีเมล';
 $display_tel = $profile_data['phone_number'] ?? 'ไม่ระบุเบอร์โทรศัพท์';
 $display_company_name = $profile_data['company_name'] ?? 'ไม่ระบุบริษัท';
@@ -290,7 +306,18 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10 mb-8">
                     <img src="<?= htmlspecialchars($display_profile_pic) ?>" alt="รูปโปรไฟล์" class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-lg border-4 border-white">
                     <div class="text-center md:text-left flex-grow">
-                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900"><?= htmlspecialchars($display_name) ?></h1>
+                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 flex items-center justify-center sm:justify-start">
+                            <?= htmlspecialchars($display_name) ?>
+
+                            <?php if ($is_verified): ?>
+                                <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                                    <svg class="ml-2 w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            <?php endif; ?>
+
+                        </h1>
                         <p class="text-md text-gray-600 mt-2"><i class="fas fa-envelope mr-2"></i><?= htmlspecialchars($display_email) ?></p>
                         <p class="text-md text-gray-600"><i class="fas fa-phone mr-2"></i><?= htmlspecialchars($display_tel) ?></p>
                         <p class="text-md text-gray-600"><i class="fas fa-building mr-2"></i><?= htmlspecialchars($display_company_name) ?></p>
@@ -335,7 +362,45 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                         <?php endif; ?>
                     </div>
                 </div>
+                <?php if ($user_id_to_view == $current_user_id): // แสดงเฉพาะเจ้าของโปรไฟล์ ?>
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold text-gradient mb-4">การยืนยันตัวตน</h2>
+                        <div class="bg-gray-50 p-4 rounded-lg">
 
+                            <?php if ($is_verified): ?>
+                                <div class="flex items-center text-green-600">
+                                    <i class="fas fa-check-circle fa-2x mr-4"></i>
+                                    <div>
+                                        <p class="font-bold">คุณได้รับการยืนยันตัวตนเรียบร้อยแล้ว</p>
+                                        <p class="text-sm">บัญชีของคุณมีความน่าเชื่อถือสูง</p>
+                                    </div>
+                                </div>
+                            <?php elseif ($verification_status === 'pending'): ?>
+                                <div class="flex items-center text-orange-600">
+                                    <i class="fas fa-hourglass-half fa-2x mr-4"></i>
+                                    <div>
+                                        <p class="font-bold">เอกสารของคุณอยู่ระหว่างการตรวจสอบ</p>
+                                        <p class="text-sm">โดยปกติจะใช้เวลา 1-3 วันทำการ</p>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle fa-2x mr-4 text-amber-500"></i>
+                                    <div>
+                                        <p class="font-bold text-gray-800">บัญชีของคุณยังไม่ได้รับการยืนยันตัวตน</p>
+                                        <p class="text-sm text-gray-600 mt-1 mb-4">
+                                            เพิ่มความน่าเชื่อถือโดยการส่งเอกสารตรวจสอบประวัติอาชญากรรมเพื่อรับเครื่องหมายยืนยันตัวตน
+                                        </p>
+                                        <a href="submit_verification.php" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
+                                            <i class="fas fa-shield-alt mr-2"></i>ยืนยันตัวตน / ส่งเอกสาร
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <?php if ($user_id_to_view == $current_user_id): ?>
                     <div class="mb-8">
                         <h2 class="text-2xl font-semibold text-gradient mb-4">ข้อมูลการชำระเงิน</h2>

@@ -167,12 +167,12 @@ hr.sidebar-divider {
                     </a>
                 </li> -->
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="how_to_use.php" class="nav-link <?= $activePage == 'how_to_use.php' ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-book"></i>
                         <p>ทีมพัฒนาระบบ</p>
                     </a>
-                </li>
+                </li> -->
 
             </ul>
         </nav>
