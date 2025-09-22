@@ -8,21 +8,91 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
     exit();
 }
 
-// ดึงข้อมูลคำขอยืนยันตัวตนทั้งหมดที่ยังรอการตรวจสอบ (pending)
-$submissions = [];
-$sql = "SELECT vs.id, vs.user_id, vs.document_path, vs.submitted_at, u.username, u.first_name, u.last_name, u.user_type
-        FROM verification_submissions vs
-        JOIN users u ON vs.user_id = u.user_id
-        WHERE vs.status = 'pending'
-        ORDER BY vs.submitted_at ASC";
+// --- Pagination Configuration ---
+$records_per_page = 5; // กำหนดจำนวนรายการต่อหน้า
+$current_page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $records_per_page;
 
-$result = $conn->query($sql);
-if ($result) {
-    $submissions = $result->fetch_all(MYSQLI_ASSOC);
+// --- รับค่าการค้นหาและฟิลเตอร์ ---
+$search_query = isset($_GET['search_query']) ? trim($_GET['search_query']) : '';
+$filter_type = isset($_GET['filter_type']) && in_array(trim($_GET['filter_type']), ['admin', 'designer', 'client']) ? trim($_GET['filter_type']) : '';
+
+// --- สร้าง SQL Query พื้นฐาน ---
+$sql_base_select = "FROM verification_submissions vs JOIN users u ON vs.user_id = u.user_id WHERE vs.status = 'pending'";
+$sql_where = "";
+$params = [];
+$types = '';
+
+// --- เพิ่มเงื่อนไขการค้นหา (ถ้ามี) ---
+if (!empty($search_query)) {
+    $sql_where .= " AND (u.username LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?)";
+    $search_param = "%" . $search_query . "%";
+    array_push($params, $search_param, $search_param, $search_param);
+    $types .= 'sss';
 }
+
+// --- เพิ่มเงื่อนไขการกรองประเภท (ถ้ามี) ---
+if (!empty($filter_type)) {
+    $sql_where .= " AND u.user_type = ?";
+    $params[] = $filter_type;
+    $types .= 's';
+}
+
+// --- Query สำหรับนับจำนวนรายการทั้งหมด ---
+$sql_count = "SELECT COUNT(vs.id) as total_records " . $sql_base_select . $sql_where;
+$stmt_count = $conn->prepare($sql_count);
+if (!empty($params)) {
+    $stmt_count->bind_param($types, ...$params);
+}
+$stmt_count->execute();
+$result_count = $stmt_count->get_result();
+$total_records = $result_count->fetch_assoc()['total_records'];
+$stmt_count->close();
+
+$total_pages = ceil($total_records / $records_per_page);
+
+// --- Query สำหรับดึงข้อมูลมาแสดงผล (พร้อม Pagination) ---
+$sql_submissions = "SELECT vs.id, vs.user_id, vs.document_path, vs.submitted_at, u.username, u.first_name, u.last_name, u.user_type "
+    . $sql_base_select . $sql_where . " ORDER BY vs.submitted_at ASC LIMIT ? OFFSET ?";
+
+$params[] = $records_per_page;
+$params[] = $offset;
+$types .= 'ii';
+
+$stmt = $conn->prepare($sql_submissions);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+$submissions = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// --- การแปลประเภทผู้ใช้ ---
+$userTypeTranslation = [
+    'admin' => 'ผู้ดูแลระบบ',
+    'designer' => 'นักออกแบบ',
+    'client' => 'ผู้ว่าจ้าง'
+];
+
+// Function to generate pagination URL
+function getPaginationUrl($page, $search_query, $filter_type)
+{
+    $url = 'manage_verification_submissions.php?';
+    $params = ['page=' . $page];
+    if (!empty($search_query)) {
+        $params[] = 'search_query=' . urlencode($search_query);
+    }
+    if (!empty($filter_type)) {
+        $params[] = 'filter_type=' . urlencode($filter_type);
+    }
+    return $url . implode('&', $params);
+}
+
 // เรียกใช้ Header ของ Admin Panel
 include 'header.php';
 ?>
+
 <style>
     /* Global Font */
     body,
@@ -739,15 +809,12 @@ include 'header.php';
                     </div>
                 </div>
             </div>
+
             <main class="content">
                 <div class="content-container">
-                    <div class="ant-row css-ee1yud">
-                        <div class="ant-col ant-col-12 css-ee1yud" style="justify-content: flex-start;">
-                            <h4>รายการที่รอการตรวจสอบ</h4>
-                        </div>
-                        <div class="ant-col ant-col-12 css-ee1yud"
-                            style="justify-content: flex-end; align-items: center; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>รายการที่รอการตรวจสอบ</h4>
+                        <div style="display: flex; align-items: center; gap: 5px;">
                                 <input type="text" id="userSearchInput" class="ant-input"
                                     placeholder="ค้นหาผู้ใช้..." value="<?= htmlspecialchars($search_query) ?>"
                                     style="width: 200px;">
@@ -759,13 +826,10 @@ include 'header.php';
                                     <i class="fas fa-times"></i> ล้างทั้งหมด
                                 </button>
                             </div>
-                            <a href="add_user.php" class="btn-modern btn-success-modern">
-                                <i class="fas fa-plus"></i> เพิ่มผู้ใช้ใหม่
-                            </a>
-                        </div>
                     </div>
                     <div class="ant-divider css-ee1yud ant-divider-horizontal" role="separator"
                         style="border-color: rgb(204, 204, 204); margin-top: 0px; margin-bottom: 0px;"></div>
+                        
                     <div style="margin-top: 20px;">
                         <div class="ant-table-wrapper css-ee1yud">
                             <div class="ant-spin-nested-loading css-ee1yud">
@@ -776,175 +840,204 @@ include 'header.php';
                                                 <table style="table-layout: fixed; width: 100%;">
                                                     <colgroup></colgroup>
                                                     <thead class="ant-table-thead">
-                                                        <tr>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 12%;">ชื่อผู้ใช้</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 18%;">อีเมล</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 15%;">ชื่อจริง</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 15%;">นามสกุล</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">
-                                                                <div class="filter-dropdown-container">
-                                                                    <span role="button" tabindex="0" class="ant-dropdown-trigger ant-table-filter-trigger <?= !empty($filter_type) ? 'active' : '' ?>">
-                                                                        ประเภท
-                                                                        <span role="img" aria-label="filter" class="anticon anticon-filter">
-                                                                            <svg viewBox="64 64 896 896" focusable="false" data-icon="filter" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-                                                                                <path d="M880.1 154H143.9c-24.5 0-39.8 26.7-27.5 48L349 597.4V838c0 17.7 14.2 32 31.8 32h262.4c17.6 0 31.8-14.3 31.8-32V597.4L907.7 202c12.2-21.3-3.1-48-27.6-48zM603.4 798H420.6V642h182.9v156zm9.6-236.6l-9.5 16.6h-183l-9.5-16.6L212.7 226h598.6L613 561.4z"></path>
-                                                                            </svg>
-                                                                        </span>
-                                                                    </span>
-                                                                    <div class="ant-dropdown css-ee1yud ant-dropdown-placement-bottomRight">
-                                                                        <div class="ant-table-filter-dropdown">
-                                                                            <div class="ant-select-dropdown-options-list">
-                                                                                <?php foreach ($userTypeTranslation as $value => $label): ?>
-                                                                                    <div class="ant-select-item <?= ($filter_type == $value) ? 'ant-select-item-option-selected' : '' ?>" data-value="<?= htmlspecialchars($value) ?>">
-                                                                                        <?= htmlspecialchars($label) ?>
-                                                                                    </div>
-                                                                                <?php endforeach; ?>
-                                                                            </div>
-                                                                            <div class="ant-dropdown-footer">
-                                                                                <button class="btn-link clear-type-filter" type="button">ล้าง</button>
-                                                                                <button class="btn-primary apply-type-filter" type="button">ตกลง</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">วันที่ส่ง</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 8%;">เอกสาร</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">อนุมัติ</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">เข้าสู่ระบบล่าสุด</th>
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="ant-table-tbody">
-                                                        <?php if (!empty($users)): ?>
-                                                            <?php foreach ($users as $user): ?>
-                                                                <tr
-                                                                    data-user-id="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo htmlspecialchars($user['username']); ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo htmlspecialchars($user['email']); ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo htmlspecialchars($user['first_name']); ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo htmlspecialchars($user['last_name']); ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <span class="user-type-<?= htmlspecialchars($user['user_type']); ?>">
-                                                                            <?php
-                                                                            echo htmlspecialchars($userTypeTranslation[$user['user_type']] ?? ucfirst($user['user_type']));
-                                                                            ?>
-                                                                        </span>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($user['registration_date']))); ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <button type="button" class="ant-switch toggle-approved"
-                                                                            data-user-id="<?= htmlspecialchars($user['user_id']); ?>"
-                                                                            data-is-approved="<?= $user['is_approved'] ? 'true' : 'false'; ?>"
-                                                                            <?= ($user['user_id'] == $_SESSION['user_id'] || $user['user_type'] == 'admin') ? 'disabled' : ''; ?>
-                                                                            style="min-width: 70px;">
-                                                                            <div class="ant-switch-handle"></div>
-                                                                            <span class="ant-switch-inner">
-                                                                                <span class="ant-switch-inner-checked">อนุมัติ</span>
-                                                                                <span class="ant-switch-inner-unchecked">ไม่อนุมัติ</span>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <?php echo $user['last_login'] ? htmlspecialchars(date('Y-m-d H:i', strtotime($user['last_login']))) : 'ยังไม่เคย'; ?>
-                                                                    </td>
-                                                                    <td class="ant-table-cell">
-                                                                        <button type="button" class="action-circle-btn edit-btn"
-                                                                            onclick="location.href='edit_user.php?id=<?php echo htmlspecialchars($user['user_id']); ?>'"
-                                                                            title="แก้ไขข้อมูลผู้ใช้">
-                                                                            <i class="fas fa-edit"></i>
-                                                                        </button>
-                                                                        <button type="button" class="action-circle-btn delete-btn"
-                                                                            onclick="confirmDelete(<?php echo htmlspecialchars($user['user_id']); ?>)"
-                                                                            title="ลบข้อมูลผู้ใช้"
-                                                                            <?php if ($user['user_id'] == $_SESSION['user_id'] || $user['user_type'] == 'admin'): ?>
-                                                                            disabled style="opacity: 0.5; cursor: not-allowed;"
-                                                                            <?php endif; ?>>
-                                                                            <i class="fas fa-trash-alt"></i>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            <?php endforeach; // End of foreach for users 
-                                                            ?>
-                                                        <?php else: ?>
-                                                            <tr class="ant-table-placeholder" style="display: table-row;">
-                                                                <td class="ant-table-cell" colspan="9">
-                                                                    <div class="css-ee1yud ant-empty ant-empty-normal">
-                                                                        <div class="ant-empty-image">
-                                                                            <svg width="64" height="41" viewBox="0 0 64 41"
-                                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                                <title>Simple Empty</title>
-                                                                                <g transform="translate(0 1)" fill="none"
-                                                                                    fill-rule="evenodd">
-                                                                                    <ellipse fill="#f5f5f5" cx="32" cy="33"
-                                                                                        rx="32" ry="7"></ellipse>
-                                                                                    <g fill-rule="nonzero" stroke="#d9d9d9">
-                                                                                        <path
-                                                                                            d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z">
-                                                                                        </path>
-                                                                                        <path
-                                                                                            d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z"
-                                                                                            fill="#fafafa"></path>
-                                                                                    </g>
-                                                                                </g>
-                                                                            </svg>
-                                                                        </div>
-                                                                        <div class="ant-empty-description">ยังไม่มีเอกสารขอยืนยันตัวตน</div>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        <?php endif; // End of if (!empty($users)) 
-                                                        ?>
-                                                    </tbody>
-                                                </table>
+                                <tr>
+                                    <th class="ant-table-cell">ชื่อผู้ใช้</th>
+                                    <th class="ant-table-cell">ชื่อจริง</th>
+                                    <th class="ant-table-cell">นามสกุล</th>
+                                    <th class="ant-table-cell">
+                                        <div class="filter-dropdown-container">
+                                            <span role="button" class="ant-dropdown-trigger ant-table-filter-trigger <?= !empty($filter_type) ? 'active' : '' ?>">
+                                                ประเภท
+                                                <span role="img" aria-label="filter" class="anticon anticon-filter">
+                                                    <svg viewBox="64 64 896 896" focusable="false" data-icon="filter" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                                                        <path d="M880.1 154H143.9c-24.5 0-39.8 26.7-27.5 48L349 597.4V838c0 17.7 14.2 32 31.8 32h262.4c17.6 0 31.8-14.3 31.8-32V597.4L907.7 202c12.2-21.3-3.1-48-27.6-48zM603.4 798H420.6V642h182.9v156zm9.6-236.6l-9.5 16.6h-183l-9.5-16.6L212.7 226h598.6L613 561.4z"></path>
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                            <div class="ant-dropdown">
+                                                <div class="ant-table-filter-dropdown">
+                                                    <div class="ant-select-dropdown-options-list">
+                                                        <?php foreach ($userTypeTranslation as $value => $label): ?>
+                                                            <div class="ant-select-item <?= ($filter_type == $value) ? 'ant-select-item-option-selected' : '' ?>" data-value="<?= htmlspecialchars($value) ?>">
+                                                                <?= htmlspecialchars($label) ?>
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                    <div class="ant-dropdown-footer">
+                                                        <button class="btn-link clear-type-filter" type="button">ล้าง</button>
+                                                        <button class="btn btn-primary apply-type-filter" type="button">ตกลง</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    </th>
+                                    <th class="ant-table-cell">วันที่ส่ง</th>
+                                    <th class="ant-table-cell">เอกสาร</th>
+                                    <th class="ant-table-cell">การดำเนินการ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="ant-table-tbody">
+                                <?php if (!empty($submissions)): ?>
+                                    <?php foreach ($submissions as $submission): ?>
+                                        <tr>
+                                            <td class="ant-table-cell"><?php echo htmlspecialchars($submission['username']); ?></td>
+                                            <td class="ant-table-cell"><?php echo htmlspecialchars($submission['first_name']); ?></td>
+                                            <td class="ant-table-cell"><?php echo htmlspecialchars($submission['last_name']); ?></td>
+                                            <td class="ant-table-cell">
+                                                <?php echo htmlspecialchars($userTypeTranslation[$submission['user_type']] ?? ucfirst($submission['user_type'])); ?>
+                                            </td>
+                                            <td class="ant-table-cell"><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($submission['submitted_at']))); ?></td>
+                                            <td class="ant-table-cell">
+                                                <a href="../<?php echo htmlspecialchars($submission['document_path']); ?>" target="_blank" class="btn btn-info btn-sm">ดูเอกสาร</a>
+                                            </td>
+                                            <td class="ant-table-cell">
+                                                <button class="btn btn-success btn-sm" onclick="handleVerification(<?php echo $submission['id']; ?>, 'approved')">อนุมัติ</button>
+                                                <button class="btn btn-danger btn-sm" onclick="handleVerification(<?php echo $submission['id']; ?>, 'rejected')">ปฏิเสธ</button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr class="ant-table-placeholder">
+                                        <td class="ant-table-cell" colspan="7">
+                                            <div class="ant-empty-description">ไม่พบข้อมูลที่ตรงกับเงื่อนไข หรือยังไม่มีคำขอยืนยันตัวตน</div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
+
+                    <?php if ($total_pages > 1): ?>
+                        <div class="ant-row ant-row-center" style="margin-top: 20px;">
+                            <ul class="ant-pagination">
+                                <li class="ant-pagination-prev <?= ($current_page <= 1) ? 'ant-pagination-disabled' : '' ?>">
+                                    <a href="<?= getPaginationUrl($current_page - 1, $search_query, $filter_type) ?>" class="ant-pagination-item-link">‹</a>
+                                </li>
+                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                    <li class="ant-pagination-item <?= ($i == $current_page) ? 'ant-pagination-item-active' : '' ?>">
+                                        <a href="<?= getPaginationUrl($i, $search_query, $filter_type) ?>"><?= $i ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="ant-pagination-next <?= ($current_page >= $total_pages) ? 'ant-pagination-disabled' : '' ?>">
+                                    <a href="<?= getPaginationUrl($current_page + 1, $search_query, $filter_type) ?>" class="ant-pagination-item-link">›</a>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
-                
+            </main>
         </div>
-        <script src="plugins/jquery/jquery.min.js"></script>
-        <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="plugins/datatables/jquery.dataTables.min.js"></script>
-        <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-        <script src="dist/js/adminlte.min.js"></script>
-        <script>
-            $(function() {
-                $('#verificationTable').DataTable({
-                    "paging": true,
-                    "lengthChange": true,
-                    "searching": true,
-                    "ordering": true,
-                    "info": true,
-                    "autoWidth": false,
-                    "responsive": true,
-                });
+    </div>
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="dist/js/adminlte.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+
+            function buildUrl(searchQuery, filterType, page = 1) {
+                const url = new URL(window.location.href.split('?')[0]);
+                url.searchParams.set('page', page);
+                if (searchQuery) {
+                    url.searchParams.set('search_query', searchQuery);
+                }
+                if (filterType) {
+                    url.searchParams.set('filter_type', filterType);
+                }
+                return url.toString();
+            }
+
+            $('#applyMainFilter').on('click', function() {
+                const searchQuery = $('#userSearchInput').val();
+                const urlParams = new URLSearchParams(window.location.search);
+                const typeFilter = urlParams.get('filter_type') || '';
+                window.location.href = buildUrl(searchQuery, typeFilter, 1);
             });
-        </script>
+
+            $('#userSearchInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#applyMainFilter').click();
+                }
+            });
+
+            $('#clearAllFilters').on('click', function() {
+                window.location.href = 'manage_verification_submissions.php';
+            });
+
+            // Dropdown Filter Logic
+            const $typeFilterTrigger = $('.ant-dropdown-trigger');
+            const $typeFilterDropdown = $typeFilterTrigger.next('.ant-dropdown');
+            let currentSelectedType = '<?= htmlspecialchars($filter_type) ?>';
+
+            $typeFilterTrigger.on('click', function(event) {
+                event.stopPropagation();
+                $typeFilterDropdown.toggleClass('ant-dropdown-open');
+            });
+
+            $typeFilterDropdown.on('click', '.ant-select-item', function() {
+                currentSelectedType = $(this).data('value');
+                $('.ant-select-item').removeClass('ant-select-item-option-selected');
+                $(this).addClass('ant-select-item-option-selected');
+            });
+
+            $typeFilterDropdown.on('click', '.apply-type-filter', function() {
+                const searchQuery = $('#userSearchInput').val();
+                window.location.href = buildUrl(searchQuery, currentSelectedType, 1);
+            });
+
+            $typeFilterDropdown.on('click', '.clear-type-filter', function() {
+                const searchQuery = $('#userSearchInput').val();
+                window.location.href = buildUrl(searchQuery, '', 1);
+            });
+
+            $(document).on('click', function(event) {
+                if (!$typeFilterTrigger.is(event.target) && $typeFilterTrigger.has(event.target).length === 0 &&
+                    !$typeFilterDropdown.is(event.target) && $typeFilterDropdown.has(event.target).length === 0) {
+                    $typeFilterDropdown.removeClass('ant-dropdown-open');
+                }
+            });
+        });
+
+        function handleVerification(submissionId, status) {
+            const actionText = status === 'approved' ? 'อนุมัติ' : 'ปฏิเสธ';
+            Swal.fire({
+                title: `ยืนยันการ${actionText}?`,
+                text: `คุณต้องการที่จะ ${actionText} คำขอนี้ใช่หรือไม่?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: 'update_verification_status.php',
+                        type: 'POST',
+                        data: {
+                            id: submissionId,
+                            status: status
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire('สำเร็จ!', `คำขอได้ถูก ${actionText} แล้ว`, 'success')
+                                    .then(() => {
+                                        location.reload();
+                                    });
+                            } else {
+                                Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถดำเนินการได้', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

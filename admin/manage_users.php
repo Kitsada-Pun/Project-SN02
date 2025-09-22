@@ -229,7 +229,7 @@ if ($condb && $condb->ping()) {
 $userTypeTranslation = [
     'admin' => 'ผู้ดูแลระบบ',
     'designer' => 'นักออกแบบ',
-    'client' => 'ลูกค้า',
+    'client' => 'ผู้ว่าจ้าง',
 ];
 
 // Function to generate pagination URL with existing filters

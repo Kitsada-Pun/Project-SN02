@@ -356,7 +356,7 @@ function getStatusInfo($status)
                                             <?= htmlspecialchars($offer['description']) ?>
                                         </p>
                                         <div class="text-sm space-y-2 text-slate-600">
-                                            <p><i class="fa-solid fa-user-tie w-5 text-slate-400 mr-1"></i> ผู้ว่าจ้าง: <a href="../view_profile.php?user_id=<?= $offer['client_id'] ?>" class="font-semibold text-blue-600 hover:underline"><?= htmlspecialchars($offer['client_name']) ?></a></p>
+                                            <p><i class="fa-solid fa-user-tie w-5 text-slate-400 mr-1"></i> ผู้ว่าจ้าง: <a href="../view_profile_client.php?user_id=<?= $offer['client_id'] ?>" class="font-semibold text-blue-600 hover:underline"><?= htmlspecialchars($offer['client_name']) ?></a></p>
                                             <p><i class="fa-solid fa-calendar-day w-5 text-slate-400 mr-1"></i> ยื่นข้อเสนอเมื่อ: <?= date('d M Y, H:i', strtotime($offer['offer_date'])) ?></p>
                                         </div>
                                     </div>
