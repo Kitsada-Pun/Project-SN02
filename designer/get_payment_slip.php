@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../connect.php';
+
 header('Content-Type: application/json');
 
 // ตรวจสอบว่าเป็น designer ที่ล็อกอินอยู่หรือไม่
@@ -8,61 +10,45 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'designer') {
     exit();
 }
 
-require_once '../connect.php';
-
 $designer_id = $_SESSION['user_id'];
-$request_id = isset($_GET['request_id']) ? intval($_GET['request_id']) : 0;
+$request_id = isset($_GET['request_id']) ? (int)$_GET['request_id'] : 0;
 
 if ($request_id === 0) {
-    echo json_encode(['status' => 'error', 'message' => 'ไม่ได้ระบุรหัสคำของาน']);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid Request ID.']);
     exit();
 }
 
-try {
-    // 1. ค้นหา contract_id และตรวจสอบว่า designer เป็นเจ้าของงานนี้จริง
-    $sql_contract = "
-        SELECT c.contract_id 
-        FROM contracts c
-        JOIN client_job_requests cjr ON c.request_id = cjr.request_id
-        WHERE c.request_id = ? AND cjr.designer_id = ?
-    ";
-    $stmt_contract = $conn->prepare($sql_contract);
-    $stmt_contract->bind_param("ii", $request_id, $designer_id);
-    $stmt_contract->execute();
-    $result_contract = $stmt_contract->get_result();
+// ค้นหา slip_path ล่าสุดจากตาราง transactions ที่เกี่ยวข้องกับ request_id นี้
+// และตรวจสอบให้แน่ใจว่า designer คนนี้เป็นเจ้าของงานนั้นจริงๆ
+$sql = "
+    SELECT t.slip_path 
+    FROM transactions t
+    JOIN contracts con ON t.contract_id = con.contract_id
+    WHERE con.request_id = ? AND con.designer_id = ?
+    ORDER BY t.transaction_date DESC 
+    LIMIT 1
+";
 
-    if ($result_contract->num_rows === 0) {
-        throw new Exception("ไม่พบสัญญาสำหรับงานนี้ หรือคุณไม่มีสิทธิ์เข้าถึง");
-    }
-    $contract_data = $result_contract->fetch_assoc();
-    $contract_id = $contract_data['contract_id'];
-    $stmt_contract->close();
-
-    // 2. ค้นหาไฟล์สลิปที่เกี่ยวข้องกับ contract_id นี้ (เอาไฟล์ล่าสุด)
-    // เราอาจจะต้องกำหนด file_type ที่ชัดเจนขึ้นในอนาคต แต่ตอนนี้จะค้นหาจาก path
-    $sql_file = "
-        SELECT file_path 
-        FROM uploaded_files 
-        WHERE contract_id = ? AND file_path LIKE 'uploads/payment_slips/%'
-        ORDER BY uploaded_at DESC 
-        LIMIT 1
-    ";
-    $stmt_file = $conn->prepare($sql_file);
-    $stmt_file->bind_param("i", $contract_id);
-    $stmt_file->execute();
-    $result_file = $stmt_file->get_result();
-
-    if ($result_file->num_rows > 0) {
-        $file_data = $result_file->fetch_assoc();
-        // ส่งที่อยู่ไฟล์กลับไปให้ JavaScript
-        echo json_encode(['status' => 'success', 'filePath' => '../' . $file_data['file_path']]);
+$stmt = $conn->prepare($sql);
+if ($stmt) {
+    $stmt->bind_param("ii", $request_id, $designer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($row = $result->fetch_assoc()) {
+        if (!empty($row['slip_path'])) {
+            // สร้าง Path ที่ถูกต้องสำหรับแสดงผล (จากโฟลเดอร์ designer/ ต้องถอยกลับไป 1 ระดับ)
+            $filePath = '../' . ltrim($row['slip_path'], './');
+            echo json_encode(['status' => 'success', 'filePath' => $filePath]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'ไม่พบไฟล์สลิปสำหรับงานนี้']);
+        }
     } else {
-        throw new Exception("ไม่พบไฟล์หลักฐานการชำระเงินสำหรับงานนี้");
+        echo json_encode(['status' => 'error', 'message' => 'ไม่พบข้อมูลการชำระเงิน']);
     }
-    $stmt_file->close();
-
-} catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    $stmt->close();
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Database query failed.']);
 }
 
 $conn->close();

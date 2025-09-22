@@ -17,7 +17,7 @@ if (empty($loggedInUserName)) {
     $sql_user = "SELECT first_name, last_name FROM users WHERE user_id = ?";
     $stmt_user = $conn->prepare($sql_user);
     if ($stmt_user) {
-        $stmt_user->bind_param("i", $current_user_id);
+        $stmt_user->bind_param("i", $client_id);
         $stmt_user->execute();
         $result_user = $stmt_user->get_result();
         if ($user_info = $result_user->fetch_assoc()) {
@@ -36,15 +36,20 @@ $sql = "
         cjr.request_id,
         cjr.title,
         cjr.description,
-        -- ใช้ offered_price ถ้ามีใบเสนอราคาที่ accepted, มิฉะนั้นใช้ budget เดิม
         COALESCE(ja.offered_price, cjr.budget) AS budget,
         cjr.posted_date,
         cjr.status,
         u.user_id AS designer_id,
-        CONCAT(u.first_name, ' ', u.last_name) AS designer_name
+        CONCAT(u.first_name, ' ', u.last_name) AS designer_name,
+        -- เพิ่มส่วนนี้เพื่อดึงที่อยู่ไฟล์สลิปที่อัปโหลดล่าสุด
+        (SELECT t.slip_path 
+         FROM transactions t
+         JOIN contracts con ON t.contract_id = con.contract_id
+         WHERE con.request_id = cjr.request_id 
+         ORDER BY t.transaction_date DESC 
+         LIMIT 1) AS slip_path
     FROM client_job_requests cjr
     LEFT JOIN users u ON cjr.designer_id = u.user_id
-    -- Join กับตาราง job_applications เพื่อดึงราคาที่ตอบตกลง
     LEFT JOIN job_applications ja ON cjr.request_id = ja.request_id AND ja.status = 'accepted'
     WHERE cjr.client_id = ?
     ORDER BY cjr.posted_date DESC
@@ -88,7 +93,7 @@ function getStatusInfoClient($status)
         case 'pending_deposit':
             return ['text' => 'รอชำระเงินมัดจำ', 'color' => 'bg-orange-100 text-orange-800', 'tab' => 'pending_deposit'];
         case 'awaiting_deposit_verification':
-            return ['text' => 'รอตรวจสอบการชำระเงิน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'awaiting_deposit_verification'];  
+            return ['text' => 'รอตรวจสอบการชำระเงิน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'awaiting_deposit_verification'];
         case 'assigned':
             return ['text' => 'กำลังดำเนินการ', 'color' => 'bg-blue-100 text-blue-800', 'tab' => 'assigned'];
         case 'awaiting_final_payment':
@@ -104,6 +109,7 @@ function getStatusInfoClient($status)
 ?>
 <!DOCTYPE html>
 <html lang="th" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,6 +122,7 @@ function getStatusInfoClient($status)
         * {
             font-family: 'Kanit', sans-serif;
         }
+
         body {
             background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%);
             color: #2c3e50;
@@ -229,6 +236,7 @@ function getStatusInfoClient($status)
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+
         .line-clamp-2 {
             overflow: hidden;
             display: -webkit-box;
@@ -281,30 +289,30 @@ function getStatusInfoClient($status)
                     <?php if ($counts['awaiting_deposit_verification'] > 0) : ?>
                         <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-purple-500 text-xs font-bold text-white"><?= $counts['awaiting_deposit_verification'] ?></span>
                     <?php endif; ?>
-                <button @click="tab = 'assigned'" :class="tab === 'assigned' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-person-digging mr-1.5"></i> กำลังดำเนินการ
-                    <?php if ($counts['assigned'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-blue-500 text-xs font-bold text-white"><?= $counts['assigned'] ?></span>
-                    <?php endif; ?>
-                </button>
-                <button @click="tab = 'awaiting_final'" :class="tab === 'awaiting_final' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-file-import mr-1.5"></i> รอตรวจสอบงาน
-                    <?php if ($counts['awaiting_final_payment'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $counts['awaiting_final_payment'] ?></span>
-                    <?php endif; ?>
-                </button>
-                <button @click="tab = 'completed'" :class="tab === 'completed' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-circle-check mr-1.5"></i> เสร็จสมบูรณ์
-                    <?php if ($counts['completed'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-xs font-bold text-white"><?= $counts['completed'] ?></span>
-                    <?php endif; ?>
-                </button>
-                <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
-                    <?php if ($counts['cancelled'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $counts['cancelled'] ?></span>
-                    <?php endif; ?>
-                </button>
+                    <button @click="tab = 'assigned'" :class="tab === 'assigned' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                        <i class="fa-solid fa-person-digging mr-1.5"></i> กำลังดำเนินการ
+                        <?php if ($counts['assigned'] > 0) : ?>
+                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-blue-500 text-xs font-bold text-white"><?= $counts['assigned'] ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <button @click="tab = 'awaiting_final'" :class="tab === 'awaiting_final' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                        <i class="fa-solid fa-file-import mr-1.5"></i> รอตรวจสอบงาน
+                        <?php if ($counts['awaiting_final_payment'] > 0) : ?>
+                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $counts['awaiting_final_payment'] ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <button @click="tab = 'completed'" :class="tab === 'completed' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                        <i class="fa-solid fa-circle-check mr-1.5"></i> เสร็จสมบูรณ์
+                        <?php if ($counts['completed'] > 0) : ?>
+                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-xs font-bold text-white"><?= $counts['completed'] ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                        <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
+                        <?php if ($counts['cancelled'] > 0) : ?>
+                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $counts['cancelled'] ?></span>
+                        <?php endif; ?>
+                    </button>
             </div>
             <div class="space-y-5">
                 <?php if (empty($requests)) : ?>
@@ -357,8 +365,10 @@ function getStatusInfoClient($status)
                                                 <i class="fa-solid fa-credit-card mr-1"></i> ชำระเงินมัดจำ
                                             </a>
                                         <?php elseif ($request['status'] === 'awaiting_deposit_verification') : ?>
-                                            <button class="w-full sm:w-auto text-center px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed" disabled>
-                                                <i class="fa-solid fa-hourglass-half mr-1"></i> ดูหลักฐานการชำระเงิน
+                                            <button
+                                                class="view-slip-btn w-full sm:w-auto text-center px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600 transition-all"
+                                                data-slip-url="<?= htmlspecialchars($request['slip_path']) ?>">
+                                                <i class="fa-solid fa-receipt mr-1"></i> ดูหลักฐานการชำระเงิน
                                             </button>
                                         <?php elseif ($request['status'] === 'assigned') : ?>
                                             <a href="../messages.php?to_user=<?= $request['designer_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600">
@@ -416,17 +426,21 @@ function getStatusInfoClient($status)
             $('.view-details-btn').on('click', function(e) {
                 e.preventDefault();
                 const requestId = $(this).data('request-id');
-                
+
                 $.ajax({
                     url: '../get_request_details.php',
                     method: 'GET',
-                    data: { request_id: requestId },
+                    data: {
+                        request_id: requestId
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
                             const details = response.data;
                             const deadline = new Date(details.deadline).toLocaleDateString('th-TH', {
-                                year: 'numeric', month: 'long', day: 'numeric'
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
                             });
                             let attachmentHtml = '';
                             if (details.attachment_path && details.attachment_path.trim() !== '') {
@@ -448,7 +462,40 @@ function getStatusInfoClient($status)
                     }
                 });
             });
+            // --- START: ADD THIS CODE ---
+            // Event listener for viewing payment slip
+            // ...
+            $(document).on('click', '.view-slip-btn', function() {
+                let slipUrl = $(this).data('slip-url');
+
+                // ตรวจสอบว่ามีข้อมูล Path หรือไม่
+                if (slipUrl) {
+                    // *** เพิ่ม Logic จัดการ Path ***
+                    // ถ้า Path ที่ได้มาขึ้นต้นด้วย '../' ให้ตัดออก
+                    if (slipUrl.startsWith('../')) {
+                        slipUrl = slipUrl.substring(3);
+                    }
+                    // สร้าง URL ที่ถูกต้องโดยอ้างอิงจาก root ของเว็บ
+                    const finalUrl = '../' + slipUrl;
+
+                    Swal.fire({
+                        title: 'หลักฐานการชำระเงิน',
+                        imageUrl: finalUrl, // ใช้ URL ที่ปรับปรุงแล้ว
+                        imageAlt: 'Payment Slip',
+                        imageWidth: 400, // กำหนดขนาดเพื่อให้ดูสวยงาม
+                        confirmButtonText: 'ปิด'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ผิดพลาด',
+                        text: 'ไม่พบไฟล์หลักฐานการชำระเงิน!'
+                    });
+                }
+            })
         });
+        // --- END: ADD THIS CODE ---
     </script>
 </body>
+
 </html>

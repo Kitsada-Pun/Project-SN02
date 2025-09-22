@@ -1102,6 +1102,42 @@ function getStatusInfo($status)
                         }
                     });
                 });
+            // จัดการการคลิกปุ่ม "ดูหลักฐานการชำระเงิน"
+            $(document).on('click', '.view-slip-btn', function() {
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดหลักฐาน...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: 'get_payment_slip.php', // เรียกใช้ไฟล์ที่เราสร้าง
+                    method: 'GET',
+                    data: { request_id: requestId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                title: 'หลักฐานการชำระเงินมัดจำ',
+                                imageUrl: response.filePath, // แสดงรูปภาพจาก path ที่ได้รับ
+                                imageAlt: 'Payment Slip',
+                                imageWidth: 400,
+                                confirmButtonText: 'ปิด'
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลได้', 'error');
+                    }
+                });
+            });
+            // --- END: เพิ่มโค้ดส่วนนี้เข้าไป ---
             });
         </script>
 

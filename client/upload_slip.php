@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_contract->execute();
     $result_contract = $stmt_contract->get_result();
     $contract_info = $result_contract->fetch_assoc();
-    
+
     if (!$contract_info) {
         die("เกิดข้อผิดพลาด: ไม่พบข้อมูลสัญญาสำหรับงานนี้");
     }
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowed_types = ['jpg', 'jpeg', 'png', 'pdf'];
-        
+
         // ตรวจสอบประเภทไฟล์
         if (!in_array($file_extension, $allowed_types)) {
             die("ข้อผิดพลาด: อนุญาตให้อัปโหลดเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น");
@@ -60,16 +60,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // ย้ายไฟล์ไปยังโฟลเดอร์ที่กำหนด
         if (move_uploaded_file($file['tmp_name'], $target_path)) {
-            
+
             // === การอัปเดตฐานข้อมูล ===
             $conn->begin_transaction();
             try {
                 // 1. บันทึกข้อมูลการชำระเงินลงในตาราง transactions
                 $payment_method = 'Bank Transfer';
                 $transaction_status = 'pending'; // รอการตรวจสอบจาก designer
-                $sql_trans = "INSERT INTO transactions (contract_id, payer_id, payee_id, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, ?)";
+                // *** เพิ่ม slip_path ในคำสั่ง INSERT และตัวแปรที่จะ bind ***
+                $sql_trans = "INSERT INTO transactions (contract_id, payer_id, payee_id, amount, payment_method, status, slip_path) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt_trans = $conn->prepare($sql_trans);
-                $stmt_trans->bind_param("iiidss", $contract_id, $client_id, $designer_id, $amount, $payment_method, $transaction_status);
+                // *** เพิ่ม "s" สำหรับ slip_path และเพิ่มตัวแปร $target_path ***
+                $stmt_trans->bind_param("iiidsss", $contract_id, $client_id, $designer_id, $amount, $payment_method, $transaction_status, $target_path);
                 $stmt_trans->execute();
                 $stmt_trans->close();
 
@@ -80,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_update->bind_param("sii", $new_status, $request_id, $client_id);
                 $stmt_update->execute();
                 $stmt_update->close();
-                
+
                 // 3. ส่งข้อความแจ้งเตือนไปยังนักออกแบบ
                 $message = "ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #{$request_id} แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน";
                 $sql_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
@@ -90,14 +92,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_message->close();
 
                 $conn->commit();
-                
+
                 // แสดงผลลัพธ์ด้วย SweetAlert
                 echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
                 echo '<script>
                     document.addEventListener("DOMContentLoaded", function() {
                         Swal.fire({
                             title: "อัปโหลดสำเร็จ!",
-                            text: "เราได้ส่งหลักฐานการชำระเงินให้นักออกแบบแล้ว โปรดรอการตรวจสอบ",
+                            text: "ได้ส่งหลักฐานการชำระเงินให้นักออกแบบแล้ว โปรดรอการตรวจสอบ",
                             icon: "success",
                             confirmButtonText: "ตกลง"
                         }).then((result) => {
@@ -107,12 +109,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         });
                     });
                 </script>';
-
             } catch (Exception $e) {
                 $conn->rollback();
                 die("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $e->getMessage());
             }
-
         } else {
             die("เกิดข้อผิดพลาดในการอัปโหลดไฟล์");
         }
@@ -124,4 +124,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: main.php");
     exit();
 }
-?>
