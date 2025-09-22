@@ -16,6 +16,7 @@ $condb->set_charset("utf8mb4");
 
 // --- ดึงข้อมูลพื้นฐาน ---
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0; // <-- เพิ่มบรรทัดนี้
 // --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
 if (isset($_SESSION['user_id'])) {
     $loggedInUserName = $_SESSION['username'] ?? $_SESSION['full_name'] ?? '';
@@ -97,6 +98,7 @@ if ($type === 'postings') {
                 'request' AS type,
                 u.first_name,
                 u.last_name,
+                u.is_verified,
                 jc.category_name,
                 NULL AS job_image_path
             FROM client_job_requests AS cjr

@@ -131,6 +131,17 @@
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+        .verified-badge-svg {
+        width: 1.25rem;
+        /* 20px */
+        height: 1.25rem;
+        /* 20px */
+        margin-left: 0.25rem;
+        /* 4px */
+        vertical-align: middle;
+        display: inline-block;
+        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+    }
 
         /* เพิ่ม CSS สำหรับ .pixellink-logo-footer ที่นี่ เพื่อให้ footer รู้จัก */
     </style>

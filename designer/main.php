@@ -24,6 +24,7 @@ $condb->set_charset("utf8mb4");
 // ดึงข้อมูลผู้ใช้ปัจจุบัน
 $designer_id = $_SESSION['user_id'];
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0; // <-- เพิ่มบรรทัดนี้
 
 // --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
 if (isset($_SESSION['user_id'])) {
@@ -55,6 +56,7 @@ $sql_job_postings = "SELECT
                         jp.posted_date,
                         u.first_name,
                         u.last_name,
+                        u.is_verified,
                         jc.category_name,
                         uf.file_path AS job_image_path
                     FROM job_postings AS jp
@@ -134,6 +136,18 @@ $condb->close();
         border: 2px solid white;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     }
+
+    .verified-badge-svg {
+        width: 1.25rem;
+        /* 20px */
+        height: 1.25rem;
+        /* 20px */
+        margin-left: 0.25rem;
+        /* 4px */
+        vertical-align: middle;
+        display: inline-block;
+        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+    }
 </style>
 
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -144,7 +158,16 @@ $condb->close();
                 <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
             </a>
             <div class="space-x-4 flex items-center">
-                <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+                <span class="font-medium text-slate-700">
+                    สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!
+                    <?php if ($is_logged_in_user_verified): ?>
+                        <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                            <svg class="verified-badge-svg text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </span>
+                    <?php endif; ?>
+                </span>
                 <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
                 <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
             </div>

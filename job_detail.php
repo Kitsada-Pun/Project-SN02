@@ -244,6 +244,7 @@ $condb->close();
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+        
     </style>
 </head>
 
