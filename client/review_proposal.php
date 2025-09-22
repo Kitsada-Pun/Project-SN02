@@ -77,6 +77,7 @@ $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="th" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,7 +86,10 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Kanit', sans-serif; }
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+
         body {
             background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%);
             color: #2c3e50;
@@ -201,6 +205,7 @@ $conn->close();
         }
     </style>
 </head>
+
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
@@ -238,8 +243,8 @@ $conn->close();
                             <h3 class="font-semibold text-gray-700">รายละเอียด:</h3>
                             <p class="text-gray-600 bg-gray-50 p-3 rounded-md"><?= nl2br(htmlspecialchars($job_request['description'])) ?></p>
                         </div>
-                        
-                        <?php if (!empty($job_request['attachment_path'])) : 
+
+                        <?php if (!empty($job_request['attachment_path'])) :
                             $file_path = '../' . ltrim(htmlspecialchars($job_request['attachment_path']), './');
                             $file_extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
                             $image_extensions = ['jpg', 'jpeg', 'png', 'gif'];
@@ -255,7 +260,7 @@ $conn->close();
                                 <?php endif; ?>
                             </div>
                         <?php endif; ?>
-                        
+
                         <div>
                             <h3 class="font-semibold text-gray-700">งบประมาณ:</h3>
                             <p class="text-green-600 font-bold text-lg">฿<?= htmlspecialchars(number_format((float)$job_request['budget'], 2)) ?></p>
@@ -289,8 +294,24 @@ $conn->close();
                         <?php foreach ($proposals as $proposal) : ?>
                             <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
                                 <div class="bg-gray-50 p-4 border-b flex items-center gap-4">
+                                    <?php
+                                    // --- [จุดแก้ไข] ---
+                                    // 1. กำหนดรูปภาพเริ่มต้น
+                                    $profile_pic = '../dist/img/avatar.png';
+
+                                    // 2. ตรวจสอบว่ามี path รูปในฐานข้อมูลหรือไม่
+                                    if (!empty($proposal['profile_picture_url'])) {
+                                        // 3. สร้าง path ที่ถูกต้องโดยการเติม '../' ข้างหน้า
+                                        $image_path = '../' . ltrim($proposal['profile_picture_url'], '/');
+
+                                        // 4. ตรวจสอบว่าไฟล์รูปภาพนั้นมีอยู่จริงหรือไม่
+                                        if (file_exists($image_path)) {
+                                            $profile_pic = htmlspecialchars($image_path);
+                                        }
+                                    }
+                                    ?>
                                     <a href="../designer/view_profile.php?user_id=<?= $proposal['designer_id'] ?>" target="_blank">
-                                        <img src="<?= htmlspecialchars($proposal['profile_picture_url'] ?? '../dist/img/avatar.png') ?>" class="w-12 h-12 rounded-full object-cover hover:opacity-80 transition-opacity">
+                                        <img src="<?= $profile_pic ?>" class="w-12 h-12 rounded-full object-cover hover:opacity-80 transition-opacity">
                                     </a>
                                     <div>
                                         <h3 class="font-bold text-lg text-gray-800">
@@ -301,17 +322,17 @@ $conn->close();
                                         <p class="text-sm text-gray-500">ยื่นข้อเสนอเมื่อ: <?= date('d M Y, H:i', strtotime($proposal['application_date'])) ?></p>
                                     </div>
                                 </div>
-                                
+
                                 <div class="p-6 space-y-4">
                                     <div class="border rounded-lg p-4">
                                         <h4 class="font-bold text-xl mb-4 text-center text-gray-700">ใบเสนอราคา</h4>
                                         <dl class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 text-sm">
                                             <dt class="font-semibold text-gray-600 md:col-span-1">ชื่องาน/โปรเจกต์:</dt>
                                             <dd class="text-gray-800 md:col-span-2"><?= htmlspecialchars($job_request['title']) ?></dd>
-                                            
+
                                             <dt class="font-semibold text-gray-600 md:col-span-1">ประเภทงาน:</dt>
                                             <dd class="text-gray-800 md:col-span-2"><?= htmlspecialchars($job_request['category_name'] ?? 'ไม่ระบุ') ?></dd>
-                                            
+
                                             <dt class="font-semibold text-gray-600 md:col-span-1">ส่งมอบงานภายในวันที่:</dt>
                                             <dd class="text-gray-800 md:col-span-2"><?= date('d F Y', strtotime($job_request['deadline'])) ?></dd>
                                         </dl>
@@ -433,4 +454,5 @@ $conn->close();
         });
     </script>
 </body>
+
 </html>
