@@ -1000,43 +1000,41 @@ include 'header.php';
         });
 
         function handleVerification(submissionId, status) {
-            const actionText = status === 'approved' ? 'อนุมัติ' : 'ปฏิเสธ';
-            Swal.fire({
-                title: `ยืนยันการ${actionText}?`,
-                text: `คุณต้องการที่จะ ${actionText} คำขอนี้ใช่หรือไม่?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ยืนยัน',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: 'update_verification_status.php',
-                        type: 'POST',
-                        data: {
-                            id: submissionId,
-                            status: status
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire('สำเร็จ!', `คำขอได้ถูก ${actionText} แล้ว`, 'success')
-                                    .then(() => {
-                                        location.reload();
-                                    });
-                            } else {
-                                Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถดำเนินการได้', 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+        const actionText = status === 'approved' ? 'อนุมัติ' : 'ปฏิเสธ';
+        Swal.fire({
+            title: `ยืนยันการ${actionText}?`,
+            text: `คุณต้องการที่จะ ${actionText} คำขอนี้ใช่หรือไม่?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'update_verification_status.php',
+                    type: 'POST',
+                    data: {
+                        submission_id: submissionId, // *** แก้ไข Key เป็น submission_id ***
+                        status: status
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire('สำเร็จ!', `คำขอได้ถูก ${actionText} แล้ว`, 'success')
+                                .then(() => { location.reload(); });
+                        } else {
+                            Swal.fire('ผิดพลาด!', response.message || 'ไม่สามารถดำเนินการได้', 'error');
                         }
-                    });
-                }
-            });
-        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+                    }
+                });
+            }
+        });
+    }
     </script>
 </body>
 
