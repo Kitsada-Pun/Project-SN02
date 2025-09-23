@@ -168,7 +168,7 @@ if (!$request || $request['status'] !== 'draft_submitted') {
                             success: function(response) {
                                 if (response.status === 'success') {
                                     Swal.fire('ยอมรับงานแล้ว!', 'กำลังนำคุณไปยังหน้าชำระเงิน', 'success').then(() => {
-                                        window.location.href = `payment.php?request_id=${requestId}`;
+                                        window.location.href = `final_payment.php?request_id=${requestId}`;
                                     });
                                 } else {
                                     Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
