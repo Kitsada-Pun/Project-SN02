@@ -387,12 +387,7 @@ function getStatusInfo($status)
                                                     class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                     <i class="fa-solid fa-check-double mr-1"></i> ยืนยันการชำระเงินและเริ่มงาน
                                                 </button>
-                                            <?php elseif ($offer['status'] === 'assigned') : ?>
-                                                <button
-                                                    @click="isDraftModalOpen = true; modalData = <?= htmlspecialchars(json_encode($offer), ENT_QUOTES, 'UTF-8') ?>"
-                                                    class="submit-draft-btn w-full sm:w-auto text-center px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600">
-                                                    <i class="fa-solid fa-paper-plane mr-1"></i> ส่งมอบงานฉบับร่าง
-                                                </button>
+                                        
                                             <?php elseif ($offer['status'] === 'awaiting_final_payment') : ?>
                                                 <button data-request-id="<?= $offer['request_id'] ?>" data-action="confirm_final_payment" class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                     <i class="fa-solid fa-file-zipper mr-1"></i> ยืนยันและส่งไฟล์งานสุดท้าย
