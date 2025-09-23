@@ -21,36 +21,38 @@ $conn->begin_transaction();
 
 try {
     if ($action === 'reject_offer') {
-        // อัปเดตสถานะในตาราง job_applications เป็น 'rejected'
-        $sql = "UPDATE job_applications SET status = 'rejected' WHERE request_id = ? AND designer_id = ?";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) throw new Exception("SQL prepare failed: " . $conn->error);
-        
-        $stmt->bind_param("ii", $request_id, $designer_id);
-        $stmt->execute();
+        // 1. อัปเดตสถานะในตาราง job_applications ให้เป็น 'rejected'
+        $sql_app = "UPDATE job_applications SET status = 'rejected' WHERE request_id = ? AND designer_id = ?";
+        $stmt_app = $conn->prepare($sql_app);
+        if (!$stmt_app) {
+            throw new Exception("SQL prepare failed (applications): " . $conn->error);
+        }
+        $stmt_app->bind_param("ii", $request_id, $designer_id);
+        $stmt_app->execute();
+        $affected_app = $stmt_app->affected_rows;
+        $stmt_app->close();
 
-        if ($stmt->affected_rows > 0) {
+        // 2. [สำคัญ] อัปเดตสถานะในตาราง client_job_requests ให้เป็น 'rejected' ด้วย
+        $sql_req = "UPDATE client_job_requests SET status = 'rejected' WHERE request_id = ?";
+        $stmt_req = $conn->prepare($sql_req);
+        if (!$stmt_req) {
+            throw new Exception("SQL prepare failed (requests): " . $conn->error);
+        }
+        $stmt_req->bind_param("i", $request_id);
+        $stmt_req->execute();
+        $affected_req = $stmt_req->affected_rows;
+        $stmt_req->close();
+
+        if ($affected_app > 0 || $affected_req > 0) {
             $conn->commit();
             echo json_encode(['status' => 'success', 'message' => 'คุณได้ปฏิเสธข้อเสนองานเรียบร้อยแล้ว']);
         } else {
-            throw new Exception("ไม่พบข้อเสนองานที่ตรงกัน หรืออาจถูกยกเลิกไปแล้ว");
+            throw new Exception("ไม่สามารถปฏิเสธข้อเสนองานได้ อาจเป็นเพราะงานนี้ไม่มีอยู่แล้ว หรือถูกจัดการไปแล้ว");
         }
-        $stmt->close();
-
-    } elseif ($action === 'confirm_deposit') {
-        // [โค้ดสำหรับการยืนยันมัดจำ]
-        // ...
-        // หมายเหตุ: ส่วนนี้ควรมีอยู่แล้ว หรือถ้ายังไม่มี ให้เพิ่มตาม workflow ต่อไป
-         echo json_encode(['status' => 'success', 'message' => 'ยืนยันมัดจำเรียบร้อยแล้ว']);
-
-    } else {
-        throw new Exception("การกระทำไม่ถูกต้อง");
     }
-
 } catch (Exception $e) {
     $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 
 $conn->close();
-?>

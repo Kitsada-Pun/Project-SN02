@@ -125,7 +125,7 @@ function getStatusInfo($status)
         case 'completed':
             return ['text' => 'เสร็จสมบูรณ์', 'color' => 'bg-green-600 text-white', 'tab' => 'completed'];
         case 'rejected':
-            return ['text' => 'ถูกปฏิเสธ', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
+            return ['text' => 'ปฏิเสธข้อเสนอ', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
         case 'cancelled':
             return ['text' => 'ถูกยกเลิก', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'cancelled'];
         default:
@@ -320,7 +320,7 @@ function getStatusInfo($status)
 
                 <button @click="tab = 'awaiting_final'" :class="tab === 'awaiting_final' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
                     <i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> <span>ตรวจสอบยอดคงเหลือ</span>
-                    <?php if ($awaiting_final_payment_count > 0) : ?>
+                    <?php if ($final_payment_verification_count > 0) : ?>
                         <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $final_payment_verification_count ?></span>
                     <?php endif; ?>
                 </button>
@@ -593,47 +593,6 @@ function getStatusInfo($status)
                 }
             });
 
-            // --- 2. จัดการการคลิกปุ่ม ปฏิเสธ ---
-            $(document).on('click', '.offer-action-btn', function() {
-                const requestId = $(this).data('request-id');
-                const action = $(this).data('action');
-                Swal.fire({
-                    title: 'ยืนยันการปฏิเสธ?',
-                    text: "คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธข้อเสนองานนี้?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'ใช่, ปฏิเสธเลย',
-                    cancelButtonText: 'ยกเลิก'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: 'action_offer.php',
-                            method: 'POST',
-                            data: {
-                                request_id: requestId,
-                                action: action
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.status === 'success') {
-                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
-                                        // [แก้ไข] ตรวจสอบว่ามี redirectUrl ส่งมาหรือไม่
-                                        if (response.redirectUrl) {
-                                            window.location.href = response.redirectUrl; // ไปยังหน้าชำระเงิน
-                                        } else {
-                                            window.location.href = 'my_requests.php'; // กลับไปหน้ารายการ (กรณีปฏิเสธ)
-                                        }
-                                    });
-                                } else {
-                                    Swal.fire('ผิดพลาด!', response.message, 'error');
-                                }
-                            },
-                        });
-                    }
-                });
-            });
 
             // --- 3. จัดการการส่งฟอร์มใบเสนอราคา ---
             $('#proposal-form').on('submit', function(e) {
