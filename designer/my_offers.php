@@ -282,7 +282,7 @@ function getStatusInfo($status)
             <p class="text-slate-500 mt-1">ติดตามและจัดการงานที่ผู้ว่าจ้างยื่นข้อเสนอให้คุณที่นี่</p>
         </div>
 
-        <div x-data="{ tab: 'all', isModalOpen: false, isDraftModalOpen: false, modalData: {} }">
+        <div x-data="{ tab: 'all', isModalOpen: false, isDraftModalOpen: false, isFinalWorkModalOpen: false, modalData: {} }">
             <div class="mb-6 p-1.5 bg-slate-200/60 rounded-xl flex flex-wrap items-center gap-2">
                 <button @click="tab = 'all'" :class="tab === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
                     <i class="fa-solid fa-list-ul mr-1.5"></i> ทั้งหมด
@@ -324,7 +324,12 @@ function getStatusInfo($status)
                         <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $final_payment_verification_count ?></span>
                     <?php endif; ?>
                 </button>
-
+                <button @click="tab = 'completed'" :class="tab === 'completed' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
+                    <i class="fa-solid fa-check-circle mr-1.5"></i> เสร็จสมบูรณ์
+                    <?php if ($completed_count > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-xs font-bold text-white"><?= $completed_count ?></span>
+                    <?php endif; ?>
+                </button>
                 <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
                     <i class="fa-solid fa-circle-xmark mr-1.5"></i> งานที่ถูกยกเลิก
                     <?php if ($cancelled_rejected_count > 0) : ?>
@@ -416,7 +421,7 @@ function getStatusInfo($status)
                                                 class="view-final-slip-btn w-full sm:w-auto text-center px-4 py-2 bg-sky-500 text-white rounded-lg text-sm font-semibold hover:bg-sky-600">
                                                 <i class="fa-solid fa-receipt mr-1"></i> ดูหลักฐานโอนเงิน
                                             </button>
-                                            <button data-request-id="<?= $offer['request_id'] ?>" data-action="confirm_final_payment" class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
+                                            <button @click='isFinalWorkModalOpen = true; modalData = <?= htmlspecialchars(json_encode($offer), ENT_QUOTES, "UTF-8") ?>' class="w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                 <i class="fa-solid fa-file-zipper mr-1"></i> ยืนยันและส่งไฟล์งานสุดท้าย
                                             </button>
                                         <?php elseif ($offer['status'] === 'completed') : ?>
@@ -557,6 +562,33 @@ function getStatusInfo($status)
                                 <i class="fas fa-paper-plane mr-2"></i>ส่งงาน
                             </button>
                             <button type="button" @click="isDraftModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">
+                                ยกเลิก
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div x-show="isFinalWorkModalOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
+                <div @click.away="isFinalWorkModalOpen = false" class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
+                    <form id="submit-final-work-form" method="POST" enctype="multipart/form-data">
+                        <div class="p-6">
+                            <h3 class="text-xl leading-6 font-bold text-gray-900 mb-2">ส่งมอบไฟล์งานฉบับสมบูรณ์</h3>
+                            <p class="text-sm text-gray-500">สำหรับงาน: <strong x-text="modalData.title"></strong></p>
+                            <hr class="my-4">
+                            <div class="space-y-4">
+                                <input type="hidden" name="request_id" :value="modalData.request_id">
+                                <div>
+                                    <label for="final_work_file" class="block text-sm font-medium text-gray-700">แนบไฟล์งานฉบับสมบูรณ์</label>
+                                    <p class="text-xs text-gray-500 mb-2">อัปโหลดไฟล์งาน (แนะนำ: .zip, .rar) เพื่อส่งมอบให้ผู้ว่าจ้าง</p>
+                                    <input type="file" name="final_work_file" id="final_work_file" required class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 sm:ml-3 sm:w-auto sm:text-sm">
+                                <i class="fas fa-check-circle mr-2"></i>ยืนยันและส่งมอบงาน
+                            </button>
+                            <button type="button" @click="isFinalWorkModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">
                                 ยกเลิก
                             </button>
                         </div>
@@ -1198,6 +1230,54 @@ function getStatusInfo($status)
                     },
                     error: function() {
                         Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
+                    }
+                });
+            });
+            // --- 7. จัดการการส่งฟอร์มไฟล์งานฉบับสมบูรณ์ ---
+            $(document).on('submit', '#submit-final-work-form', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                Swal.fire({
+                    title: 'ยืนยันการส่งมอบงาน?',
+                    text: "ไฟล์จะถูกส่งไปยังผู้ว่าจ้าง และงานนี้จะเสร็จสมบูรณ์",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'ใช่, ส่งมอบงาน',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'กำลังอัปโหลด...',
+                            text: 'กรุณารอสักครู่',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'submit_final_work.php',
+                            method: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+                            }
+                        });
                     }
                 });
             });
