@@ -845,42 +845,7 @@ function getStatusInfo($status)
                     }
                 });
             });
-            // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
-            // $(document).on('click', '.confirm-payment-btn', function() {
-            //     const requestId = $(this).data('request-id');
-            //     Swal.fire({
-            //         title: 'ยืนยันการเริ่มงาน?',
-            //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
-            //         icon: 'question',
-            //         showCancelButton: true,
-            //         confirmButtonColor: '#28a745',
-            //         cancelButtonColor: '#6c757d',
-            //         confirmButtonText: 'ใช่, เริ่มงานเลย',
-            //         cancelButtonText: 'ยกเลิก'
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             $.ajax({
-            //                 url: 'action_offer.php', // เราจะใช้ไฟล์ action เดิม
-            //                 method: 'POST',
-            //                 data: {
-            //                     request_id: requestId,
-            //                     action: 'confirm_payment' // ส่ง action ใหม่ไปให้ server
-            //                 },
-            //                 dataType: 'json',
-            //                 success: function(response) {
-            //                     if (response.status === 'success') {
-            //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-            //                     } else {
-            //                         Swal.fire('ผิดพลาด!', response.message, 'error');
-            //                     }
-            //                 },
-            //                 error: function() {
-            //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-            //                 }
-            //             });
-            //         }
-            //     });
-            // });
+    
             // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
             $(document).on('click', '.action-btn', function() {
                 const button = $(this);
@@ -944,42 +909,7 @@ function getStatusInfo($status)
                 });
             });
 
-            // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
-            // $(document).on('click', '.confirm-payment-btn', function() {
-            //     const requestId = $(this).data('request-id');
-            //     Swal.fire({
-            //         title: 'ยืนยันการเริ่มงาน?',
-            //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
-            //         icon: 'question',
-            //         showCancelButton: true,
-            //         confirmButtonColor: '#28a745',
-            //         cancelButtonColor: '#6c757d',
-            //         confirmButtonText: 'ใช่, เริ่มงานเลย',
-            //         cancelButtonText: 'ยกเลิก'
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             $.ajax({
-            //                 url: 'action_offer.php',
-            //                 method: 'POST',
-            //                 data: {
-            //                     request_id: requestId,
-            //                     action: 'confirm_payment' // ส่ง action ใหม่
-            //                 },
-            //                 dataType: 'json',
-            //                 success: function(response) {
-            //                     if (response.status === 'success') { 
-            //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-            //                     } else {
-            //                         Swal.fire('ผิดพลาด!', response.message, 'error');
-            //                     }
-            //                 },
-            //                 error: function() {
-            //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-            //                 }
-            //             });
-            //         }
-            //     });
-            // });
+        
             // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
             $(document).on('click', '.action-btn', function() {
                 const button = $(this);
