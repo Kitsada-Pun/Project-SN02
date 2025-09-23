@@ -159,6 +159,9 @@ $conn->close();
                             <input type="file" name="slip_image" id="slip_image" required 
                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
                             <p class="text-xs text-gray-500 mt-2">รองรับ: JPG, PNG, PDF (ไม่เกิน 5MB)</p>
+                            <div class="mt-4">
+                                <img id="slip-preview" src="#" alt="ตัวอย่างสลิป" class="hidden max-w-full h-auto rounded-md border"/>
+                            </div>
                         </div>
 
                         <div class="mt-8">
@@ -173,6 +176,7 @@ $conn->close();
         </div>
     </main>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function copyToClipboard() {
             const accountNumber = document.getElementById('account-number').innerText;
@@ -190,6 +194,22 @@ $conn->close();
                 alert('ไม่สามารถคัดลอกได้');
             });
         }
+
+        $(document).ready(function() {
+            $('#slip_image').on('change', function(event) {
+                const preview = $('#slip-preview');
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.attr('src', e.target.result).removeClass('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                     preview.attr('src', '#').addClass('hidden');
+                }
+            });
+        });
     </script>
 
 </body>

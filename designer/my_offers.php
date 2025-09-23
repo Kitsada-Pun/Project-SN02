@@ -116,7 +116,7 @@ function getStatusInfo($status)
         case 'draft_submitted':
             return ['text' => 'รอผู้ว่าจ้างตรวจสอบ', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'inprogress'];
         case 'awaiting_final_payment':
-            return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
+            return ['text' => 'รอตรวจสอบยอดคงเหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
         case 'completed':
             return ['text' => 'เสร็จสมบูรณ์', 'color' => 'bg-green-600 text-white', 'tab' => 'completed'];
         case 'rejected':
@@ -315,7 +315,7 @@ function getStatusInfo($status)
                     </button>
 
                     <button @click="tab = 'awaiting_final'" :class="tab === 'awaiting_final' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
-                        <i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> <span>รอชำระเงินส่วนที่เหลือ</span>
+                        <i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> <span>ตรวจสอบยอดคงเหลือ</span>
                         <?php if ($awaiting_final_payment_count > 0) : ?>
                             <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $awaiting_final_payment_count ?></span>
                         <?php endif; ?>
@@ -401,6 +401,11 @@ function getStatusInfo($status)
                                                     <i class="fa-solid fa-eye mr-1"></i> ดูไฟล์ฉบับร่าง
                                                 </button>
                                             <?php elseif ($offer['status'] === 'awaiting_final_payment') : ?>
+                                                <button
+                                                    data-request-id="<?= $offer['request_id'] ?>"
+                                                    class="view-final-slip-btn w-full sm:w-auto text-center px-4 py-2 bg-sky-500 text-white rounded-lg text-sm font-semibold hover:bg-sky-600">
+                                                    <i class="fa-solid fa-receipt mr-1"></i> ดูหลักฐานโอนเงิน
+                                                </button>
                                                 <button data-request-id="<?= $offer['request_id'] ?>" data-action="confirm_final_payment" class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                     <i class="fa-solid fa-file-zipper mr-1"></i> ยืนยันและส่งไฟล์งานสุดท้าย
                                                 </button>
@@ -441,7 +446,7 @@ function getStatusInfo($status)
 
                         <div x-show="tab === 'awaiting_final' && <?= $awaiting_final_payment_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                             <i class="fa-solid fa-hand-holding-dollar fa-3x text-slate-300"></i>
-                            <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่รอชำระเงินส่วนที่เหลือ</h3>
+                            <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่ต้องตรวจสอบยอดคงเหลือ</h3>
                         </div>
 
                         <div x-show="tab === 'completed' && <?= $completed_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
@@ -1160,9 +1165,9 @@ function getStatusInfo($status)
                     }
                 });
 
-                // ใช้ get_payment_slip.php ซ้ำได้เลยเพราะ Logic คล้ายกัน
+                // แก้ไข URL ให้เรียกใช้สคริปต์ที่ถูกต้องสำหรับไฟล์ฉบับร่าง
                 $.ajax({
-                    url: 'get_payment_slip.php',
+                    url: 'get_draft_file.php', // <--- แก้ไขเป็นไฟล์ใหม่ตรงนี้
                     method: 'GET',
                     data: {
                         request_id: requestId
@@ -1178,6 +1183,42 @@ function getStatusInfo($status)
                             });
                         } else {
                             Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่พบไฟล์แนบ', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
+                    }
+                });
+            });
+            // --- 6. จัดการปุ่ม "ดูหลักฐานโอนเงิน" (ยอดคงเหลือ) ---
+            $(document).on('click', '.view-final-slip-btn', function() {
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดหลักฐาน...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: 'get_final_slip.php', // เรียกใช้ไฟล์ใหม่ที่เราสร้าง
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success' && response.filePath) {
+                            Swal.fire({
+                                title: 'หลักฐานการชำระเงินส่วนที่เหลือ',
+                                imageUrl: response.filePath,
+                                imageAlt: 'Final Payment Slip',
+                                confirmButtonText: 'ปิด'
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่พบไฟล์สลิป', 'error');
                         }
                     },
                     error: function() {
