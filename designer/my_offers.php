@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
     if (empty($loggedInUserName)) {
         $user_id = $_SESSION['user_id'];
         $sql_user = "SELECT first_name, last_name FROM users WHERE user_id = ?";
-        $stmt_user = $condb->prepare($sql_user);
+        $stmt_user = $conn->prepare($sql_user);
         if ($stmt_user) {
             $stmt_user->bind_param("i", $user_id);
             $stmt_user->execute();
@@ -112,6 +112,8 @@ function getStatusInfo($status)
             return ['text' => 'รอตรวจสอบมัดจำ', 'color' => 'bg-orange-100 text-orange-800', 'tab' => 'awaiting_deposit'];
         case 'assigned':
             return ['text' => 'กำลังดำเนินการ', 'color' => 'bg-green-100 text-green-800', 'tab' => 'inprogress'];
+        case 'draft_submitted':
+            return ['text' => 'รอผู้ว่าจ้างตรวจสอบ', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'inprogress'];
         case 'awaiting_final_payment':
             return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
         case 'completed':
@@ -541,236 +543,236 @@ function getStatusInfo($status)
                 </div>
             </div>
         </div>
-        
-        </main>
-        </main>
 
-        <?php include '../includes/footer.php'; ?>
+    </main>
+    </main>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            $(document).ready(function() {
-                // --- 1. จัดการการคำนวณเงินมัดจำ ---
-                $(document).on('input', '#offered_price', function() {
-                    const price = parseFloat($(this).val());
-                    const depositContainer = $('#deposit-calculation');
-                    const depositAmountSpan = $('#deposit-amount');
-                    if (price && price > 0) {
-                        const deposit = price * 0.20;
-                        const formattedDeposit = deposit.toLocaleString('th-TH', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
+    <?php include '../includes/footer.php'; ?>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // --- 1. จัดการการคำนวณเงินมัดจำ ---
+            $(document).on('input', '#offered_price', function() {
+                const price = parseFloat($(this).val());
+                const depositContainer = $('#deposit-calculation');
+                const depositAmountSpan = $('#deposit-amount');
+                if (price && price > 0) {
+                    const deposit = price * 0.20;
+                    const formattedDeposit = deposit.toLocaleString('th-TH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    depositAmountSpan.text(formattedDeposit);
+                    depositContainer.slideDown();
+                } else {
+                    depositContainer.slideUp();
+                }
+            });
+
+            // --- 2. จัดการการคลิกปุ่ม ปฏิเสธ ---
+            $(document).on('click', '.offer-action-btn', function() {
+                const requestId = $(this).data('request-id');
+                const action = $(this).data('action');
+                Swal.fire({
+                    title: 'ยืนยันการปฏิเสธ?',
+                    text: "คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธข้อเสนองานนี้?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'ใช่, ปฏิเสธเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'action_offer.php',
+                            method: 'POST',
+                            data: {
+                                request_id: requestId,
+                                action: action
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
+                                        // [แก้ไข] ตรวจสอบว่ามี redirectUrl ส่งมาหรือไม่
+                                        if (response.redirectUrl) {
+                                            window.location.href = response.redirectUrl; // ไปยังหน้าชำระเงิน
+                                        } else {
+                                            window.location.href = 'my_requests.php'; // กลับไปหน้ารายการ (กรณีปฏิเสธ)
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
                         });
-                        depositAmountSpan.text(formattedDeposit);
-                        depositContainer.slideDown();
-                    } else {
-                        depositContainer.slideUp();
                     }
                 });
+            });
 
-                // --- 2. จัดการการคลิกปุ่ม ปฏิเสธ ---
-                $(document).on('click', '.offer-action-btn', function() {
-                    const requestId = $(this).data('request-id');
-                    const action = $(this).data('action');
-                    Swal.fire({
-                        title: 'ยืนยันการปฏิเสธ?',
-                        text: "คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธข้อเสนองานนี้?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'ใช่, ปฏิเสธเลย',
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: 'action_offer.php',
-                                method: 'POST',
-                                data: {
-                                    request_id: requestId,
-                                    action: action
-                                },
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
-                                            // [แก้ไข] ตรวจสอบว่ามี redirectUrl ส่งมาหรือไม่
-                                            if (response.redirectUrl) {
-                                                window.location.href = response.redirectUrl; // ไปยังหน้าชำระเงิน
-                                            } else {
-                                                window.location.href = 'my_requests.php'; // กลับไปหน้ารายการ (กรณีปฏิเสธ)
-                                            }
-                                        });
-                                    } else {
-                                        Swal.fire('ผิดพลาด!', response.message, 'error');
-                                    }
-                                },
-                            });
-                        }
-                    });
-                });
-
-                // --- 3. จัดการการส่งฟอร์มใบเสนอราคา ---
-                $('#proposal-form').on('submit', function(e) {
-                    e.preventDefault();
-                    const formData = $(this).serialize();
-                    Swal.fire({
-                        title: 'ยืนยันการส่งใบเสนอราคา?',
-                        text: "กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนส่ง",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'ยืนยันและส่ง',
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                title: 'กำลังส่งข้อมูล...',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                            $.ajax({
-                                url: 'submit_proposal.php',
-                                method: 'POST',
-                                data: formData,
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-                                    } else {
-                                        Swal.fire('ผิดพลาด!', response.message, 'error');
-                                    }
-                                },
-                                error: function() {
-                                    Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-                                }
-                            });
-                        }
-                    });
-                });
-
-                // --- 2. จัดการการคลิกที่ชื่องานเพื่อดูรายละเอียด ---
-                $('.view-details-btn').on('click', function(e) {
-                    e.preventDefault();
-                    const requestId = $(this).data('request-id');
-                    // ... (โค้ดส่วนนี้เหมือนเดิม) ...
-                    $.ajax({
-                        url: '../get_request_details.php',
-                        method: 'GET',
-                        data: {
-                            request_id: requestId
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                const details = response.data;
-                                const deadline = new Date(details.deadline).toLocaleDateString('th-TH', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                });
-                                let attachmentHtml = '';
-                                if (details.attachment_path && details.attachment_path.trim() !== '') {
-                                    const filePath = details.attachment_path.startsWith('../') ? details.attachment_path.substring(3) : details.attachment_path;
-                                    attachmentHtml = `<hr style="margin: 1rem 0;"><p><strong>ไฟล์แนบ:</strong></p><a href="../${filePath}" target="_blank"><img src="../${filePath}" alt="ไฟล์แนบ" style="max-width: 100%; max-height: 250px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd;"></a>`;
-                                }
-                                Swal.fire({
-                                    title: `<strong>รายละเอียดคำขอจ้างงาน</strong>`,
-                                    html: `<div style="text-align: left; padding: 0 1rem;"><p><strong>ชื่องาน:</strong> ${details.title}</p><p><strong>ประเภทงาน:</strong> ${details.category_name || 'ไม่ได้ระบุ'}</p><p><strong>รายละเอียด:</strong></p><div style="white-space: pre-wrap; background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto;">${details.description}</div>${attachmentHtml}<hr style="margin: 1rem 0;"><p><strong>งบประมาณ:</strong> ${details.budget ? details.budget + ' บาท' : 'ไม่ได้ระบุ'}</p><p><strong>ส่งมอบงานภายใน:</strong> ${deadline}</p></div>`,
-                                    confirmButtonText: 'ปิด',
-                                    width: '600px'
-                                });
-                            } else {
-                                Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
+            // --- 3. จัดการการส่งฟอร์มใบเสนอราคา ---
+            $('#proposal-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = $(this).serialize();
+                Swal.fire({
+                    title: 'ยืนยันการส่งใบเสนอราคา?',
+                    text: "กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนส่ง",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'ยืนยันและส่ง',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'กำลังส่งข้อมูล...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
                             }
-                        }
-                    });
-                });
-
-                // --- 3. จัดการการคลิกปุ่ม ปฏิเสธ ---
-                $('.offer-action-btn').on('click', function() {
-                    // ... (โค้ดส่วนนี้เหมือนเดิม) ...
-                });
-                // เมื่อมีการพิมพ์ในช่อง "เสนอราคา"
-                $('#proposal-form').on('input', '#offered_price', function() {
-                    const price = parseFloat($(this).val());
-                    const depositContainer = $('#deposit-calculation');
-                    const depositAmountSpan = $('#deposit-amount');
-
-                    if (price && price > 0) {
-                        // คำนวณ 20%
-                        const deposit = price * 0.20;
-                        // จัดรูปแบบตัวเลขให้มีทศนิยม 2 ตำแหน่งและมีจุลภาค
-                        const formattedDeposit = deposit.toLocaleString('th-TH', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
                         });
+                        $.ajax({
+                            url: 'submit_proposal.php',
+                            method: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+                            }
+                        });
+                    }
+                });
+            });
 
-                        depositAmountSpan.text(formattedDeposit); // แสดงผล
-                        depositContainer.slideDown(); // แสดงกล่อง
-                    } else {
-                        depositContainer.slideUp(); // ซ่อนกล่องถ้าไม่มีราคา
+            // --- 2. จัดการการคลิกที่ชื่องานเพื่อดูรายละเอียด ---
+            $('.view-details-btn').on('click', function(e) {
+                e.preventDefault();
+                const requestId = $(this).data('request-id');
+                // ... (โค้ดส่วนนี้เหมือนเดิม) ...
+                $.ajax({
+                    url: '../get_request_details.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            const details = response.data;
+                            const deadline = new Date(details.deadline).toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                            let attachmentHtml = '';
+                            if (details.attachment_path && details.attachment_path.trim() !== '') {
+                                const filePath = details.attachment_path.startsWith('../') ? details.attachment_path.substring(3) : details.attachment_path;
+                                attachmentHtml = `<hr style="margin: 1rem 0;"><p><strong>ไฟล์แนบ:</strong></p><a href="../${filePath}" target="_blank"><img src="../${filePath}" alt="ไฟล์แนบ" style="max-width: 100%; max-height: 250px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd;"></a>`;
+                            }
+                            Swal.fire({
+                                title: `<strong>รายละเอียดคำขอจ้างงาน</strong>`,
+                                html: `<div style="text-align: left; padding: 0 1rem;"><p><strong>ชื่องาน:</strong> ${details.title}</p><p><strong>ประเภทงาน:</strong> ${details.category_name || 'ไม่ได้ระบุ'}</p><p><strong>รายละเอียด:</strong></p><div style="white-space: pre-wrap; background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto;">${details.description}</div>${attachmentHtml}<hr style="margin: 1rem 0;"><p><strong>งบประมาณ:</strong> ${details.budget ? details.budget + ' บาท' : 'ไม่ได้ระบุ'}</p><p><strong>ส่งมอบงานภายใน:</strong> ${deadline}</p></div>`,
+                                confirmButtonText: 'ปิด',
+                                width: '600px'
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            // --- 3. จัดการการคลิกปุ่ม ปฏิเสธ ---
+            $('.offer-action-btn').on('click', function() {
+                // ... (โค้ดส่วนนี้เหมือนเดิม) ...
+            });
+            // เมื่อมีการพิมพ์ในช่อง "เสนอราคา"
+            $('#proposal-form').on('input', '#offered_price', function() {
+                const price = parseFloat($(this).val());
+                const depositContainer = $('#deposit-calculation');
+                const depositAmountSpan = $('#deposit-amount');
+
+                if (price && price > 0) {
+                    // คำนวณ 20%
+                    const deposit = price * 0.20;
+                    // จัดรูปแบบตัวเลขให้มีทศนิยม 2 ตำแหน่งและมีจุลภาค
+                    const formattedDeposit = deposit.toLocaleString('th-TH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    depositAmountSpan.text(formattedDeposit); // แสดงผล
+                    depositContainer.slideDown(); // แสดงกล่อง
+                } else {
+                    depositContainer.slideUp(); // ซ่อนกล่องถ้าไม่มีราคา
+                }
+            });
+
+            // --- [เพิ่มโค้ดส่วนนี้] --- 
+            // Clear ค่ามัดจำเมื่อปิด Modal
+            $('[data-modal-hide="offerModal"], [data-dismiss="modal"], .btn-cancel, [x-show="isModalOpen"]').on('click', function() {
+                $('#deposit-calculation').hide();
+                $('#deposit-amount').text('0.00');
+            });
+
+            // --- [แก้ไข] เมื่อคลิกปุ่ม "ดูใบเสนอราคาของฉัน" ---
+            $('.view-proposal-btn').on('click', function(e) {
+                e.preventDefault();
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดข้อมูล...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
                     }
                 });
 
-                // --- [เพิ่มโค้ดส่วนนี้] --- 
-                // Clear ค่ามัดจำเมื่อปิด Modal
-                $('[data-modal-hide="offerModal"], [data-dismiss="modal"], .btn-cancel, [x-show="isModalOpen"]').on('click', function() {
-                    $('#deposit-calculation').hide();
-                    $('#deposit-amount').text('0.00');
-                });
+                $.ajax({
+                    url: '../get_proposal_details.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            const details = response.data;
+                            const offeredPrice = parseFloat(details.offered_price);
 
-                // --- [แก้ไข] เมื่อคลิกปุ่ม "ดูใบเสนอราคาของฉัน" ---
-                $('.view-proposal-btn').on('click', function(e) {
-                    e.preventDefault();
-                    const requestId = $(this).data('request-id');
+                            // คำนวณมัดจำ 20%
+                            const deposit = offeredPrice * 0.20;
 
-                    Swal.fire({
-                        title: 'กำลังโหลดข้อมูล...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
+                            // จัดรูปแบบตัวเลขทั้งหมด
+                            const formattedOfferedPrice = offeredPrice.toLocaleString('th-TH', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            const formattedDeposit = deposit.toLocaleString('th-TH', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            const applicationDate = new Date(details.application_date).toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
 
-                    $.ajax({
-                        url: '../get_proposal_details.php',
-                        method: 'GET',
-                        data: {
-                            request_id: requestId
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                const details = response.data;
-                                const offeredPrice = parseFloat(details.offered_price);
-
-                                // คำนวณมัดจำ 20%
-                                const deposit = offeredPrice * 0.20;
-
-                                // จัดรูปแบบตัวเลขทั้งหมด
-                                const formattedOfferedPrice = offeredPrice.toLocaleString('th-TH', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                                const formattedDeposit = deposit.toLocaleString('th-TH', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                                const applicationDate = new Date(details.application_date).toLocaleDateString('th-TH', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-
-                                // สร้าง HTML ให้เหมือนฟอร์ม
-                                const proposalHtml = `
+                            // สร้าง HTML ให้เหมือนฟอร์ม
+                            const proposalHtml = `
                     <div class="text-center mb-6">
                         <h3 class="text-2xl leading-6 font-bold text-gray-900">ใบเสนอราคา (ที่ยื่นไปแล้ว)</h3>
                         <p class="mt-1 text-sm text-gray-500">นี่คือรายละเอียดที่คุณได้ยื่นเสนอไป</p>
@@ -814,294 +816,294 @@ function getStatusInfo($status)
                     </div>
                 `;
 
-                                Swal.fire({
-                                    html: proposalHtml,
-                                    showConfirmButton: true,
-                                    confirmButtonText: 'ปิด',
-                                    width: '600px' // หรือ 'max-w-2xl'
-                                });
-
-                            } else {
-                                Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลใบเสนอราคาได้', 'error');
-                        }
-                    });
-                });
-                // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
-                // $(document).on('click', '.confirm-payment-btn', function() {
-                //     const requestId = $(this).data('request-id');
-                //     Swal.fire({
-                //         title: 'ยืนยันการเริ่มงาน?',
-                //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
-                //         icon: 'question',
-                //         showCancelButton: true,
-                //         confirmButtonColor: '#28a745',
-                //         cancelButtonColor: '#6c757d',
-                //         confirmButtonText: 'ใช่, เริ่มงานเลย',
-                //         cancelButtonText: 'ยกเลิก'
-                //     }).then((result) => {
-                //         if (result.isConfirmed) {
-                //             $.ajax({
-                //                 url: 'action_offer.php', // เราจะใช้ไฟล์ action เดิม
-                //                 method: 'POST',
-                //                 data: {
-                //                     request_id: requestId,
-                //                     action: 'confirm_payment' // ส่ง action ใหม่ไปให้ server
-                //                 },
-                //                 dataType: 'json',
-                //                 success: function(response) {
-                //                     if (response.status === 'success') {
-                //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-                //                     } else {
-                //                         Swal.fire('ผิดพลาด!', response.message, 'error');
-                //                     }
-                //                 },
-                //                 error: function() {
-                //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-                //                 }
-                //             });
-                //         }
-                //     });
-                // });
-                // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
-                $(document).on('click', '.action-btn', function() {
-                    const button = $(this);
-                    const action = button.data('action');
-                    const requestId = button.data('request-id');
-
-                    let title = 'ยืนยันการกระทำ?';
-                    let text = 'คุณแน่ใจหรือไม่ว่าต้องการดำเนินการ?';
-                    let confirmButtonText = 'ยืนยัน';
-
-                    if (action === 'confirm_deposit') {
-                        title = 'ยืนยันการชำระเงินมัดจำ?';
-                        text = 'คุณได้ตรวจสอบสลิปและยืนยันว่าถูกต้องแล้วใช่หรือไม่?';
-                        confirmButtonText = 'ใช่, ยืนยันและเริ่มงาน';
-                    } else if (action === 'submit_work') {
-                        title = 'ยืนยันการส่งมอบงาน?';
-                        text = 'ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงานและชำระเงินส่วนที่เหลือ';
-                        confirmButtonText = 'ใช่, ส่งมอบงาน';
-                    } else if (action === 'confirm_final_payment') {
-                        title = 'ยืนยันและส่งไฟล์งานสุดท้าย?';
-                        text = 'การกระทำนี้จะถือว่างานเสร็จสมบูรณ์และสิ้นสุดสัญญา';
-                        confirmButtonText = 'ใช่, ยืนยันและสิ้นสุดงาน';
-                    }
-
-                    Swal.fire({
-                        title: title,
-                        text: text,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: confirmButtonText,
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: 'action_offer.php',
-                                method: 'POST',
-                                data: {
-                                    request_id: requestId,
-                                    action: action
-                                },
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-                                    } else {
-                                        Swal.fire('ผิดพลาด!', response.message, 'error');
-                                    }
-                                },
-                                error: function() {
-                                    Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                                }
-                            });
-                        }
-                    });
-                });
-
-                // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
-                // $(document).on('click', '.confirm-payment-btn', function() {
-                //     const requestId = $(this).data('request-id');
-                //     Swal.fire({
-                //         title: 'ยืนยันการเริ่มงาน?',
-                //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
-                //         icon: 'question',
-                //         showCancelButton: true,
-                //         confirmButtonColor: '#28a745',
-                //         cancelButtonColor: '#6c757d',
-                //         confirmButtonText: 'ใช่, เริ่มงานเลย',
-                //         cancelButtonText: 'ยกเลิก'
-                //     }).then((result) => {
-                //         if (result.isConfirmed) {
-                //             $.ajax({
-                //                 url: 'action_offer.php',
-                //                 method: 'POST',
-                //                 data: {
-                //                     request_id: requestId,
-                //                     action: 'confirm_payment' // ส่ง action ใหม่
-                //                 },
-                //                 dataType: 'json',
-                //                 success: function(response) {
-                //                     if (response.status === 'success') { 
-                //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-                //                     } else {
-                //                         Swal.fire('ผิดพลาด!', response.message, 'error');
-                //                     }
-                //                 },
-                //                 error: function() {
-                //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
-                //                 }
-                //             });
-                //         }
-                //     });
-                // });
-                // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
-                $(document).on('click', '.action-btn', function() {
-                    const button = $(this);
-                    const action = button.data('action');
-                    const requestId = button.data('request-id');
-
-                    let title = 'ยืนยันการกระทำ?';
-                    let text = 'คุณแน่ใจหรือไม่ว่าต้องการดำเนินการ?';
-                    let confirmButtonText = 'ยืนยัน';
-
-                    if (action === 'confirm_deposit') {
-                        title = 'ยืนยันการชำระเงินมัดจำ?';
-                        text = 'คุณได้ตรวจสอบสลิปและยืนยันว่าถูกต้องแล้วใช่หรือไม่?';
-                        confirmButtonText = 'ใช่, ยืนยันและเริ่มงาน';
-                    } else if (action === 'submit_work') {
-                        title = 'ยืนยันการส่งมอบงาน?';
-                        text = 'ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงานและชำระเงินส่วนที่เหลือ';
-                        confirmButtonText = 'ใช่, ส่งมอบงาน';
-                    } else if (action === 'confirm_final_payment') {
-                        title = 'ยืนยันและส่งไฟล์งานสุดท้าย?';
-                        text = 'การกระทำนี้จะถือว่างานเสร็จสมบูรณ์และสิ้นสุดสัญญา';
-                        confirmButtonText = 'ใช่, ยืนยันและสิ้นสุดงาน';
-                    }
-
-                    Swal.fire({
-                        title: title,
-                        text: text,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: confirmButtonText,
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                url: 'action_offer.php',
-                                method: 'POST',
-                                data: {
-                                    request_id: requestId,
-                                    action: action
-                                },
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
-                                    } else {
-                                        Swal.fire('ผิดพลาด!', response.message, 'error');
-                                    }
-                                },
-                                error: function() {
-                                    Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                                }
-                            });
-                        }
-                    });
-                });
-                // --- [เพิ่มโค้ดส่วนนี้] จัดการการคลิกปุ่ม "ดูหลักฐานการชำระเงิน" ---
-                $(document).on('click', '.view-slip-btn', function() {
-                    const requestId = $(this).data('request-id');
-
-                    Swal.fire({
-                        title: 'กำลังโหลดหลักฐาน...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    $.ajax({
-                        url: 'get_payment_slip.php', // เรียกใช้ไฟล์ที่เราสร้างในขั้นตอนที่ 1
-                        method: 'GET',
-                        data: {
-                            request_id: requestId
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    title: 'หลักฐานการชำระเงินมัดจำ',
-                                    imageUrl: response.filePath, // แสดงรูปภาพจาก path ที่ได้รับ
-                                    imageAlt: 'Payment Slip',
-                                    confirmButtonText: 'ปิด'
-                                });
-                            } else {
-                                Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลได้', 'error');
-                        }
-                    });
-                });
-                // --- [เพิ่มโค้ดส่วนนี้] จัดการการส่งฟอร์มงานฉบับร่าง ---
-                $('#draft-upload-form').on('submit', function(e) {
-                    e.preventDefault();
-
-                    // ใช้ FormData เพื่อส่งไฟล์ผ่าน AJAX
-                    const formData = new FormData(this);
-
-                    Swal.fire({
-                        title: 'ยืนยันการส่งมอบงาน?',
-                        text: "ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงาน",
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'ใช่, ส่งมอบเลย',
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
                             Swal.fire({
-                                title: 'กำลังอัปโหลดและส่งงาน...',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
+                                html: proposalHtml,
+                                showConfirmButton: true,
+                                confirmButtonText: 'ปิด',
+                                width: '600px' // หรือ 'max-w-2xl'
                             });
 
-                            $.ajax({
-                                url: 'submit_draft.php', // เรียกใช้ไฟล์ที่เราสร้าง
-                                method: 'POST',
-                                data: formData,
-                                dataType: 'json',
-                                contentType: false, // สำคัญมากสำหรับการส่งไฟล์
-                                processData: false, // สำคัญมากสำหรับการส่งไฟล์
-                                success: function(response) {
-                                    if (response.status === 'success') {
-                                        Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire('ผิดพลาด!', response.message, 'error');
-                                    }
-                                },
-                                error: function() {
-                                    Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                                }
-                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
                         }
-                    });
+                    },
+                    error: function() {
+                        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลใบเสนอราคาได้', 'error');
+                    }
                 });
+            });
+            // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
+            // $(document).on('click', '.confirm-payment-btn', function() {
+            //     const requestId = $(this).data('request-id');
+            //     Swal.fire({
+            //         title: 'ยืนยันการเริ่มงาน?',
+            //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
+            //         icon: 'question',
+            //         showCancelButton: true,
+            //         confirmButtonColor: '#28a745',
+            //         cancelButtonColor: '#6c757d',
+            //         confirmButtonText: 'ใช่, เริ่มงานเลย',
+            //         cancelButtonText: 'ยกเลิก'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             $.ajax({
+            //                 url: 'action_offer.php', // เราจะใช้ไฟล์ action เดิม
+            //                 method: 'POST',
+            //                 data: {
+            //                     request_id: requestId,
+            //                     action: 'confirm_payment' // ส่ง action ใหม่ไปให้ server
+            //                 },
+            //                 dataType: 'json',
+            //                 success: function(response) {
+            //                     if (response.status === 'success') {
+            //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
+            //                     } else {
+            //                         Swal.fire('ผิดพลาด!', response.message, 'error');
+            //                     }
+            //                 },
+            //                 error: function() {
+            //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+            //                 }
+            //             });
+            //         }
+            //     });
+            // });
+            // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
+            $(document).on('click', '.action-btn', function() {
+                const button = $(this);
+                const action = button.data('action');
+                const requestId = button.data('request-id');
+
+                let title = 'ยืนยันการกระทำ?';
+                let text = 'คุณแน่ใจหรือไม่ว่าต้องการดำเนินการ?';
+                let confirmButtonText = 'ยืนยัน';
+
+                if (action === 'confirm_deposit') {
+                    title = 'ยืนยันการชำระเงินมัดจำ?';
+                    text = 'คุณได้ตรวจสอบสลิปและยืนยันว่าถูกต้องแล้วใช่หรือไม่?';
+                    confirmButtonText = 'ใช่, ยืนยันและเริ่มงาน';
+                } else if (action === 'submit_work') {
+                    title = 'ยืนยันการส่งมอบงาน?';
+                    text = 'ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงานและชำระเงินส่วนที่เหลือ';
+                    confirmButtonText = 'ใช่, ส่งมอบงาน';
+                } else if (action === 'confirm_final_payment') {
+                    title = 'ยืนยันและส่งไฟล์งานสุดท้าย?';
+                    text = 'การกระทำนี้จะถือว่างานเสร็จสมบูรณ์และสิ้นสุดสัญญา';
+                    confirmButtonText = 'ใช่, ยืนยันและสิ้นสุดงาน';
+                }
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: confirmButtonText,
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'action_offer.php',
+                            method: 'POST',
+                            data: {
+                                request_id: requestId,
+                                action: action
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // เพิ่ม script จัดการปุ่ม 'ยืนยันการชำระเงินและเริ่มงาน'
+            // $(document).on('click', '.confirm-payment-btn', function() {
+            //     const requestId = $(this).data('request-id');
+            //     Swal.fire({
+            //         title: 'ยืนยันการเริ่มงาน?',
+            //         text: "คุณได้ตรวจสอบสลิปและยืนยันการชำระเงินมัดจำจากผู้ว่าจ้างแล้วใช่หรือไม่?",
+            //         icon: 'question',
+            //         showCancelButton: true,
+            //         confirmButtonColor: '#28a745',
+            //         cancelButtonColor: '#6c757d',
+            //         confirmButtonText: 'ใช่, เริ่มงานเลย',
+            //         cancelButtonText: 'ยกเลิก'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             $.ajax({
+            //                 url: 'action_offer.php',
+            //                 method: 'POST',
+            //                 data: {
+            //                     request_id: requestId,
+            //                     action: 'confirm_payment' // ส่ง action ใหม่
+            //                 },
+            //                 dataType: 'json',
+            //                 success: function(response) {
+            //                     if (response.status === 'success') { 
+            //                         Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
+            //                     } else {
+            //                         Swal.fire('ผิดพลาด!', response.message, 'error');
+            //                     }
+            //                 },
+            //                 error: function() {
+            //                     Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+            //                 }
+            //             });
+            //         }
+            //     });
+            // });
+            // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
+            $(document).on('click', '.action-btn', function() {
+                const button = $(this);
+                const action = button.data('action');
+                const requestId = button.data('request-id');
+
+                let title = 'ยืนยันการกระทำ?';
+                let text = 'คุณแน่ใจหรือไม่ว่าต้องการดำเนินการ?';
+                let confirmButtonText = 'ยืนยัน';
+
+                if (action === 'confirm_deposit') {
+                    title = 'ยืนยันการชำระเงินมัดจำ?';
+                    text = 'คุณได้ตรวจสอบสลิปและยืนยันว่าถูกต้องแล้วใช่หรือไม่?';
+                    confirmButtonText = 'ใช่, ยืนยันและเริ่มงาน';
+                } else if (action === 'submit_work') {
+                    title = 'ยืนยันการส่งมอบงาน?';
+                    text = 'ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงานและชำระเงินส่วนที่เหลือ';
+                    confirmButtonText = 'ใช่, ส่งมอบงาน';
+                } else if (action === 'confirm_final_payment') {
+                    title = 'ยืนยันและส่งไฟล์งานสุดท้าย?';
+                    text = 'การกระทำนี้จะถือว่างานเสร็จสมบูรณ์และสิ้นสุดสัญญา';
+                    confirmButtonText = 'ใช่, ยืนยันและสิ้นสุดงาน';
+                }
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: confirmButtonText,
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'action_offer.php',
+                            method: 'POST',
+                            data: {
+                                request_id: requestId,
+                                action: action
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => location.reload());
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+            // --- [เพิ่มโค้ดส่วนนี้] จัดการการคลิกปุ่ม "ดูหลักฐานการชำระเงิน" ---
+            $(document).on('click', '.view-slip-btn', function() {
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดหลักฐาน...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: 'get_payment_slip.php', // เรียกใช้ไฟล์ที่เราสร้างในขั้นตอนที่ 1
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                title: 'หลักฐานการชำระเงินมัดจำ',
+                                imageUrl: response.filePath, // แสดงรูปภาพจาก path ที่ได้รับ
+                                imageAlt: 'Payment Slip',
+                                confirmButtonText: 'ปิด'
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลได้', 'error');
+                    }
+                });
+            });
+            // --- [เพิ่มโค้ดส่วนนี้] จัดการการส่งฟอร์มงานฉบับร่าง ---
+            $('#draft-upload-form').on('submit', function(e) {
+                e.preventDefault();
+
+                // ใช้ FormData เพื่อส่งไฟล์ผ่าน AJAX
+                const formData = new FormData(this);
+
+                Swal.fire({
+                    title: 'ยืนยันการส่งมอบงาน?',
+                    text: "ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงาน",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'ใช่, ส่งมอบเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'กำลังอัปโหลดและส่งงาน...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'submit_draft.php',
+                            method: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            contentType: false, // สำคัญมากสำหรับการส่งไฟล์
+                            processData: false, // สำคัญมากสำหรับการส่งไฟล์
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                            }
+                        });
+                    }
+                });
+            });
             // จัดการการคลิกปุ่ม "ดูหลักฐานการชำระเงิน"
             $(document).on('click', '.view-slip-btn', function() {
                 const requestId = $(this).data('request-id');
@@ -1117,7 +1119,9 @@ function getStatusInfo($status)
                 $.ajax({
                     url: 'get_payment_slip.php', // เรียกใช้ไฟล์ที่เราสร้าง
                     method: 'GET',
-                    data: { request_id: requestId },
+                    data: {
+                        request_id: requestId
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
@@ -1138,8 +1142,8 @@ function getStatusInfo($status)
                 });
             });
             // --- END: เพิ่มโค้ดส่วนนี้เข้าไป ---
-            });
-        </script>
+        });
+    </script>
 
 </body>
 
