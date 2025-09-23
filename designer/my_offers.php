@@ -43,6 +43,7 @@ $sql = "
         cjr.budget AS price,
         cjr.posted_date AS offer_date,
         cjr.status,
+        cjr.attachment_path,
         u.user_id AS client_id,
         CONCAT(u.first_name, ' ', u.last_name) AS client_name
     FROM client_job_requests cjr
@@ -387,7 +388,18 @@ function getStatusInfo($status)
                                                     class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                     <i class="fa-solid fa-check-double mr-1"></i> ยืนยันการชำระเงินและเริ่มงาน
                                                 </button>
-                                        
+                                            <?php elseif ($offer['status'] === 'assigned') : ?>
+                                                <button
+                                                    @click='isDraftModalOpen = true; modalData = <?= htmlspecialchars(json_encode($offer), ENT_QUOTES, 'UTF-8') ?>'
+                                                    class="w-full sm:w-auto text-center px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600">
+                                                    <i class="fa-solid fa-file-arrow-up mr-1"></i> ส่งมอบงาน (ฉบับร่าง)
+                                                </button>
+                                            <?php elseif ($offer['status'] === 'draft_submitted') : ?>
+                                                <button
+                                                    data-request-id="<?= $offer['request_id'] ?>"
+                                                    class="view-draft-btn w-full sm:w-auto text-center px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600">
+                                                    <i class="fa-solid fa-eye mr-1"></i> ดูไฟล์ฉบับร่าง
+                                                </button>
                                             <?php elseif ($offer['status'] === 'awaiting_final_payment') : ?>
                                                 <button data-request-id="<?= $offer['request_id'] ?>" data-action="confirm_final_payment" class="action-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
                                                     <i class="fa-solid fa-file-zipper mr-1"></i> ยืนยันและส่งไฟล์งานสุดท้าย
@@ -504,37 +516,36 @@ function getStatusInfo($status)
                         </form>
                     </div>
                 </div>
-            </div>
-            <div x-show="isDraftModalOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
-                <div @click.away="isDraftModalOpen = false" class="bg-gray-50 rounded-xl shadow-2xl w-full max-w-lg mx-auto max-h-full overflow-y-auto">
-                    <form id="draft-upload-form" method="POST" enctype="multipart/form-data">
-                        <div class="px-6 py-5 sm:p-8">
-                            <div class="text-center mb-6">
-                                <h3 class="text-2xl leading-6 font-bold text-gray-900">ส่งมอบงาน (ฉบับร่าง)</h3>
-                                <p class="mt-1 text-sm text-gray-500">สำหรับงาน: <span class="font-semibold" x-text="modalData.title"></span></p>
-                            </div>
-                            <div class="space-y-5">
-                                <input type="hidden" name="request_id" :value="modalData.request_id">
-                                <div>
-                                    <label for="draft_file" class="block text-sm font-bold text-gray-700">แนบไฟล์งาน</label>
-                                    <input type="file" name="draft_file" id="draft_file" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
-                                    <p class="text-xs text-gray-500 mt-1">ขนาดไฟล์สูงสุด: 25MB</p>
+                <div x-show="isDraftModalOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4 py-6" style="display: none;">
+                    <div @click.away="isDraftModalOpen = false" class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
+                        <form id="submit-draft-form" method="POST" enctype="multipart/form-data">
+                            <div class="p-6">
+                                <h3 class="text-xl leading-6 font-bold text-gray-900 mb-2">ส่งมอบงานฉบับร่าง</h3>
+                                <p class="text-sm text-gray-500">สำหรับงาน: <strong x-text="modalData.title"></strong></p>
+                                <hr class="my-4">
+                                <div class="space-y-4">
+                                    <input type="hidden" name="request_id" :value="modalData.request_id">
+                                    <div>
+                                        <label for="draft_file" class="block text-sm font-medium text-gray-700">แนบไฟล์งานฉบับร่าง</label>
+                                        <p class="text-xs text-gray-500 mb-2">อัปโหลดไฟล์งานเพื่อให้ผู้ว่าจ้างตรวจสอบ (แนะนำ: JPG, PNG, PDF)</p>
+                                        <input type="file" name="draft_file" id="draft_file" required class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+                                    </div>
+                                    <div>
+                                        <label for="draft_message" class="block text-sm font-medium text-gray-700">ข้อความถึงผู้ว่าจ้าง (ถ้ามี)</label>
+                                        <textarea name="draft_message" id="draft_message" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="เช่น 'ส่งมอบงานฉบับร่างแรกครับ สามารถแจ้งแก้ไขได้เลยครับ'"></textarea>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="message_to_client" class="block text-sm font-bold text-gray-700">ข้อความถึงผู้ว่าจ้าง (ถ้ามี)</label>
-                                    <textarea id="message_to_client" name="message_to_client" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="อธิบายรายละเอียดงานที่ส่ง, สิ่งที่ต้องการให้ผู้ว่าจ้างตรวจสอบ, หรือข้อความอื่นๆ..."></textarea>
-                                </div>
                             </div>
-                        </div>
-                        <div class="bg-gray-100 px-4 py-4 sm:px-8 sm:flex sm:flex-row-reverse rounded-b-xl">
-                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">
-                                <i class="fas fa-paper-plane mr-2"></i>ส่งมอบงาน
-                            </button>
-                            <button type="button" @click="isDraftModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">
-                                ยกเลิก
-                            </button>
-                        </div>
-                    </form>
+                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 sm:ml-3 sm:w-auto sm:text-sm">
+                                    <i class="fas fa-paper-plane mr-2"></i>ส่งงาน
+                                </button>
+                                <button type="button" @click="isDraftModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">
+                                    ยกเลิก
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1050,55 +1061,7 @@ function getStatusInfo($status)
                     }
                 });
             });
-            // --- [เพิ่มโค้ดส่วนนี้] จัดการการส่งฟอร์มงานฉบับร่าง ---
-            $('#draft-upload-form').on('submit', function(e) {
-                e.preventDefault();
 
-                // ใช้ FormData เพื่อส่งไฟล์ผ่าน AJAX
-                const formData = new FormData(this);
-
-                Swal.fire({
-                    title: 'ยืนยันการส่งมอบงาน?',
-                    text: "ระบบจะแจ้งเตือนผู้ว่าจ้างให้เข้ามาตรวจสอบงาน",
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'ใช่, ส่งมอบเลย',
-                    cancelButtonText: 'ยกเลิก'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'กำลังอัปโหลดและส่งงาน...',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-
-                        $.ajax({
-                            url: 'submit_draft.php',
-                            method: 'POST',
-                            data: formData,
-                            dataType: 'json',
-                            contentType: false, // สำคัญมากสำหรับการส่งไฟล์
-                            processData: false, // สำคัญมากสำหรับการส่งไฟล์
-                            success: function(response) {
-                                if (response.status === 'success') {
-                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
-                                        location.reload();
-                                    });
-                                } else {
-                                    Swal.fire('ผิดพลาด!', response.message, 'error');
-                                }
-                            },
-                            error: function() {
-                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-                            }
-                        });
-                    }
-                });
-            });
             // จัดการการคลิกปุ่ม "ดูหลักฐานการชำระเงิน"
             $(document).on('click', '.view-slip-btn', function() {
                 const requestId = $(this).data('request-id');
@@ -1137,6 +1100,91 @@ function getStatusInfo($status)
                 });
             });
             // --- END: เพิ่มโค้ดส่วนนี้เข้าไป ---
+            // --- 4. จัดการการส่งฟอร์มฉบับร่าง ---
+            $('#submit-draft-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                Swal.fire({
+                    title: 'ยืนยันการส่งงาน?',
+                    text: "ไฟล์จะถูกส่งไปให้ผู้ว่าจ้างตรวจสอบ",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'ใช่, ส่งเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'กำลังอัปโหลด...',
+                            text: 'กรุณารอสักครู่',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'submit_draft.php',
+                            method: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('สำเร็จ!', response.message, 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('ผิดพลาด!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+            // --- 5. จัดการปุ่ม "ดูไฟล์ฉบับร่าง" ---
+            $(document).on('click', '.view-draft-btn', function() {
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดไฟล์...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // ใช้ get_payment_slip.php ซ้ำได้เลยเพราะ Logic คล้ายกัน
+                $.ajax({
+                    url: 'get_payment_slip.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success' && response.filePath) {
+                            Swal.fire({
+                                title: 'ไฟล์ฉบับร่างที่ส่งไปแล้ว',
+                                imageUrl: response.filePath,
+                                imageAlt: 'Draft File',
+                                confirmButtonText: 'ปิด'
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่พบไฟล์แนบ', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
+                    }
+                });
+            });
         });
     </script>
 

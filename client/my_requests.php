@@ -72,7 +72,9 @@ $counts = [
     'pending_deposit' => 0,
     'awaiting_deposit_verification' => 0,
     'assigned' => 0,
+    'draft_submitted' => 0,
     'awaiting_final_payment' => 0,
+    'final_payment_verification' => 0, // <-- เพิ่มบรรทัดนี้
     'completed' => 0,
     'cancelled' => 0,
 ];
@@ -81,6 +83,11 @@ foreach ($requests as $request) {
         $counts[$request['status']]++;
     }
 }
+// นับจำนวนรวมสำหรับแท็บ "รอชำระเงินมัดจำ"
+$pending_deposit_total = ($counts['pending_deposit'] ?? 0) + ($counts['awaiting_deposit_verification'] ?? 0);
+// นับจำนวนรวมสำหรับแท็บ "รอชำระเงิน"
+$awaiting_final_payment_total = ($counts['awaiting_final_payment'] ?? 0) + ($counts['final_payment_verification'] ?? 0);
+
 $conn->close();
 
 function getStatusInfoClient($status)
@@ -93,11 +100,17 @@ function getStatusInfoClient($status)
         case 'pending_deposit':
             return ['text' => 'รอชำระเงินมัดจำ', 'color' => 'bg-orange-100 text-orange-800', 'tab' => 'pending_deposit'];
         case 'awaiting_deposit_verification':
-            return ['text' => 'รอตรวจสอบการชำระเงิน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'awaiting_deposit_verification'];
+            return ['text' => 'รอตรวจสอบ (มัดจำ)', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'pending_deposit'];
         case 'assigned':
             return ['text' => 'กำลังดำเนินการ', 'color' => 'bg-blue-100 text-blue-800', 'tab' => 'assigned'];
+        case 'draft_submitted': // <-- เพิ่ม case ใหม่
+            return ['text' => 'ตรวจสอบงาน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'review_work'];
+            // case 'awaiting_final_payment':
+            //     return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
         case 'awaiting_final_payment':
-            return ['text' => 'รอตรวจสอบงาน', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
+            return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final_payment'];
+        case 'final_payment_verification':
+            return ['text' => 'รอตรวจสอบยอดชำระคงเหลือ', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'awaiting_final_payment'];
         case 'completed':
             return ['text' => 'เสร็จสมบูรณ์', 'color' => 'bg-green-100 text-green-800', 'tab' => 'completed'];
         case 'cancelled':
@@ -279,40 +292,41 @@ function getStatusInfoClient($status)
                     <?php endif; ?>
                 </button>
                 <button @click="tab = 'pending_deposit'" :class="tab === 'pending_deposit' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-money-bill-wave mr-1.5"></i> รอชำระเงินมัดจำ
-                    <?php if ($counts['pending_deposit'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-xs font-bold text-white"><?= $counts['pending_deposit'] ?></span>
+                    <i class="fa-solid fa-money-bill-wave mr-1.5"></i> ชำระเงินมัดจำ
+                    <?php if ($pending_deposit_total > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-orange-500 text-xs font-bold text-white"><?= $pending_deposit_total ?></span>
                     <?php endif; ?>
                 </button>
-                <button @click="tab = 'awaiting_deposit_verification'" :class="tab === 'awaiting_deposit_verification' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                    <i class="fa-solid fa-hourglass-half mr-1.5"></i> รอตรวจสอบการชำระเงิน
-                    <?php if ($counts['awaiting_deposit_verification'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-purple-500 text-xs font-bold text-white"><?= $counts['awaiting_deposit_verification'] ?></span>
+                <button @click="tab = 'assigned'" :class="tab === 'assigned' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                    <i class="fa-solid fa-person-digging mr-1.5"></i> กำลังดำเนินการ
+                    <?php if ($counts['assigned'] > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-blue-500 text-xs font-bold text-white"><?= $counts['assigned'] ?></span>
                     <?php endif; ?>
-                    <button @click="tab = 'assigned'" :class="tab === 'assigned' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                        <i class="fa-solid fa-person-digging mr-1.5"></i> กำลังดำเนินการ
-                        <?php if ($counts['assigned'] > 0) : ?>
-                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-blue-500 text-xs font-bold text-white"><?= $counts['assigned'] ?></span>
-                        <?php endif; ?>
-                    </button>
-                    <button @click="tab = 'awaiting_final'" :class="tab === 'awaiting_final' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                        <i class="fa-solid fa-file-import mr-1.5"></i> รอตรวจสอบงาน
-                        <?php if ($counts['awaiting_final_payment'] > 0) : ?>
-                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $counts['awaiting_final_payment'] ?></span>
-                        <?php endif; ?>
-                    </button>
-                    <button @click="tab = 'completed'" :class="tab === 'completed' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                        <i class="fa-solid fa-circle-check mr-1.5"></i> เสร็จสมบูรณ์
-                        <?php if ($counts['completed'] > 0) : ?>
-                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-xs font-bold text-white"><?= $counts['completed'] ?></span>
-                        <?php endif; ?>
-                    </button>
-                    <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
-                        <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
-                        <?php if ($counts['cancelled'] > 0) : ?>
-                            <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $counts['cancelled'] ?></span>
-                        <?php endif; ?>
-                    </button>
+                </button>
+                <button @click="tab = 'review_work'" :class="tab === 'review_work' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                    <i class="fa-solid fa-file-import mr-1.5"></i> ตรวจสอบงาน
+                    <?php if ($counts['draft_submitted'] > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-purple-500 text-xs font-bold text-white"><?= $counts['draft_submitted'] ?></span>
+                    <?php endif; ?>
+                </button>
+                <button @click="tab = 'awaiting_final_payment'" :class="tab === 'awaiting_final_payment' ? 'bg-white text-yellow-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                    <i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> รอชำระเงิน
+                    <?php if ($awaiting_final_payment_total > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-yellow-500 text-xs font-bold text-white"><?= $awaiting_final_payment_total ?></span>
+                    <?php endif; ?>
+                </button>
+                <button @click="tab = 'completed'" :class="tab === 'completed' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                    <i class="fa-solid fa-circle-check mr-1.5"></i> เสร็จสมบูรณ์
+                    <?php if ($counts['completed'] > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-500 text-xs font-bold text-white"><?= $counts['completed'] ?></span>
+                    <?php endif; ?>
+                </button>
+                <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
+                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
+                    <?php if ($counts['cancelled'] > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $counts['cancelled'] ?></span>
+                    <?php endif; ?>
+                </button>
             </div>
             <div class="space-y-5">
                 <?php if (empty($requests)) : ?>
@@ -374,10 +388,20 @@ function getStatusInfoClient($status)
                                             <a href="../messages.php?to_user=<?= $request['designer_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600">
                                                 <i class="fa-solid fa-comments mr-1"></i> พูดคุยกับนักออกแบบ
                                             </a>
-                                        <?php elseif ($request['status'] === 'awaiting_final_payment') : ?>
-                                            <a href="review_work.php?request_id=<?= $request['request_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600">
-                                                <i class="fa-solid fa-file-circle-check mr-1"></i> ตรวจสอบงานและชำระเงิน
+                                        <?php elseif ($request['status'] === 'draft_submitted') : ?>
+                                            <a href="review_work.php?request_id=<?= $request['request_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600">
+                                                <i class="fa-solid fa-file-circle-check mr-1"></i> ตรวจสอบงาน
                                             </a>
+                                        <?php elseif ($request['status'] === 'awaiting_final_payment') : ?>
+                                            <a href="final_payment.php?request_id=<?= $request['request_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600">
+                                                <i class="fa-solid fa-credit-card mr-1"></i> ชำระเงินส่วนที่เหลือ
+                                            </a>
+                                        <?php elseif ($request['status'] === 'final_payment_verification') : ?>
+                                            <button
+                                                class="view-slip-btn w-full sm:w-auto text-center px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600 transition-all"
+                                                data-slip-url="<?= htmlspecialchars($request['slip_path']) ?>">
+                                                <i class="fa-solid fa-receipt mr-1"></i> ดูหลักฐานการชำระเงิน
+                                            </button>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -389,20 +413,25 @@ function getStatusInfoClient($status)
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีใบเสนอราคาที่ต้องพิจารณา</h3>
                         <p class="mt-1 text-slate-500">เมื่อนักออกแบบส่งข้อเสนอมา งานจะแสดงที่นี่</p>
                     </div>
-                    <div x-show="tab === 'awaiting_deposit_verification' && <?= $counts['awaiting_deposit_verification'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
+                    <div x-show="tab === 'pending_deposit' && <?= $pending_deposit_total ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-money-bill-wave fa-3x text-slate-300"></i>
-                        <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่รอชำระเงิน</h3>
-                        <p class="mt-1 text-slate-500">หลังจากตอบตกลงใบเสนอราคา งานจะมาอยู่ที่นี่เพื่อรอชำระเงินมัดจำ</p>
+                        <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่รอชำระเงินมัดจำ</h3>
+                        <p class="mt-1 text-slate-500">หลังจากตอบตกลงใบเสนอราคาแล้ว งานจะแสดงที่นี่</p>
                     </div>
                     <div x-show="tab === 'assigned' && <?= $counts['assigned'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-person-digging fa-3x text-slate-300"></i>
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่กำลังดำเนินการ</h3>
                         <p class="mt-1 text-slate-500">เมื่องานเริ่มขึ้นแล้ว คุณสามารถติดตามความคืบหน้าได้ที่นี่</p>
                     </div>
-                    <div x-show="tab === 'awaiting_final' && <?= $counts['awaiting_final_payment'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
+                    <div x-show="tab === 'review_work' && <?= $counts['draft_submitted'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-file-import fa-3x text-slate-300"></i>
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่ต้องตรวจสอบ</h3>
-                        <p class="mt-1 text-slate-500">เมื่อนักออกแบบส่งมอบงาน คุณสามารถตรวจสอบและอนุมัติได้จากที่นี่</p>
+                        <p class="mt-1 text-slate-500">เมื่อนักออกแบบส่งมอบงานฉบับร่าง คุณสามารถตรวจสอบและอนุมัติได้จากที่นี่</p>
+                    </div>
+                    <div x-show="tab === 'awaiting_final_payment' && <?= $awaiting_final_payment_total ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
+                        <i class="fa-solid fa-hand-holding-dollar fa-3x text-slate-300"></i>
+                        <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่รอชำระเงิน</h3>
+                        <p class="mt-1 text-slate-500">หลังจากคุณยอมรับงานฉบับร่างแล้ว งานจะมาแสดงที่นี่เพื่อรอชำระเงินงวดสุดท้าย</p>
                     </div>
                     <div x-show="tab === 'completed' && <?= $counts['completed'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-circle-check fa-3x text-slate-300"></i>
