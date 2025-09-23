@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 23, 2025 at 08:25 PM
+-- Generation Time: Sep 23, 2025 at 11:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -51,51 +51,13 @@ INSERT INTO `client_job_requests` (`request_id`, `client_id`, `designer_id`, `ti
 (2, 5, NULL, 'พัฒนาหน้า Landing Page', 'สำหรับแคมเปญการตลาดใหม่ เน้นการแปลงผู้เข้าชมเป็นลูกค้า', NULL, 3, '15,000-30,000 บาท', '2025-07-15', '2025-06-07 15:44:37', 'assigned', 0),
 (3, 3, NULL, 'จ้างนักออกแบบ Package Product', 'ออกแบบบรรจุภัณฑ์สินค้าใหม่ 3 ชิ้น', NULL, 1, '8,000-15,000 บาท', '2025-07-01', '2025-06-07 15:44:37', 'open', 0),
 (4, 3, 2, 'ป้ายอบจ.', 'ทำมาเหอะ', NULL, NULL, '5000', '2025-09-05', '2025-09-01 15:31:15', 'assigned', 0),
-(5, 3, NULL, 'tttt', 'ttt', NULL, NULL, '2500', '2025-09-21', '2025-09-03 19:20:21', 'open', 0),
-(6, 3, NULL, 'ui', 'ui สวยๆ', NULL, NULL, '5000', '2025-09-12', '2025-09-08 08:40:06', 'open', 0),
-(7, 3, NULL, 'รรรร', 'วววว', NULL, NULL, '5000', '2025-09-13', '2025-09-08 11:16:24', 'open', 0),
-(8, 3, NULL, 'เเเเเ', 'เเเเเเเเเเเเเเเ', NULL, NULL, '500', '2025-09-14', '2025-09-08 12:17:40', 'open', 0),
-(9, 3, NULL, 'ออกแบบป้าย', 'ป้าย อบจ', NULL, NULL, '3000', '2025-09-18', '2025-09-08 16:19:23', 'open', 0),
-(10, 3, NULL, 'ux ui', 'dsfsdf', NULL, NULL, '5000', '2025-09-14', '2025-09-09 03:31:33', 'open', 0),
-(11, 3, NULL, 'วาดการ์ตูนแนวก้านกล้วย', 'เน้นสีดำ', NULL, 5, NULL, '2025-09-14', '2025-09-10 09:07:08', 'open', 0),
-(12, 3, NULL, 'วาดการ์ตูนแนวก้านกล้วย', 'test', NULL, 5, NULL, '2025-09-14', '2025-09-13 07:24:10', 'open', 0),
-(13, 3, NULL, 'test', 'tsetset', NULL, NULL, NULL, '2025-09-21', '2025-09-13 08:27:12', 'open', 0),
-(14, 3, NULL, 'test', 'ererere', NULL, NULL, NULL, '2025-10-09', '2025-09-13 08:32:41', 'open', 0),
-(15, 3, NULL, 'yjyjyj', 'jyjyj', NULL, NULL, '3000', '2025-09-28', '2025-09-13 10:13:59', 'open', 0),
-(16, 3, NULL, 'หกดหกด', 'หดก', NULL, NULL, '50000', '2025-10-02', '2025-09-13 10:25:28', 'open', 0),
-(17, 3, NULL, 'tttttt', 'ttttttttttttt', NULL, NULL, '50000', '2025-09-27', '2025-09-13 10:29:16', 'open', 0),
-(18, 3, NULL, 'รวนวร', 'รนวรนว', NULL, NULL, '35000', '2025-09-26', '2025-09-13 10:30:43', 'open', 0),
-(19, 3, NULL, 'กด้กด้กด', 'กดเกดเดกเ', NULL, NULL, '65666565', '2025-09-26', '2025-09-13 10:33:23', 'open', 0),
-(20, 3, NULL, 'ไดำไดำดไำด', 'ไำดไำดไำด', NULL, NULL, '60000', '2025-10-03', '2025-09-13 10:35:27', 'open', 0),
-(21, 3, NULL, 'ไำพไำพไำพ', 'หกดกหดหกด', NULL, NULL, '60000', '2025-09-27', '2025-09-13 10:48:25', 'open', 0),
-(22, 3, NULL, 'sdfdfs', 'fsdfsdf', NULL, NULL, '50000', '2025-09-26', '2025-09-13 10:50:03', 'open', 0),
-(23, 3, NULL, 'tttttt', 'sdfdsf', NULL, NULL, '5000', '2025-09-21', '2025-09-13 10:50:26', 'open', 0),
-(24, 3, NULL, 'werwerwer', 'asdasdasd', NULL, NULL, '35000', '2025-09-20', '2025-09-13 10:51:04', 'open', 0),
-(25, 3, NULL, 'ewrwerwer', 'sdfsdf', NULL, NULL, '6000', '2025-09-20', '2025-09-13 10:53:04', 'open', 0),
-(26, 3, NULL, 'rrrrrr', 'rrrrrrrrrrrrrrr', NULL, NULL, '60000', '2025-09-27', '2025-09-13 10:56:21', 'open', 0),
-(27, 3, NULL, 'หกดหกด', 'หกดหกดหกด', NULL, NULL, '6000', '2025-09-16', '2025-09-13 10:57:19', 'open', 0),
-(28, 3, NULL, 'test', 'sdfdsf', NULL, 4, '5000', '2025-09-26', '2025-09-14 02:22:03', 'open', 0),
-(29, 3, NULL, 'test', '1515', NULL, 4, '60000', '2025-09-20', '2025-09-14 02:23:42', 'open', 0),
-(30, 3, NULL, 'เเเเเเเเเเเเเเ', 'เเเเเเเเเเเเเเเเ', NULL, 6, '60000', '2025-09-20', '2025-09-14 02:24:43', 'open', 0),
-(31, 3, NULL, 'หกหหกห', 'กหกหกหก', NULL, 6, '6000', '2025-09-27', '2025-09-14 02:25:03', 'open', 0),
-(32, 3, NULL, 'ดกดกดกด', 'กดกดกด', NULL, 6, '5000', '2025-09-25', '2025-09-14 02:39:55', 'open', 0),
 (33, 3, 2, 'ทำ ux/ui เว็บสั่งซื้อเสื้อผ้า', 'เน้นโทนสีดำ โมเดิร์น สไตล์ยุคใหม่', NULL, 2, '60000', '2025-09-21', '2025-09-14 03:47:01', 'awaiting_final_payment', 0),
-(34, 3, NULL, 'ป้ายยยย', 'ป้ายยยย', '../uploads/job_attachments/job_68c642e8db55b7.60595056.png', 1, '3000', '2025-09-26', '2025-09-14 04:22:00', 'open', 0),
-(35, 3, NULL, 'trtdt', 'tstst', '../uploads/job_attachments/job_68c64527ae14d3.18467186.png', 6, '60000', '2025-09-20', '2025-09-14 04:31:35', 'open', 0),
-(36, 3, NULL, 'ฟหกฟหกฟหก', 'ฟหกฟหกฟหก', '../uploads/job_attachments/job_68c6470e2d3b13.04546651.jpg', 4, '3000', '2025-09-27', '2025-09-14 04:39:42', 'open', 0),
-(37, 3, NULL, 'asdasd', 'asdasdasd', NULL, 6, '300', '2025-09-20', '2025-09-14 04:58:51', 'open', 0),
-(38, 3, NULL, 'wwwww', 'wwwwwwwwwwwwwww', 'uploads/job_attachments/job_68c64be1e7602_1757826017.jpg', 2, '5000', '2025-09-21', '2025-09-14 05:00:17', 'open', 0),
-(39, 3, NULL, 'testtttttttt', 'tttttttttttttttt', 'uploads/job_attachments/job_68c68231226e5_1757839921.jpg', 4, '3000', '2025-09-28', '2025-09-14 08:52:01', 'open', 0),
-(40, 3, NULL, 'asddsdasd', 'asdasd', 'uploads/job_attachments/job_68c69565d9f7a_1757844837.jpg', 6, '3000', '2025-09-20', '2025-09-14 10:13:57', 'open', 0),
 (41, 3, 2, 'sdfsdfdsf', 'sdfsdfdsf', NULL, 6, '30000', '2025-09-27', '2025-09-14 10:14:08', 'awaiting_deposit_verification', 0),
 (42, 3, 2, 'ไำพไำพไำพ', 'ไำพไำพำไพ', NULL, 4, '50000', '2025-09-26', '2025-09-15 09:41:26', 'awaiting_deposit_verification', 0),
-(43, 3, NULL, 'ฟกดกฟดห', 'หกดหกดหกด', NULL, 4, '25000', '2025-09-19', '2025-09-15 12:16:18', 'open', 0),
-(44, 3, 4, 'adfsdf', 'sdfdsfsd', NULL, 4, '25200', '2025-09-20', '2025-09-15 13:22:39', 'open', 0),
-(45, 3, NULL, 'กดหกด', 'ฟหกหฟกหฟก', NULL, 4, '5000', '2025-09-19', '2025-09-15 13:37:45', 'open', 0),
 (46, 3, 2, '252525', '5000', 'uploads/job_attachments/job_68c81ae9e93c5_1757944553.jpg', 6, '3000', '2025-09-19', '2025-09-15 13:55:53', 'awaiting_deposit_verification', 0),
 (47, 3, 2, 'tertert', 'erer', NULL, 6, '5000', '2025-09-26', '2025-09-15 17:57:51', 'awaiting_deposit_verification', 0),
-(48, 3, 2, 'hhhhh', 'hhhh', 'uploads/job_attachments/job_68c853b58830d_1757959093.png', 4, '3000', '2025-09-25', '2025-09-15 17:58:13', '', 0),
-(49, 3, 2, '่้ืิเอดอดอดอ', 'ทื้ิอ', 'uploads/job_attachments/job_68c85416189b0_1757959190.jpg', 4, '5000', '2025-09-26', '2025-09-15 17:59:50', '', 0),
+(48, 3, 2, 'hhhhh', 'hhhh', 'uploads/job_attachments/job_68c853b58830d_1757959093.png', 4, '3000', '2025-09-25', '2025-09-15 17:58:13', 'rejected', 0),
+(49, 3, 2, '่้ืิเอดอดอดอ', 'ทื้ิอ', 'uploads/job_attachments/job_68c85416189b0_1757959190.jpg', 4, '5000', '2025-09-26', '2025-09-15 17:59:50', 'rejected', 0),
 (50, 3, 2, '1231321', '546545', 'uploads/job_attachments/job_68c86c60a0d6a_1757965408.jpg', 2, '5000', '2025-09-26', '2025-09-15 19:43:28', 'rejected', 0),
 (51, 3, 2, '44444', '4444444444444', 'uploads/job_attachments/job_68c86c6e6e2ce_1757965422.png', 6, '546456', '2025-09-27', '2025-09-15 19:43:42', 'rejected', 0),
 (52, 3, 2, '11111111111', '111111111111111', 'uploads/job_attachments/job_68c876751dddf_1757967989.png', 6, '5000', '2025-09-26', '2025-09-15 20:26:29', 'rejected', 0),
@@ -137,10 +99,12 @@ INSERT INTO `client_job_requests` (`request_id`, `client_id`, `designer_id`, `ti
 (88, 3, 2, 'ertretert', 'tertert', 'uploads/job_attachments/job_68d18d7c98a66_1758563708.png', 6, '6500', '2025-10-02', '2025-09-22 17:55:08', 'assigned', 0),
 (89, 3, 2, 'test ชำระเงิน', 'test ชำระเงิน', 'uploads/job_attachments/job_68d1a186d04b0_1758568838.jpg', 4, '600', '2025-10-04', '2025-09-22 19:20:38', 'assigned', 0),
 (90, 3, 2, 'test ชำระเงิน2', 'test ชำระเงิน2', '../uploads/draft_files/draft_90_68d2e4f0ca31b_C04.pdf', 4, '800', '2025-10-03', '2025-09-22 19:42:27', 'draft_submitted', 0),
-(91, 3, 2, 'test ชำระเงิน3', 'test ชำระเงิน3', '../uploads/draft_files/draft_91_68d2e4c0460eb_pixellink-assistants-main.rar', 4, '670', '2025-10-05', '2025-09-22 19:53:15', 'draft_submitted', 1),
+(91, 3, 2, 'test ชำระเงิน3', 'test ชำระเงิน3', '../uploads/draft_files/draft_91_68d2e4c0460eb_pixellink-assistants-main.rar', 4, '670', '2025-10-05', '2025-09-22 19:53:15', 'final_payment_verification', 1),
 (92, 3, 2, 'test ส่งไฟล์ฉบับร่าง1', 'test ส่งไฟล์ฉบับร่าง1', '../uploads/draft_files/draft_92_68d2d6a5c1142_IMG_Desing.png', 4, '3600', '2025-10-03', '2025-09-22 21:37:21', 'final_payment_verification', 2),
 (93, 3, 2, 'ส่งฉบับร่าง 2', 'ส่งฉบับร่าง 2', '../uploads/draft_files/draft_93_68d274add8f12_logo.png', 6, '6000', '2025-09-25', '2025-09-22 22:41:43', 'final_payment_verification', 0),
-(94, 3, 2, 'test รวมtab', 'test รวมtab', '../uploads/draft_files/draft_94_68d2e4a658455_pixellink-assistants-main.rar', 6, '60', '2025-10-03', '2025-09-23 18:17:37', 'awaiting_deposit_verification', 0);
+(94, 3, 2, 'test รวมtab', 'test รวมtab', '../uploads/draft_files/draft_94_68d2e4a658455_pixellink-assistants-main.rar', 6, '60', '2025-10-03', '2025-09-23 18:17:37', 'awaiting_deposit_verification', 0),
+(95, 3, 2, 'สวัสดีจ้างงาน', 'สวัสดีจ้างงาน', '../uploads/draft_files/draft_95_68d2e8bab88a0_S__5423114_0.jpg', 6, '300', '2025-09-26', '2025-09-23 18:33:30', 'final_payment_verification', 0),
+(96, 5, 4, 'สวัสดีจ้างงาน', 'สวัสดีจ้างงาน', '../uploads/draft_files/draft_96_68d2f8ead7443_6.png', 2, '300', '2025-09-25', '2025-09-23 18:49:53', 'final_payment_verification', 1);
 
 -- --------------------------------------------------------
 
@@ -189,7 +153,9 @@ INSERT INTO `contracts` (`contract_id`, `request_id`, `designer_id`, `client_id`
 (21, 91, 2, 3, 890.00, '2025-09-23', NULL, 'active', 'pending', '2025-09-23 02:54:06'),
 (22, 92, 2, 3, 3800.00, '2025-09-23', NULL, 'active', 'pending', '2025-09-23 04:38:10'),
 (23, 93, 2, 3, 6500.00, '2025-09-23', NULL, 'active', 'pending', '2025-09-23 05:42:38'),
-(24, 94, 2, 3, 65.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:18:21');
+(24, 94, 2, 3, 65.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:18:21'),
+(25, 95, 2, 3, 350.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:34:35'),
+(26, 96, 4, 5, 350.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:51:38');
 
 -- --------------------------------------------------------
 
@@ -230,13 +196,13 @@ CREATE TABLE `job_applications` (
 INSERT INTO `job_applications` (`application_id`, `request_id`, `designer_id`, `client_id`, `proposal_text`, `offered_price`, `application_date`, `status`) VALUES
 (1, 1, 2, 3, 'สามารถออกแบบให้ตรงคอนเซ็ปต์และส่งงานได้ตามกำหนดครับ', 3500.00, '2025-06-07 15:44:37', 'pending'),
 (2, 2, 2, 5, 'สนใจงาน Landing Page ครับ มีประสบการณ์ด้านนี้โดยตรง สามารถทำให้ติด SEO ได้', 20000.00, '2025-06-07 15:44:37', 'rejected'),
-(3, 3, 4, 3, 'ถนัดงานออกแบบแพ็กเกจจิ้งครับ มีตัวอย่างผลงานให้ดู', 10000.00, '2025-06-07 15:44:37', 'pending'),
+(3, 3, 4, 3, 'ถนัดงานออกแบบแพ็กเกจจิ้งครับ มีตัวอย่างผลงานให้ดู', 10000.00, '2025-06-07 15:44:37', 'rejected'),
 (4, 1, 2, 3, '0', 2500.00, '2025-06-09 07:07:29', 'rejected'),
 (5, 46, 2, 3, 'เพิ่มเวลาในการทำงานได้ไหมครับ', 30000.00, '2025-09-15 16:24:50', 'accepted'),
 (6, 42, 2, 3, '132123', 35000.00, '2025-09-15 17:50:23', 'accepted'),
 (7, 41, 2, 3, 'asdasd', 3000.00, '2025-09-15 17:50:48', 'accepted'),
-(8, 48, 2, 3, 'thrh', 5000.00, '2025-09-15 17:59:01', 'accepted'),
-(9, 49, 2, 3, 'efgeger', 3000.00, '2025-09-15 18:08:24', 'accepted'),
+(8, 48, 2, 3, 'thrh', 5000.00, '2025-09-15 17:59:01', 'rejected'),
+(9, 49, 2, 3, 'efgeger', 3000.00, '2025-09-15 18:08:24', 'rejected'),
 (10, 47, 2, 3, '546545', 30000.00, '2025-09-15 18:23:53', 'accepted'),
 (11, 57, 2, 3, '55555555', 5000.00, '2025-09-16 15:04:53', 'accepted'),
 (12, 58, 2, 3, 'asdasdasd', 3000.00, '2025-09-17 07:17:51', 'accepted'),
@@ -276,7 +242,9 @@ INSERT INTO `job_applications` (`application_id`, `request_id`, `designer_id`, `
 (46, 91, 2, 3, 'test ชำระเงิน3', 890.00, '2025-09-22 19:53:37', 'accepted'),
 (47, 92, 2, 3, 'test ส่งไฟล์ฉบับร่าง1', 3800.00, '2025-09-22 21:37:44', 'accepted'),
 (48, 93, 2, 3, 'ส่งฉบับร่าง 2', 6500.00, '2025-09-22 22:42:07', 'accepted'),
-(49, 94, 2, 3, 'test รวมtab', 65.00, '2025-09-23 18:17:57', 'accepted');
+(49, 94, 2, 3, 'test รวมtab', 65.00, '2025-09-23 18:17:57', 'accepted'),
+(50, 95, 2, 3, 'สวัสดีจ้างงาน', 350.00, '2025-09-23 18:34:14', 'accepted'),
+(51, 96, 4, 5, 'สวัสดีจ้างงาน', 350.00, '2025-09-23 18:50:45', 'accepted');
 
 -- --------------------------------------------------------
 
@@ -1102,7 +1070,27 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (739, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 01:18:11'),
 (740, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:18:53'),
 (741, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 01:20:52'),
-(742, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:22:35');
+(742, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:22:35'),
+(743, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 01:32:15'),
+(744, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:33:37'),
+(745, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 01:34:24'),
+(746, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:35:48'),
+(747, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 01:36:57'),
+(748, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:41:59'),
+(749, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 01:48:45'),
+(750, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 01:50:05'),
+(751, 5, 'Login Attempt Failed', 'Incorrect password for: tech_corp', '::1', '2025-09-24 01:51:13'),
+(752, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 01:51:21'),
+(753, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 01:53:16'),
+(754, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 01:53:48'),
+(755, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 01:54:32'),
+(756, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 02:30:23'),
+(757, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 02:44:37'),
+(758, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 02:44:57'),
+(759, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 02:45:29'),
+(760, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 02:45:59'),
+(761, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 02:52:31'),
+(762, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 04:26:48');
 
 -- --------------------------------------------------------
 
@@ -1410,7 +1398,18 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (307, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"test \\u0e23\\u0e27\\u0e21tab\",\"request_id\":94}', '2025-09-23 18:17:37', 0),
 (308, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:18:27', 0),
 (309, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:22:15', 0),
-(310, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:22:22', 0);
+(310, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:22:22', 0),
+(311, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":95}', '2025-09-23 18:33:30', 0),
+(312, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #95 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:35:33', 0),
+(313, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:37:44', 0),
+(314, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:40:14', 0),
+(315, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:40:39', 0),
+(316, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:41:49', 0),
+(317, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":96}', '2025-09-23 18:49:53', 1),
+(318, 5, 4, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #96 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 19:29:56', 1),
+(319, 5, 4, 'ผู้ว่าจ้างขอแก้ไขงาน: \"แก้ไข1\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 19:45:15', 0),
+(320, 5, 4, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 19:46:10', 0),
+(321, 5, 4, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 19:46:22', 0);
 
 -- --------------------------------------------------------
 
@@ -1441,7 +1440,7 @@ CREATE TABLE `profiles` (
 INSERT INTO `profiles` (`profile_id`, `user_id`, `address`, `company_name`, `bio`, `skills`, `profile_picture_url`, `facebook_url`, `instagram_url`, `tiktok_url`, `payment_qr_code_url`, `bank_name`, `account_number`) VALUES
 (1, 2, '123 Design St, BKK', 'PixelLink co. ltd', 'Passionate UI/UX designer and dev.', 'UX/UI, Figma, Photoshop, AI,Canva', '/uploads/profile_pictures/profile_2_1758564450.jpg', 'https://www.facebook.com/', 'https://www.instagram.com/', 'https://www.tiktok.com/th-TH/', '/uploads/qr_codes/qr_2_1758398445.jfif', 'กรุงไทย', '6790013520'),
 (2, 3, '456 Business Rd, Nonthaburi', 'Acme Corp', NULL, NULL, '/uploads/profile_pictures/profile_3_1758482656.jpg', NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 4, '789 Art Ave, Chiang Mai', '', 'Junior graphic designer looking for freelance work.', 'Photoshop, Illustrator', '/uploads/profile_pictures/profile_4_1758402259.jpg', '', '', '', NULL, NULL, NULL),
+(3, 4, '789 Art Ave, Chiang Mai', '', 'Junior graphic designer looking for freelance work.', 'Photoshop, Illustrator', '/uploads/profile_pictures/profile_4_1758402259.jpg', '', '', '', '/uploads/qr_codes/qr_4_1758653643.jfif', 'กรุงไทย', '6790013520'),
 (4, 5, '101 Tech Tower, Bangkok', 'Tech Corp', NULL, NULL, '/uploads/profile_pictures/profile_5_1758492204.jpg', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -1551,7 +1550,12 @@ INSERT INTO `transactions` (`transaction_id`, `contract_id`, `payer_id`, `payee_
 (8, 23, 3, 2, 5200.00, '2025-09-23 17:45:18', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_93_1758649518.jpg'),
 (9, 22, 3, 2, 3040.00, '2025-09-23 17:45:51', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_92_1758649551.jpg'),
 (10, 24, 3, 2, 13.00, '2025-09-23 18:18:27', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_94_1758651507.png'),
-(11, 24, 3, 2, 13.00, '2025-09-23 18:22:22', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_94_1758651742.png');
+(11, 24, 3, 2, 13.00, '2025-09-23 18:22:22', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_94_1758651742.png'),
+(12, 25, 3, 2, 70.00, '2025-09-23 18:35:33', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_95_1758652533.png'),
+(13, 21, 3, 2, 712.00, '2025-09-23 18:40:39', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_91_1758652839.png'),
+(14, 25, 3, 2, 280.00, '2025-09-23 18:41:49', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_95_1758652909.png'),
+(15, 26, 5, 4, 70.00, '2025-09-23 19:29:56', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_96_1758655796.png'),
+(16, 26, 5, 4, 280.00, '2025-09-23 19:46:22', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_96_1758656782.png');
 
 -- --------------------------------------------------------
 
@@ -1636,9 +1640,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `is_verified`, `last_login`) VALUES
 (1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, NULL),
 (2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-09-16 23:30:42', 1, 1, NULL),
-(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 01:17:18', 1, 1, NULL),
+(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 01:33:08', 1, 1, NULL),
 (4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 0, NULL),
-(5, 'tech_corp', 'tech_pass', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, NULL, 1, 0, NULL),
+(5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 02:45:22', 1, 0, NULL),
 (6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, 0, NULL),
 (7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, 0, NULL),
 (10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL),
@@ -1810,13 +1814,13 @@ ALTER TABLE `verification_submissions`
 -- AUTO_INCREMENT for table `client_job_requests`
 --
 ALTER TABLE `client_job_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `contract_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `contract_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `designer_portfolio`
@@ -1828,7 +1832,7 @@ ALTER TABLE `designer_portfolio`
 -- AUTO_INCREMENT for table `job_applications`
 --
 ALTER TABLE `job_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `job_categories`
@@ -1846,13 +1850,13 @@ ALTER TABLE `job_postings`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=743;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=763;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=311;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=322;
 
 --
 -- AUTO_INCREMENT for table `profiles`
@@ -1882,7 +1886,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `uploaded_files`
