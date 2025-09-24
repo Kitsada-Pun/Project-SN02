@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 24, 2025 at 11:07 PM
+-- Generation Time: Sep 25, 2025 at 01:57 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -313,10 +313,10 @@ INSERT INTO `job_postings` (`post_id`, `designer_id`, `title`, `description`, `c
 (4, 7, 'รับออกแบบโปสเตอร์สินค้า', 'ออกแบบโปสเตอร์โฆษณาสินค้าแบบมืออาชีพ สะดุดตา', 1, '2,500–6,000 บาท', '2025-07-10 16:34:16', 'active', 0, 59),
 (14, 10, 'ทำอินโฟกราฟิกนำเสนอ', 'ออกแบบภาพอินโฟกราฟิกสำหรับพรีเซนต์หรือโซเชียลมีเดีย', 1, '3,000–8,000 บาท', '2025-07-10 16:40:37', 'active', 0, 58),
 (15, 10, 'วาดภาพประกอบนิทาน', 'วาดภาพประกอบแนวเด็กน่ารักสดใส สำหรับหนังสือนิทาน', 2, '5,000–12,000 บาท', '2025-07-10 16:43:43', 'active', 0, 53),
-(16, 4, 'วาดตัวละครแนวแฟนตาซี', 'รับวาดคาแรคเตอร์สไตล์เกม/อนิเมะแฟนตาซี', 2, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 56),
+(16, 4, 'วาดตัวละครแนวแฟนตาซี', 'รับวาดคาแรคเตอร์สไตล์เกม/อนิเมะแฟนตาซี', 2, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 66),
 (17, 7, 'ออกแบบโลโก้แบรนด์แฟชั่น', 'สร้างโลโก้สำหรับแบรนด์เสื้อผ้าหรือแฟชั่นสมัยใหม่', 3, '4,000–10,000 บาท', '2025-07-10 16:43:43', 'active', 0, 55),
 (18, 7, 'โลโก้ธุรกิจท้องถิ่น', 'โลโก้เรียบง่าย เหมาะสำหรับร้านอาหาร คาเฟ่ และ SME', 3, '2,000–5,000 บาท', '2025-07-10 16:43:43', 'active', 0, 54),
-(19, 4, 'ถ่ายภาพโปรไฟล์', 'รับถ่ายภาพโปรไฟล์สำหรับใช้ในงานหรือโซเชียลมีเดีย', 4, '1,500–4,000 บาท', '2025-07-10 16:43:43', 'active', 0, 57),
+(19, 4, 'ถ่ายภาพโปรไฟล์', 'รับถ่ายภาพโปรไฟล์สำหรับใช้ในงานหรือโซเชียลมีเดีย', 4, '1,500–4,000 บาท', '2025-07-10 16:43:43', 'active', 0, 65),
 (20, 10, 'ถ่ายสินค้าเพื่อขายออนไลน์', 'ถ่ายภาพสินค้าพร้อมแต่งภาพ เหมาะกับตลาดออนไลน์', 4, '3,000–7,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (21, 2, 'ออกแบบ UI เว็บไซต์', 'ดีไซน์หน้าเว็บให้สวยงาม น่าใช้งาน และตอบโจทย์ UX', 5, '10,000–25,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (22, 4, 'พัฒนาเว็บไซต์ด้วย HTML/CSS', 'รับสร้างเว็บไซต์พื้นฐานด้วย HTML/CSS ตามแบบที่ลูกค้าต้องการ', 6, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 58),
@@ -1187,7 +1187,16 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (842, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 03:26:25'),
 (843, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 03:26:41'),
 (844, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 03:32:27'),
-(845, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 04:02:45');
+(845, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 04:02:45'),
+(846, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 05:23:44'),
+(847, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-09-25 05:41:21'),
+(848, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-09-25 05:42:40'),
+(849, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 05:42:47'),
+(850, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 05:57:06'),
+(851, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:00:52'),
+(852, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:35:27'),
+(853, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 06:35:43'),
+(854, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:42:11');
 
 -- --------------------------------------------------------
 
@@ -1734,7 +1743,12 @@ INSERT INTO `uploaded_files` (`file_id`, `contract_id`, `job_post_id`, `uploader
 (58, NULL, NULL, 4, 'job_img_68cb1c5b252131758141531.png', '../uploads/job_images/job_img_68cb1c5b252131758141531.png', '2025-09-17 20:38:51', 287932, NULL, 'image/png', '2025-09-18 03:38:51'),
 (59, NULL, NULL, 4, 'job_img_68cb1c69767cb1758141545.png', '../uploads/job_images/job_img_68cb1c69767cb1758141545.png', '2025-09-17 20:39:05', 431342, NULL, 'image/png', '2025-09-18 03:39:05'),
 (60, NULL, NULL, 2, 'job_img_68cef0de54e1e1758392542.png', '../uploads/job_images/job_img_68cef0de54e1e1758392542.png', '2025-09-20 18:22:22', 143688, NULL, 'image/png', '2025-09-21 01:22:22'),
-(61, NULL, NULL, 2, 'job_img_68cf122ecc3e91758401070.png', '../uploads/job_images/job_img_68cf122ecc3e91758401070.png', '2025-09-20 20:44:30', 55987, NULL, 'image/png', '2025-09-21 03:44:30');
+(61, NULL, NULL, 2, 'job_img_68cf122ecc3e91758401070.png', '../uploads/job_images/job_img_68cf122ecc3e91758401070.png', '2025-09-20 20:44:30', 55987, NULL, 'image/png', '2025-09-21 03:44:30'),
+(62, NULL, NULL, 4, 'job_img_68d465f60de4f1758750198.png', '../uploads/job_images/job_img_68d465f60de4f1758750198.png', '2025-09-24 21:43:18', 607406, NULL, 'image/png', '2025-09-25 04:43:18'),
+(63, NULL, NULL, 4, 'job_img_68d4661a65ed31758750234.png', '../uploads/job_images/job_img_68d4661a65ed31758750234.png', '2025-09-24 21:43:54', 143688, NULL, 'image/png', '2025-09-25 04:43:54'),
+(64, NULL, NULL, 4, 'job_img_68d46b58463801758751576.png', '../uploads/job_images/job_img_68d46b58463801758751576.png', '2025-09-24 22:06:16', 287932, NULL, 'image/png', '2025-09-25 05:06:16'),
+(65, NULL, NULL, 4, 'job_img_68d46df1c2b501758752241.png', '../uploads/job_images/job_img_68d46df1c2b501758752241.png', '2025-09-24 22:17:21', 571371, NULL, 'image/png', '2025-09-25 05:17:21'),
+(66, NULL, NULL, 4, 'job_img_68d46e083a8121758752264.png', '../uploads/job_images/job_img_68d46e083a8121758752264.png', '2025-09-24 22:17:44', 55987, NULL, 'image/png', '2025-09-25 05:17:44');
 
 -- --------------------------------------------------------
 
@@ -1976,7 +1990,7 @@ ALTER TABLE `job_postings`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=846;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=855;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -2018,7 +2032,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `uploaded_files`
 --
 ALTER TABLE `uploaded_files`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `users`
