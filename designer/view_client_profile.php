@@ -26,7 +26,7 @@ if (isset($_SESSION['user_id'])) {
     if (empty($loggedInUserName)) {
         $user_id = $_SESSION['user_id'];
         $sql_user = "SELECT first_name, last_name FROM users WHERE user_id = ?";
-        $stmt_user = $condb->prepare($sql_user);
+        $stmt_user = $conn->prepare($sql_user);
         if ($stmt_user) {
             $stmt_user->bind_param("i", $user_id);
             $stmt_user->execute();
@@ -63,18 +63,22 @@ if ($stmt_profile) {
     $stmt_profile->close();
 }
 
-// --- ดึงประวัติการจ้างงานที่เสร็จสมบูรณ์ (Completed) ---
+// --- [แก้ไข] ดึงประวัติการจ้างงานเฉพาะที่เกี่ยวข้องกับ Designer คนปัจจุบัน ---
 $sql_jobs = "
-    SELECT cjr.title, cjr.completed_date, r.rating, r.comment
+    SELECT 
+        cjr.title, 
+        c.end_date AS completed_date, 
+        r.rating, 
+        r.comment
     FROM client_job_requests cjr
-    LEFT JOIN contracts c ON cjr.request_id = c.request_id
-    LEFT JOIN reviews r ON c.contract_id = r.contract_id AND r.review_type = 'designer_review_client'
-    WHERE cjr.client_id = ? AND cjr.status = 'completed'
-    ORDER BY cjr.completed_date DESC";
+    JOIN contracts c ON cjr.request_id = c.request_id
+    LEFT JOIN reviews r ON c.contract_id = r.contract_id AND r.reviewer_id = cjr.client_id
+    WHERE cjr.client_id = ? AND cjr.designer_id = ? AND cjr.status = 'completed'
+    ORDER BY c.end_date DESC";
 
 $stmt_jobs = $conn->prepare($sql_jobs);
 if ($stmt_jobs) {
-    $stmt_jobs->bind_param("i", $client_id);
+    $stmt_jobs->bind_param("ii", $client_id, $_SESSION['user_id']);
     $stmt_jobs->execute();
     $result_jobs = $stmt_jobs->get_result();
     $job_history = $result_jobs->fetch_all(MYSQLI_ASSOC);
@@ -96,7 +100,7 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             font-family: 'Kanit', sans-serif;
@@ -217,21 +221,22 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
-        .verified-badge-svg {
-        width: 1.25rem;
-        /* 20px */
-        height: 1.25rem;
-        /* 20px */
-        margin-left: 0.25rem;
-        /* 4px */
-        vertical-align: middle;
-        display: inline-block;
-        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
-    }
 
+        .verified-badge-svg {
+            width: 1.25rem;
+            /* 20px */
+            height: 1.25rem;
+            /* 20px */
+            margin-left: 0.25rem;
+            /* 4px */
+            vertical-align: middle;
+            display: inline-block;
+            /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+        }
     </style>
-    
+
 </head>
+
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
@@ -245,7 +250,7 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
                 <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
             </div>
         </div>
-</nav>
+    </nav>
 
     <div class="container mx-auto px-4 py-8 flex-grow">
         <div class="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -276,7 +281,7 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
                 </div>
 
                 <div class="mt-8 border-t border-gray-200 pt-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">ประวัติการจ้างงานและรีวิว</h2>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">ประวัติการจ้างงานและรีวิว (ที่ทำร่วมกับคุณ)</h2>
                     <?php if (empty($job_history)) : ?>
                         <p class="text-gray-500">ยังไม่มีประวัติการจ้างงานที่เสร็จสมบูรณ์</p>
                     <?php else : ?>
@@ -287,9 +292,14 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
                                     <?php if (!empty($job['rating'])) : ?>
                                         <div class="flex items-center my-1">
                                             <div class="flex text-yellow-400">
-                                                <?php for ($i = 1; $i <= 5; $i++) : ?>
-                                                    <i class="fas fa-star<?= $i <= $job['rating'] ? '' : '-half-alt' ?>"></i>
-                                                <?php endfor; ?>
+                                                <?php
+                                                $full_stars = floor($job['rating']);
+                                                $half_star = ($job['rating'] - $full_stars) >= 0.5;
+                                                $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
+                                                ?>
+                                                <?php for ($i = 0; $i < $full_stars; $i++) echo '<i class="fas fa-star"></i>'; ?>
+                                                <?php if ($half_star) echo '<i class="fas fa-star-half-alt"></i>'; ?>
+                                                <?php for ($i = 0; $i < $empty_stars; $i++) echo '<i class="far fa-star"></i>'; ?>
                                             </div>
                                             <span class="ml-2 text-sm font-bold text-gray-700"><?= number_format($job['rating'], 1) ?></span>
                                         </div>
@@ -309,4 +319,5 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
 
     <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>
