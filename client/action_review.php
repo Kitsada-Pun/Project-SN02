@@ -19,7 +19,7 @@ if (empty($request_id) || empty($action)) {
 }
 
 // ตรวจสอบว่าผู้ใช้เป็นเจ้าของงานจริงหรือไม่
-$sql_verify = "SELECT designer_id, revision_count FROM client_job_requests WHERE request_id = ? AND client_id = ?";
+$sql_verify = "SELECT title, designer_id, revision_count FROM client_job_requests WHERE request_id = ? AND client_id = ?";
 $stmt_verify = $conn->prepare($sql_verify);
 $stmt_verify->bind_param("ii", $request_id, $client_id);
 $stmt_verify->execute();
@@ -70,7 +70,8 @@ try {
         $stmt_update->execute();
 
         // ส่งข้อความแจ้งให้นักออกแบบทราบ
-        $message_to_designer = "ผู้ว่าจ้างขอแก้ไขงาน: \"" . htmlspecialchars($revision_message) . "\"กรุณาตรวจสอบและดำเนินการแก้ไข";
+        $job_title = $job_data['title']; // ดึงชื่องานจากข้อมูลที่ได้มา
+        $message_to_designer = "ผู้ว่าจ้างขอแก้ไขงาน " .' htmlspecialchars($job_title)' . "\n" . htmlspecialchars($revision_message) . "กรุณาตรวจสอบและดำเนินการแก้ไข";
         $sql_msg = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
         $stmt_msg = $conn->prepare($sql_msg);
         $stmt_msg->bind_param("iis", $client_id, $designer_id, $message_to_designer);

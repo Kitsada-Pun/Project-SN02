@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'client') {
     header("Location: ../login.php");
     exit();
 }
-
+$message_html = ''; // ตัวแปรสำหรับเก็บ HTML ของ SweetAlert
 // ตรวจสอบว่าเป็นการส่งข้อมูลแบบ POST หรือไม่
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $request_id = $_POST['request_id'];
@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
 
                 // สร้างข้อความแจ้งเตือน
-                $message_content = "สวัสดีครับ คุณ " . htmlspecialchars($client_name) . " ได้ส่งหลักฐานการชำระเงินมัดจำสำหรับงาน '" . htmlspecialchars($job_title) . "' เรียบร้อยแล้วครับ\n\nกรุณาตรวจสอบและยืนยันเพื่อเริ่มงานในขั้นตอนต่อไป";
+                $message_content = "ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินมัดจำสำหรับงาน '" . htmlspecialchars($job_title) . "' ให้นักออกแบบเรียบร้อยแล้ว\nกรุณาตรวจสอบและยืนยันเพื่อเริ่มงานในขั้นตอนต่อไป";
 
                 $sql_send_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
                 $stmt_message = $conn->prepare($sql_send_message);
@@ -115,22 +115,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $conn->commit();
 
-                // แสดงผลลัพธ์ด้วย SweetAlert
-                echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-                echo '<script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        Swal.fire({
-                            title: "อัปโหลดสำเร็จ!",
-                            text: "ได้ส่งหลักฐานการชำระเงินให้นักออกแบบแล้ว โปรดรอการตรวจสอบ",
-                            icon: "success",
-                            confirmButtonText: "ตกลง"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "my_requests.php";
-                            }
-                        });
-                    });
-                </script>';
+                // สร้าง HTML สำหรับ SweetAlert เมื่อสำเร็จ
+                $message_html = '
+    Swal.fire({
+        title: "อัปโหลดสำเร็จ!",
+        text: "ได้ส่งหลักฐานการชำระเงินให้นักออกแบบแล้ว โปรดรอการตรวจสอบ",
+        icon: "success",
+        confirmButtonText: "ตกลง"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "my_requests.php";
+        }
+    });
+';
             } catch (Exception $e) {
                 $conn->rollback();
                 die("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $e->getMessage());
@@ -146,3 +143,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: main.php");
     exit();
 }
+?>
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กำลังประมวลผล...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        // 4. แสดง SweetAlert เมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener("DOMContentLoaded", function() {
+            <?php echo $message_html; ?>
+        });
+    </script>
+
+</body>
+</html>

@@ -25,7 +25,7 @@ $conn->begin_transaction();
 
 try {
     // Verify that the job request belongs to the client
-    $sql_verify = "SELECT status FROM client_job_requests WHERE request_id = ? AND client_id = ?";
+    $sql_verify = "SELECT title, status FROM client_job_requests WHERE request_id = ? AND client_id = ?";
     $stmt_verify = $conn->prepare($sql_verify);
     $stmt_verify->bind_param("ii", $request_id, $client_id);
     $stmt_verify->execute();
@@ -35,6 +35,7 @@ try {
         throw new Exception('Job request not found or you do not have permission.');
     }
     $job_request = $result_verify->fetch_assoc();
+    $job_title = $job_request['title']; // <-- เพิ่มบรรทัดนี้
     $stmt_verify->close();
 
     if (!in_array($job_request['status'], ['open', 'proposed'])) {
@@ -98,14 +99,24 @@ try {
         $stmt_contract->close();
 
         // --- END: MODIFIED AND ADDED CODE ---
-        
+        // --- START: โค้ดส่วนที่เพิ่มเข้ามาใหม่ ---
+        // 6. ส่งข้อความแจ้งเตือนไปยังนักออกแบบ
+        $message_content = "ยินดีด้วย! ข้อเสนอของคุณสำหรับงาน '" . htmlspecialchars($job_title) . "' ได้รับการยอมรับแล้ว กรุณารอผู้ว่าจ้างชำระเงินมัดจำเพื่อเริ่มงาน";
+        $sql_send_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
+        $stmt_message = $conn->prepare($sql_send_message);
+        if ($stmt_message) {
+            $system_sender_id = $client_id; // ให้ผู้ส่งเป็นผู้ว่าจ้าง
+            $stmt_message->bind_param("iis", $system_sender_id, $designer_id, $message_content);
+            $stmt_message->execute();
+            $stmt_message->close();
+        }
+        // --- END: สิ้นสุดโค้ดส่วนที่เพิ่มเข้ามา ---
         $conn->commit();
         echo json_encode([
-            'status' => 'success', 
-            'message' => 'ตอบรับข้อเสนอเรียบร้อยแล้ว! กรุณาชำระเงินมัดจำเพื่อเริ่มงาน',
+            'status' => 'success',
+            'message' => 'ตอบรับข้อเสนอเรียบร้อยแล้ว! ระบบกำลังนำคุณไปหน้าชำระเงิน',
             'redirectUrl' => 'payment.php?request_id=' . $request_id
         ]);
-
     } elseif ($action === 'reject') {
         $sql_update_job = "UPDATE client_job_requests SET status = 'cancelled' WHERE request_id = ?";
         $stmt_update_job = $conn->prepare($sql_update_job);
@@ -123,19 +134,16 @@ try {
 
         $conn->commit();
         echo json_encode([
-            'status' => 'success', 
+            'status' => 'success',
             'message' => 'ข้อเสนอถูกปฏิเสธ และงานนี้ถูกยกเลิกแล้ว',
             'redirectUrl' => 'my_requests.php'
         ]);
-        
     } else {
         throw new Exception('Invalid action.');
     }
-
 } catch (Exception $e) {
     $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 
 $conn->close();
-?>

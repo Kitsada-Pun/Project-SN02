@@ -107,6 +107,7 @@ foreach ($offers as $offer) {
             $awaiting_deposit_count++;
             break;
         case 'assigned':
+        case 'draft_submitted':
             $in_progress_count++;
             break;
         case 'awaiting_final_payment':
@@ -476,7 +477,7 @@ function getStatusInfo($status)
                         <p class="mt-1 text-slate-500">เมื่องานได้รับการยอมรับและผู้ว่าจ้างชำระเงินแล้ว จะแสดงที่นี่</p>
                     </div>
 
-                    <div x-show="tab === 'inprogress' && <?= $in_progress_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
+                    <div x-show="tab === 'inprogress' && document.querySelector('[data-status-tab=\'inprogress\'][style*=\'display: none\']') === null && <?= $in_progress_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-person-digging fa-3x text-slate-300"></i>
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่กำลังดำเนินการ</h3>
                         <p class="mt-1 text-slate-500">เมื่องานได้รับการยืนยันการชำระเงินแล้ว จะมาแสดงที่นี่</p>

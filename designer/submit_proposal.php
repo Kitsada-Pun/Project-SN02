@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // สร้างข้อความแจ้งเตือน
-        $message_content = "สวัสดีครับ คุณ " . htmlspecialchars($designer_name) . " ได้ส่งใบเสนอราคาสำหรับงาน '" . htmlspecialchars($job_title) . "' ให้คุณพิจารณาแล้วครับ\n\nคุณสามารถตรวจสอบข้อเสนอได้ที่หน้า 'คำขอจ้างงานของฉัน' ในแท็บ 'รอพิจารณา'";
+        $message_content = "นักออกแบบได้ส่งใบเสนอราคาสำหรับงาน '". htmlspecialchars($job_title) . "' ให้คุณพิจารณาแล้ว\nคุณสามารถตรวจสอบข้อเสนอได้ที่หน้า 'คำขอจ้างงานของฉัน' ในแท็บ 'รอพิจารณา'";
 
         $sql_send_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
         $stmt_send_message = $conn->prepare($sql_send_message);

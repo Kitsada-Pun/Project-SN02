@@ -196,7 +196,7 @@ $conn->close();
         .rating-stars label:hover ~ label { color: #f59e0b; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-slate-100 min-h-screen flex flex-col">
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <a href="main.php">
