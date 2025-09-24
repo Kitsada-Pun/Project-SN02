@@ -53,6 +53,7 @@ $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <title>ให้คะแนนและรีวิว</title>
@@ -179,23 +180,32 @@ $conn->close();
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+
         .verified-badge-svg {
-        width: 1.25rem;
-        /* 20px */
-        height: 1.25rem;
-        /* 20px */
-        margin-left: 0.25rem;
-        /* 4px */
-        vertical-align: middle;
-        display: inline-block;
-        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
-    }
-        .rating-stars label { color: #d1d5db; transition: color 0.2s; }
-        .rating-stars input:checked ~ label,
+            width: 1.25rem;
+            /* 20px */
+            height: 1.25rem;
+            /* 20px */
+            margin-left: 0.25rem;
+            /* 4px */
+            vertical-align: middle;
+            display: inline-block;
+            /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+        }
+
+        .rating-stars label {
+            color: #d1d5db;
+            transition: color 0.2s;
+        }
+
+        .rating-stars input:checked~label,
         .rating-stars label:hover,
-        .rating-stars label:hover ~ label { color: #f59e0b; }
+        .rating-stars label:hover~label {
+            color: #f59e0b;
+        }
     </style>
 </head>
+
 <body class="bg-slate-100 min-h-screen flex flex-col">
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
@@ -215,19 +225,20 @@ $conn->close();
             <p class="text-gray-600 mb-1">สำหรับงาน: <span class="font-semibold"><?= htmlspecialchars($job_info['title']) ?></span></p>
             <p class="text-gray-600 mb-6">นักออกแบบ: <span class="font-semibold"><?= htmlspecialchars($job_info['designer_name']) ?></span></p>
 
-            <form action="process_review.php" method="POST">
+            <form id="review-form">
                 <input type="hidden" name="request_id" value="<?= $request_id ?>">
                 <input type="hidden" name="contract_id" value="<?= $job_info['contract_id'] ?>">
                 <input type="hidden" name="designer_id" value="<?= $job_info['designer_id'] ?>">
+                <input type="hidden" name="job_title" value="<?= htmlspecialchars($job_info['title']) ?>">
 
                 <div class="mb-6">
                     <label class="block text-gray-700 text-lg font-bold mb-2">คะแนนความพึงพอใจ</label>
                     <div class="rating-stars flex flex-row-reverse justify-end text-4xl cursor-pointer">
-                        <input type="radio" id="star5" name="rating" value="5" class="hidden" required/><label for="star5" title="ยอดเยี่ยม">★</label>
-                        <input type="radio" id="star4" name="rating" value="4" class="hidden"/><label for="star4" title="ดีมาก">★</label>
-                        <input type="radio" id="star3" name="rating" value="3" class="hidden"/><label for="star3" title="ปานกลาง">★</label>
-                        <input type="radio" id="star2" name="rating" value="2" class="hidden"/><label for="star2" title="พอใช้">★</label>
-                        <input type="radio" id="star1" name="rating" value="1" class="hidden"/><label for="star1" title="ควรปรับปรุง">★</label>
+                        <input type="radio" id="star5" name="rating" value="5" class="hidden" required /><label for="star5" title="ยอดเยี่ยม">★</label>
+                        <input type="radio" id="star4" name="rating" value="4" class="hidden" /><label for="star4" title="ดีมาก">★</label>
+                        <input type="radio" id="star3" name="rating" value="3" class="hidden" /><label for="star3" title="ปานกลาง">★</label>
+                        <input type="radio" id="star2" name="rating" value="2" class="hidden" /><label for="star2" title="พอใช้">★</label>
+                        <input type="radio" id="star1" name="rating" value="1" class="hidden" /><label for="star1" title="ควรปรับปรุง">★</label>
                     </div>
                 </div>
 
@@ -243,6 +254,77 @@ $conn->close();
             </form>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 <?php include '../includes/footer.php'; ?>
+<script>
+    $(document).ready(function() {
+        $('#review-form').on('submit', function(e) {
+            e.preventDefault(); // ป้องกันการส่งฟอร์มแบบปกติ
+
+            // ตรวจสอบว่ามีการให้คะแนนดาวหรือไม่
+            if ($('input[name="rating"]:checked').length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ข้อผิดพลาด',
+                    text: 'กรุณาให้คะแนนความพึงพอใจ (เลือกดาว)',
+                });
+                return;
+            }
+
+            const formData = $(this).serialize();
+
+            // แสดง Pop-up ยืนยันก่อนส่ง
+            Swal.fire({
+                title: 'ยืนยันการส่งรีวิว?',
+                text: "คุณจะไม่สามารถแก้ไขรีวิวได้ในภายหลัง",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่, ส่งรีวิว',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ส่งข้อมูลไปยัง process_review.php
+                    $.ajax({
+                        url: 'process_review.php',
+                        method: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'ส่งรีวิวสำเร็จ!',
+                                    text: response.message,
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    // กลับไปหน้าจัดการงาน
+                                    window.location.href = 'my_requests.php';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'เกิดข้อผิดพลาด',
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'ผิดพลาด',
+                                text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
 </html>

@@ -47,7 +47,22 @@ if (!move_uploaded_file($file['tmp_name'], $file_path)) {
     echo json_encode(['status' => 'error', 'message' => 'ไม่สามารถบันทึกไฟล์ได้']);
     exit();
 }
-
+// ดึง client_id และ title เพื่อใช้ส่งข้อความ
+$sql_info = "SELECT client_id, title FROM client_job_requests WHERE request_id = ? AND designer_id = ?";
+$stmt_info = $conn->prepare($sql_info);
+if (!$stmt_info) {
+    throw new Exception("SQL Error (info): " . $conn->error);
+}
+$stmt_info->bind_param("ii", $request_id, $designer_id);
+$stmt_info->execute();
+$result_info = $stmt_info->get_result();
+if ($result_info->num_rows === 0) {
+    throw new Exception("ไม่พบข้อมูลงาน");
+}
+$job_info = $result_info->fetch_assoc();
+$client_id = $job_info['client_id'];
+$job_title = $job_info['title'];
+$stmt_info->close();
 // --- เริ่ม Transaction สำหรับการอัปเดตฐานข้อมูล ---
 $conn->begin_transaction();
 
@@ -70,11 +85,21 @@ try {
     }
     $stmt_contract->bind_param("si", $current_date, $request_id);
     $stmt_contract->execute();
+    $stmt_contract->close();
 
+    // 3. ส่งข้อความแจ้งเตือนไปยังผู้ว่าจ้าง
+    $message_content = "นักออกแบบได้ส่งมอบไฟล์งานฉบับสมบูรณ์สำหรับโปรเจกต์ '" . htmlspecialchars($job_title) . "' เรียบร้อยแล้ว คุณสามารถดาวน์โหลดไฟล์ได้จากหน้ารายการจ้างงานของคุณ";
+    $sql_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
+    $stmt_message = $conn->prepare($sql_message);
+    if (!$stmt_message) {
+        throw new Exception("SQL Error (message): " . $conn->error);
+    }
+    $stmt_message->bind_param("iis", $designer_id, $client_id, $message_content);
+    $stmt_message->execute();
+    $stmt_message->close();
     // --- ถ้าทุกอย่างสำเร็จ ---
     $conn->commit();
     echo json_encode(['status' => 'success', 'message' => 'ส่งมอบงานฉบับสมบูรณ์เรียบร้อยแล้ว!']);
-
 } catch (Exception $e) {
     // --- หากเกิดข้อผิดพลาด ให้ยกเลิกการเปลี่ยนแปลงทั้งหมด ---
     $conn->rollback();
@@ -89,4 +114,3 @@ try {
 $stmt_request->close();
 $stmt_contract->close();
 $conn->close();
-?>
