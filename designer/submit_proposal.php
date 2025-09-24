@@ -43,6 +43,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $stmt_insert->execute();
         $stmt_update->execute();
+        // --- [เพิ่มส่วนนี้] 3. ส่งข้อความแจ้งเตือนไปยังผู้ว่าจ้าง ---
+        $designer_name = $_SESSION['full_name'] ?? $_SESSION['username'];
+
+        // ดึงชื่องานเพื่อใช้ในข้อความ
+        $job_title = '';
+        $sql_get_title = "SELECT title FROM client_job_requests WHERE request_id = ?";
+        $stmt_get_title = $conn->prepare($sql_get_title);
+        if ($stmt_get_title) {
+            $stmt_get_title->bind_param("i", $request_id);
+            if ($stmt_get_title->execute()) {
+                $result_title = $stmt_get_title->get_result();
+                if ($row = $result_title->fetch_assoc()) {
+                    $job_title = $row['title'];
+                }
+            }
+            $stmt_get_title->close();
+        }
+
+        // สร้างข้อความแจ้งเตือน
+        $message_content = "สวัสดีครับ คุณ " . htmlspecialchars($designer_name) . " ได้ส่งใบเสนอราคาสำหรับงาน '" . htmlspecialchars($job_title) . "' ให้คุณพิจารณาแล้วครับ\n\nคุณสามารถตรวจสอบข้อเสนอได้ที่หน้า 'คำขอจ้างงานของฉัน' ในแท็บ 'รอพิจารณา'";
+
+        $sql_send_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
+        $stmt_send_message = $conn->prepare($sql_send_message);
+        if ($stmt_send_message) {
+            $stmt_send_message->bind_param("iis", $designer_id, $client_id, $message_content);
+            $stmt_send_message->execute();
+            $stmt_send_message->close();
+        }
+        // --- สิ้นสุดส่วนที่เพิ่มเข้ามา ---
         $conn->commit();
         $response = ['status' => 'success', 'message' => 'ยื่นใบเสนอราคาสำเร็จแล้ว!'];
     } catch (mysqli_sql_exception $exception) {
@@ -59,4 +88,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 echo json_encode($response); // <-- ส่งผลลัพธ์กลับเป็น JSON
 exit();
-?>

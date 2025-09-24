@@ -358,7 +358,7 @@ function getStatusInfoClient($status)
                             <div class="flex flex-col sm:flex-row gap-6">
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
-                                        <h2 class="text-xl font-bold text-slate-800">
+                                        <h2 class="text-xl font-bold text-slate-800 leading-tight">
                                             <a href="#" class="view-details-btn hover:text-blue-600" data-request-id="<?= $request['request_id'] ?>">
                                                 <?= htmlspecialchars($request['title']) ?>
                                             </a>
@@ -370,10 +370,18 @@ function getStatusInfoClient($status)
                                     <p class="text-slate-500 text-sm mb-4 line-clamp-2">
                                         <?= htmlspecialchars($request['description']) ?>
                                     </p>
-                                    <p class="text-sm text-slate-600">
-                                        <i class="fa-solid fa-calendar-day w-5 text-slate-400 mr-1"></i>
-                                        ประกาศเมื่อ: <?= date('d M Y, H:i', strtotime($request['posted_date'])) ?>
-                                    </p>
+                                    <div class="text-sm space-y-2 text-slate-600">
+                                        <?php // --- [เพิ่ม] เงื่อนไขแสดงชื่อนักออกแบบ ถ้ามี --- 
+                                        ?>
+                                        <?php if (!empty($request['designer_name'])) : ?>
+                                            <p><i class="fa-solid fa-user-pen w-5 text-slate-400 mr-1"></i> นักออกแบบ:
+                                                <a href="../designer/view_profile.php?user_id=<?= $request['designer_id'] ?>" class="font-semibold text-blue-600 hover:underline">
+                                                    <?= htmlspecialchars($request['designer_name']) ?>
+                                                </a>
+                                            </p>
+                                        <?php endif; ?>
+                                        <p><i class="fa-solid fa-calendar-day w-5 text-slate-400 mr-1"></i> ยื่นข้อเสนอเมื่อ: <?= date('d M Y, H:i', strtotime($request['posted_date'])) ?></p>
+                                    </div>
                                 </div>
                                 <div class="flex-shrink-0 sm:text-right sm:border-l sm:pl-6 border-slate-200/80 w-full sm:w-auto">
                                     <div class="text-2xl font-bold text-green-600 mb-4">
