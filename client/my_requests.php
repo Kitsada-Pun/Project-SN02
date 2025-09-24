@@ -41,13 +41,19 @@ $sql = "
         cjr.status,
         u.user_id AS designer_id,
         CONCAT(u.first_name, ' ', u.last_name) AS designer_name,
-        -- เพิ่มส่วนนี้เพื่อดึงที่อยู่ไฟล์สลิปที่อัปโหลดล่าสุด
         (SELECT t.slip_path 
          FROM transactions t
-         JOIN contracts con ON t.contract_id = con.contract_id
-         WHERE con.request_id = cjr.request_id 
+         JOIN contracts con_t ON t.contract_id = con_t.contract_id
+         WHERE con_t.request_id = cjr.request_id 
          ORDER BY t.transaction_date DESC 
-         LIMIT 1) AS slip_path
+         LIMIT 1) AS slip_path,
+        -- --- [เพิ่มส่วนนี้เข้ามา] ---
+        (SELECT COUNT(r.review_id) 
+         FROM reviews r 
+         JOIN contracts c_r ON r.contract_id = c_r.contract_id 
+         WHERE c_r.request_id = cjr.request_id AND r.reviewer_id = cjr.client_id
+        ) > 0 AS has_reviewed
+        -- --- สิ้นสุดส่วนที่เพิ่ม ---
     FROM client_job_requests cjr
     LEFT JOIN users u ON cjr.designer_id = u.user_id
     LEFT JOIN job_applications ja ON cjr.request_id = ja.request_id AND ja.status = 'accepted'
@@ -77,6 +83,7 @@ $counts = [
     'final_payment_verification' => 0, // <-- เพิ่มบรรทัดนี้
     'completed' => 0,
     'cancelled' => 0,
+    'rejected' => 0, // เพิ่มบรรทัดนี้
 ];
 foreach ($requests as $request) {
     if (isset($counts[$request['status']])) {
@@ -87,6 +94,8 @@ foreach ($requests as $request) {
 $pending_deposit_total = ($counts['pending_deposit'] ?? 0) + ($counts['awaiting_deposit_verification'] ?? 0);
 // นับจำนวนรวมสำหรับแท็บ "รอชำระเงิน"
 $awaiting_final_payment_total = ($counts['awaiting_final_payment'] ?? 0) + ($counts['final_payment_verification'] ?? 0);
+// [เพิ่ม] นับจำนวนรวมสำหรับแท็บ "ยกเลิก"
+$cancelled_rejected_total = ($counts['cancelled'] ?? 0) + ($counts['rejected'] ?? 0);
 
 $conn->close();
 
@@ -94,7 +103,7 @@ function getStatusInfoClient($status)
 {
     switch ($status) {
         case 'open':
-            return ['text' => 'เปิดรับข้อเสนอ', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'open'];
+            return ['text' => 'ส่งคำขอจ้างงาน', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'open'];
         case 'proposed':
             return ['text' => 'รอการพิจารณา', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'proposed'];
         case 'pending_deposit':
@@ -105,8 +114,7 @@ function getStatusInfoClient($status)
             return ['text' => 'กำลังดำเนินการ', 'color' => 'bg-blue-100 text-blue-800', 'tab' => 'assigned'];
         case 'draft_submitted': // <-- เพิ่ม case ใหม่
             return ['text' => 'ตรวจสอบงาน', 'color' => 'bg-purple-100 text-purple-800', 'tab' => 'review_work'];
-            // case 'awaiting_final_payment':
-            //     return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final'];
+
         case 'awaiting_final_payment':
             return ['text' => 'รอชำระเงินส่วนที่เหลือ', 'color' => 'bg-yellow-100 text-yellow-800', 'tab' => 'awaiting_final_payment'];
         case 'final_payment_verification':
@@ -114,7 +122,9 @@ function getStatusInfoClient($status)
         case 'completed':
             return ['text' => 'เสร็จสมบูรณ์', 'color' => 'bg-green-100 text-green-800', 'tab' => 'completed'];
         case 'cancelled':
-            return ['text' => 'ยกเลิก', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
+            return ['text' => 'ถูกยกเลิก', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'cancelled'];
+        case 'rejected': // [เพิ่ม case นี้]
+            return ['text' => 'คุณปฏิเสธ', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
         default:
             return ['text' => 'ไม่ระบุ', 'color' => 'bg-gray-100 text-gray-800', 'tab' => 'all'];
     }
@@ -323,8 +333,8 @@ function getStatusInfoClient($status)
                 </button>
                 <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all">
                     <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
-                    <?php if ($counts['cancelled'] > 0) : ?>
-                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $counts['cancelled'] ?></span>
+                    <?php if ($cancelled_rejected_total > 0) : ?>
+                        <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $cancelled_rejected_total ?></span>
                     <?php endif; ?>
                 </button>
             </div>
@@ -402,6 +412,21 @@ function getStatusInfoClient($status)
                                                 data-slip-url="<?= htmlspecialchars($request['slip_path']) ?>">
                                                 <i class="fa-solid fa-receipt mr-1"></i> ดูหลักฐานการชำระเงิน
                                             </button>
+                                        <?php elseif ($request['status'] === 'completed') : ?>
+                                            <a href="#" class="download-final-file-btn w-full sm:w-auto text-center px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 mb-2" data-request-id="<?= $request['request_id'] ?>">
+                                                <i class="fa-solid fa-download mr-1"></i> ดาวน์โหลดไฟล์งาน
+                                            </a>
+
+                                            <?php if (!$request['has_reviewed']) : ?>
+                                                <a href="submit_review.php?request_id=<?= $request['request_id'] ?>" class="w-full sm:w-auto text-center px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600">
+                                                    <i class="fa-solid fa-star mr-1"></i> ให้คะแนนและรีวิว
+                                                </a>
+                                            <?php else : ?>
+                                                <button disabled class="w-full sm:w-auto text-center px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-sm font-semibold cursor-not-allowed">
+                                                    <i class="fa-solid fa-check mr-1"></i> คุณรีวิวแล้ว
+                                                </button>
+                                            <?php endif; ?>
+
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -441,7 +466,7 @@ function getStatusInfoClient($status)
                     <div x-show="tab === 'cancelled' && <?= $counts['cancelled'] ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-circle-xmark fa-3x text-slate-300"></i>
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่ถูกยกเลิก</h3>
-                        <p class="mt-1 text-slate-500">งานที่คุณปฏิเสธหรือยกเลิกจะแสดงในหน้านี้</p>
+                        <p class="mt-1 text-slate-500">งานที่คุณปฏิเสธ หรือถูกนักออกแบบยกเลิกจะแสดงอยู่ที่นี่</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -522,6 +547,30 @@ function getStatusInfoClient($status)
                     });
                 }
             })
+            // จัดการปุ่มดาวน์โหลดไฟล์งานฉบับสมบูรณ์
+            $(document).on('click', '.download-final-file-btn', function(e) {
+                e.preventDefault();
+                const requestId = $(this).data('request-id');
+
+                $.ajax({
+                    url: 'get_final_work_client.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success' && response.filePath) {
+                            window.open(response.filePath, '_blank');
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่พบไฟล์', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
+                    }
+                });
+            });
         });
         // --- END: ADD THIS CODE ---
     </script>

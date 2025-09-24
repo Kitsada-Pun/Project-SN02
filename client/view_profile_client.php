@@ -49,7 +49,7 @@ if ($profile_data) {
     // 1. ดึงจำนวนงานที่เสร็จและยกเลิก
     $sql_job_counts = "SELECT 
                         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_jobs,
-                        SUM(CASE WHEN status IN ('cancelled', 'rejected') THEN 1 ELSE 0 END) AS cancelled_jobs
+                        SUM(CASE WHEN status IN ('rejected') THEN 1 ELSE 0 END) AS cancelled_jobs
                        FROM client_job_requests 
                        WHERE client_id = ?";
     $stmt_job_counts = $conn->prepare($sql_job_counts);
@@ -402,7 +402,7 @@ if (!empty($raw_pic_path)) {
                             <div class="flex items-center">
                                 <i class="fas fa-star-half-alt fa-2x w-8 text-center text-yellow-500 mr-4"></i>
                                 <div>
-                                    <p class="font-semibold text-gray-700">คะแนนเฉลี่ยที่ให้</p>
+                                    <p class="font-semibold text-gray-700">คะแนนเฉลี่ยที่รีวิว</p>
                                     <p class="text-yellow-600 text-3xl font-bold"><?= number_format($job_stats['avg_rating'], 1) ?></p>
                                 </div>
                             </div>

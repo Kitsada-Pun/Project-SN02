@@ -34,28 +34,48 @@ if (isset($_SESSION['user_id'])) {
 
 $offers = [];
 
-// --- SQL Query ---
+// --- [แก้ไข] SQL Query ---
 $sql = "
-    SELECT 
-        cjr.request_id,
-        cjr.title,
-        cjr.description,
-        COALESCE(ja.offered_price, cjr.budget) AS price, -- ใช้ราคาที่เสนอ ถ้าไม่มีให้ใช้งบประมาณเดิม
-        cjr.posted_date AS offer_date,
-        cjr.status,
-        cjr.attachment_path,
-        u.user_id AS client_id,
-        CONCAT(u.first_name, ' ', u.last_name) AS client_name
-    FROM job_applications ja
-    JOIN client_job_requests cjr ON ja.request_id = cjr.request_id
-    JOIN users u ON cjr.client_id = u.user_id
-    WHERE ja.designer_id = ?
-    ORDER BY cjr.posted_date DESC
+    (
+        -- Query A: ดึงงานที่ถูกส่งมาให้โดยตรง (สถานะ 'open' หรือ 'rejected')
+        SELECT 
+            cjr.request_id,
+            cjr.title,
+            cjr.description,
+            cjr.budget AS price,
+            cjr.posted_date AS offer_date,
+            cjr.status,
+            cjr.attachment_path,
+            u.user_id AS client_id,
+            CONCAT(u.first_name, ' ', u.last_name) AS client_name
+        FROM client_job_requests cjr
+        JOIN users u ON cjr.client_id = u.user_id
+        WHERE cjr.designer_id = ? AND cjr.status IN ('open', 'rejected')
+    )
+    UNION
+    (
+        -- Query B: ดึงงานทั้งหมดที่เคยมีการยื่นข้อเสนอไปแล้ว
+        SELECT 
+            cjr.request_id,
+            cjr.title,
+            cjr.description,
+            COALESCE(ja.offered_price, cjr.budget) AS price,
+            cjr.posted_date AS offer_date,
+            cjr.status,
+            cjr.attachment_path,
+            u.user_id AS client_id,
+            CONCAT(u.first_name, ' ', u.last_name) AS client_name
+        FROM job_applications ja
+        JOIN client_job_requests cjr ON ja.request_id = cjr.request_id
+        JOIN users u ON cjr.client_id = u.user_id
+        WHERE ja.designer_id = ?
+    )
+    ORDER BY offer_date DESC
 ";
 
 $stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param("i", $designer_id);
+    $stmt->bind_param("ii", $designer_id, $designer_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $offers = $result->fetch_all(MYSQLI_ASSOC);
@@ -425,11 +445,11 @@ function getStatusInfo($status)
                                                 <i class="fa-solid fa-file-zipper mr-1"></i> ยืนยันและส่งไฟล์งานสุดท้าย
                                             </button>
                                         <?php elseif ($offer['status'] === 'completed') : ?>
-                                            <a href="#reviews" class="w-full sm:w-auto text-center px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600">
+                                            <button data-request-id="<?= $offer['request_id'] ?>" class="view-review-btn w-full sm:w-auto text-center px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600">
                                                 <i class="fa-solid fa-star mr-1"></i> ดูรีวิว
-                                            </a>
+                                            </button>
                                             <a href="#" data-request-id="<?= $offer['request_id'] ?>" class="view-final-file-btn w-full sm:w-auto text-center px-4 py-2 bg-gray-500 text-white rounded-lg text-sm font-semibold hover:bg-gray-600">
-                                                <i class="fa-solid fa-file-archive mr-1"></i> ดูไฟล์ที่ส่งมอบ
+                                                <i class="fa-solid fa-file-archive mr-1"></i> ไฟล์ที่ส่งมอบ
                                             </a>
                                         <?php endif; ?>
                                     </div>
@@ -1238,6 +1258,64 @@ function getStatusInfo($status)
                     },
                     error: function() {
                         Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
+                    }
+                });
+            });
+            // --- [เพิ่มโค้ดส่วนนี้] 9. จัดการปุ่ม "ดูรีวิว" ---
+            $(document).on('click', '.view-review-btn', function() {
+                const requestId = $(this).data('request-id');
+
+                Swal.fire({
+                    title: 'กำลังโหลดรีวิว...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: 'get_review_details.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            const review = response.data;
+                            const starsHtml = Array(5).fill(0).map((_, i) =>
+                                `<i class="fas fa-star ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}"></i>`
+                            ).join('');
+                            const reviewDate = new Date(review.review_date).toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            Swal.fire({
+                                title: '<strong>รีวิวจากคุณ ' + review.client_name + '</strong>',
+                                icon: 'success',
+                                html: `
+                        <div class="text-left space-y-4 mt-4">
+                            <div class="text-3xl text-center">${starsHtml}</div>
+                            <div>
+                                <p class="font-semibold">ความคิดเห็น:</p>
+                                <div class="w-full p-3 bg-gray-100 border rounded-md mt-1">
+                                    <p class="text-gray-700">${review.comment ? review.comment : '<em>ไม่มีความคิดเห็นเพิ่มเติม</em>'}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 text-right">รีวิวเมื่อ: ${reviewDate}</p>
+                        </div>`,
+                                confirmButtonText: 'ปิด'
+                            });
+                        } else {
+                            Swal.fire('ไม่พบข้อมูล', response.message, 'info');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลรีวิวได้', 'error');
                     }
                 });
             });
