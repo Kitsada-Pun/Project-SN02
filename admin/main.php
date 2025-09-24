@@ -541,7 +541,7 @@ include 'sidebar_menu.php';
                             <p><?php echo number_format($total_transactions); ?> ครั้ง <i class="fas fa-exchange-alt neutral"></i></p>
                         </div>
                         <div class="summary-card">
-                            <h3>งานประกาศที่กำลังเปิด</h3>
+                            <h3>งานประกาศทั้งหมด</h3>
                             <p><?php echo number_format($active_job_postings_count); ?> รายการ <i class="fas fa-bullhorn trend-up"></i></p>
                         </div>
                     </div>
@@ -549,14 +549,6 @@ include 'sidebar_menu.php';
                     <hr class="ant-divider">
 
                     <div class="row">
-                        <div class="col-lg-6 col-md-12">
-                            <div class="chart-container">
-                                <h5>สถานะการประกาศรับงานของนักออกแบบ</h5>
-                                <div class="chart-canvas-wrapper">
-                                    <canvas id="jobPostingStatusChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-lg-6 col-md-12">
                             <div class="chart-container">
                                 <h5>สถานะคำของานของผู้ว่าจ้าง</h5>
@@ -581,14 +573,7 @@ include 'sidebar_menu.php';
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-12">
-                            <div class="chart-container">
-                                <h5>สถานะการชำระเงินของสัญญา</h5>
-                                <div class="chart-canvas-wrapper">
-                                    <canvas id="paymentStatusChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <div class="col-lg-6 col-md-12">
                             <div class="chart-container">
                                 <h5>จำนวนผู้ใช้งานตามประเภท</h5>
@@ -737,15 +722,13 @@ include 'sidebar_menu.php';
             // Chart 1: Job Posting Status (Designer)
             const jpLabels = Object.keys(jobPostingStatusData).map(status => {
                 const statusMap = {
-                    'active': 'กำลังประกาศ',
+                    'active': 'ประกาศงาน',
                     'inactive': 'ไม่ใช้งาน',
                     'completed': 'เสร็จสิ้น'
                 };
                 return statusMap[status] || status;
             });
-            const jpCounts = Object.values(jobPostingStatusData);
-            const jpCtx = document.getElementById('jobPostingStatusChart').getContext('2d');
-            createChart(jpCtx, 'pie', jpLabels, jpCounts, 'สถานะการประกาศรับงาน');
+            
 
             // Chart 2: Client Request Status
             const crLabels = Object.keys(clientRequestStatusData).map(status => {
@@ -800,8 +783,7 @@ include 'sidebar_menu.php';
                 return statusMap[status] || status;
             });
             const paymentCounts = Object.values(paymentStatusData);
-            const paymentCtx = document.getElementById('paymentStatusChart').getContext('2d');
-            createChart(paymentCtx, 'pie', paymentLabels, paymentCounts, 'สถานะการชำระเงินของสัญญา');
+
 
 
             // Chart 6: User Type Distribution

@@ -288,12 +288,12 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
                 <a href="index.php"
                     class="text-2xl sm:text-3xl font-bold pixellink-logo mb-4 md:mb-0 transition duration-300 hover:opacity-80">Pixel<b>Link</b></a>
                 <div class="flex flex-wrap justify-center space-x-2 md:space-x-6 text-sm md:text-base footer-links">
-                    <a href="#"
+                    <a href="about.php"
                         class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เกี่ยวกับเรา</a>
-                    <a href="#" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">ติดต่อเรา</a>
-                    <a href="#"
+                    <a href="contact.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">ติดต่อเรา</a>
+                    <a href="terms.php"
                         class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เงื่อนไขการใช้งาน</a>
-                    <a href="#"
+                    <a href="privacy.php"
                         class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">นโยบายความเป็นส่วนตัว</a>
                 </div>
             </div>

@@ -244,7 +244,6 @@ $condb->close();
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
-        
     </style>
 </head>
 
@@ -324,7 +323,7 @@ $condb->close();
                             }
                         }
                         ?>
-                        <img src="<?= $image_source ?>" alt="ภาพประกอบงาน" class="w-full h-auto rounded-xl shadow-lg object-cover aspect-[16/9]">
+                            <img src="<?= $image_source ?>" alt="ภาพประกอบงาน" class="max-w-full h-auto mx-auto rounded-xl shadow-lg">
                     </div>
 
                     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
