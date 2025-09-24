@@ -122,9 +122,9 @@ function getStatusInfoClient($status)
         case 'completed':
             return ['text' => 'เสร็จสมบูรณ์', 'color' => 'bg-green-100 text-green-800', 'tab' => 'completed'];
         case 'cancelled':
-            return ['text' => 'ถูกยกเลิก', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'cancelled'];
+            return ['text' => 'คุณปฏิเสธ', 'color' => 'bg-gray-200 text-gray-800', 'tab' => 'cancelled'];
         case 'rejected': // [เพิ่ม case นี้]
-            return ['text' => 'คุณปฏิเสธ', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
+            return ['text' => 'ถูกยกเลิก', 'color' => 'bg-red-100 text-red-800', 'tab' => 'cancelled'];
         default:
             return ['text' => 'ไม่ระบุ', 'color' => 'bg-gray-100 text-gray-800', 'tab' => 'all'];
     }

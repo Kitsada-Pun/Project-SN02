@@ -107,7 +107,7 @@ try {
         ]);
 
     } elseif ($action === 'reject') {
-        $sql_update_job = "UPDATE client_job_requests SET status = 'rejected' WHERE request_id = ?";
+        $sql_update_job = "UPDATE client_job_requests SET status = 'cancelled' WHERE request_id = ?";
         $stmt_update_job = $conn->prepare($sql_update_job);
         $stmt_update_job->bind_param("i", $request_id);
         if (!$stmt_update_job->execute()) {
