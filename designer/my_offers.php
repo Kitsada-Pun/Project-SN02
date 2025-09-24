@@ -331,7 +331,7 @@ function getStatusInfo($status)
                     <?php endif; ?>
                 </button>
                 <button @click="tab = 'cancelled'" :class="tab === 'cancelled' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:bg-slate-300/60'" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200">
-                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> งานที่ถูกยกเลิก
+                    <i class="fa-solid fa-circle-xmark mr-1.5"></i> ยกเลิก
                     <?php if ($cancelled_rejected_count > 0) : ?>
                         <span class="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gray-500 text-xs font-bold text-white"><?= $cancelled_rejected_count ?></span>
                     <?php endif; ?>
@@ -428,6 +428,9 @@ function getStatusInfo($status)
                                             <a href="#reviews" class="w-full sm:w-auto text-center px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600">
                                                 <i class="fa-solid fa-star mr-1"></i> ดูรีวิว
                                             </a>
+                                            <a href="#" data-request-id="<?= $offer['request_id'] ?>" class="view-final-file-btn w-full sm:w-auto text-center px-4 py-2 bg-gray-500 text-white rounded-lg text-sm font-semibold hover:bg-gray-600">
+                                                <i class="fa-solid fa-file-archive mr-1"></i> ดูไฟล์ที่ส่งมอบ
+                                            </a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -468,11 +471,13 @@ function getStatusInfo($status)
                     <div x-show="tab === 'completed' && <?= $completed_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-check-circle fa-3x text-slate-300"></i>
                         <h3 class="mt-4 text-xl font-semibold text-slate-700">ยังไม่มีงานที่เสร็จสมบูรณ์</h3>
+                        <p class="mt-1 text-slate-500">เมื่องานเสร็จสมบูรณ์และส่งมอบเรียบร้อยแล้ว จะถูกย้ายมาที่นี่</p>
                     </div>
 
                     <div x-show="tab === 'cancelled' && <?= $cancelled_rejected_count ?> === 0" class="text-center bg-white rounded-lg shadow-sm p-12">
                         <i class="fa-solid fa-circle-xmark fa-3x text-slate-300"></i>
-                        <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่ถูกยกเลิกหรือปฏิเสธ</h3>
+                        <h3 class="mt-4 text-xl font-semibold text-slate-700">ไม่มีงานที่ถูกยกเลิก</h3>
+                        <p class="mt-1 text-slate-500">งานที่คุณปฏิเสธ หรือถูกผู้ว่าจ้างยกเลิกจะแสดงอยู่ที่นี่</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -845,7 +850,7 @@ function getStatusInfo($status)
                     }
                 });
             });
-    
+
             // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
             $(document).on('click', '.action-btn', function() {
                 const button = $(this);
@@ -909,7 +914,7 @@ function getStatusInfo($status)
                 });
             });
 
-        
+
             // -- โค้ด JavaScript สำหรับปุ่ม Action ทั้งหมด --
             $(document).on('click', '.action-btn', function() {
                 const button = $(this);
@@ -1208,6 +1213,31 @@ function getStatusInfo($status)
                                 Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
                             }
                         });
+                    }
+                });
+            });
+            // --- [เพิ่มโค้ดส่วนนี้] 8. จัดการปุ่ม "ดูไฟล์ที่ส่งมอบ" ---
+            $(document).on('click', '.view-final-file-btn', function(e) {
+                e.preventDefault();
+                const requestId = $(this).data('request-id');
+
+                $.ajax({
+                    url: 'get_final_work.php',
+                    method: 'GET',
+                    data: {
+                        request_id: requestId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success' && response.filePath) {
+                            // เปิดไฟล์ใน Tab ใหม่ ซึ่งจะทำให้เบราว์เซอร์เริ่มดาวน์โหลด
+                            window.open(response.filePath, '_blank');
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', response.message || 'ไม่พบไฟล์ที่ส่งมอบ', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด!', 'ไม่สามารถเชื่อมต่อเพื่อดึงข้อมูลไฟล์ได้', 'error');
                     }
                 });
             });

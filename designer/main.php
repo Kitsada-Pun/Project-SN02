@@ -181,9 +181,9 @@ $condb->close();
             <p class="text-base sm:text-lg md:text-xl mb-6 md:mb-8 leading-relaxed opacity-90 font-light">จัดการโครงการของคุณ, ค้นหางานใหม่, และนำเสนอผลงานสู่ผู้ว่าจ้าง</p>
 
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-4 flex-wrap">
-                <a href="#available-jobs" class="bg-blue-500 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto mb-3 sm:mb-0 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 whitespace-nowrap">
+                <!-- <a href="#available-jobs" class="bg-blue-500 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto mb-3 sm:mb-0 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 whitespace-nowrap">
                     <i class="fas fa-search mr-2"></i> หางานใหม่
-                </a>
+                </a> -->
                 <a href="create_job_post.php" class="bg-purple-600 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto mb-3 sm:mb-0 hover:bg-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-300 whitespace-nowrap">
                     <i class="fas fa-bullhorn mr-2"></i> โพสต์บริการ
                 </a>
