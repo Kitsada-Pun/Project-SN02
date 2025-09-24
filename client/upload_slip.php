@@ -83,13 +83,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_update->execute();
                 $stmt_update->close();
 
-                // 3. ส่งข้อความแจ้งเตือนไปยังนักออกแบบ
-                $message = "ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #{$request_id} แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน";
-                $sql_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
-                $stmt_message = $conn->prepare($sql_message);
-                $stmt_message->bind_param("iis", $client_id, $designer_id, $message);
-                $stmt_message->execute();
-                $stmt_message->close();
+                // --- [แก้ไข] 3. ส่งข้อความแจ้งเตือนไปยังนักออกแบบ ---
+                $client_name = $_SESSION['full_name'] ?? $_SESSION['username'];
+
+                // ดึงชื่องานเพื่อใช้ในข้อความ
+                $job_title = '';
+                $sql_get_title = "SELECT title FROM client_job_requests WHERE request_id = ?";
+                $stmt_get_title = $conn->prepare($sql_get_title);
+                if ($stmt_get_title) {
+                    $stmt_get_title->bind_param("i", $request_id);
+                    if ($stmt_get_title->execute()) {
+                        $result_title = $stmt_get_title->get_result();
+                        if ($row = $result_title->fetch_assoc()) {
+                            $job_title = $row['title'];
+                        }
+                    }
+                    $stmt_get_title->close();
+                }
+
+                // สร้างข้อความแจ้งเตือน
+                $message_content = "สวัสดีครับ คุณ " . htmlspecialchars($client_name) . " ได้ส่งหลักฐานการชำระเงินมัดจำสำหรับงาน '" . htmlspecialchars($job_title) . "' เรียบร้อยแล้วครับ\n\nกรุณาตรวจสอบและยืนยันเพื่อเริ่มงานในขั้นตอนต่อไป";
+
+                $sql_send_message = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
+                $stmt_message = $conn->prepare($sql_send_message);
+                if ($stmt_message) {
+                    $stmt_message->bind_param("iis", $client_id, $designer_id, $message_content);
+                    $stmt_message->execute();
+                    $stmt_message->close();
+                }
+                // --- สิ้นสุดส่วนที่แก้ไข ---
 
                 $conn->commit();
 

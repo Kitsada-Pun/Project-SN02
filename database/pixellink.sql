@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 24, 2025 at 12:33 AM
+-- Generation Time: Sep 24, 2025 at 08:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -104,7 +104,11 @@ INSERT INTO `client_job_requests` (`request_id`, `client_id`, `designer_id`, `ti
 (93, 3, 2, 'ส่งฉบับร่าง 2', 'ส่งฉบับร่าง 2', '../uploads/draft_files/draft_93_68d274add8f12_logo.png', 6, '6000', '2025-09-25', '2025-09-22 22:41:43', 'final_payment_verification', 0),
 (94, 3, 2, 'test รวมtab', 'test รวมtab', '../uploads/draft_files/draft_94_68d2e4a658455_pixellink-assistants-main.rar', 6, '60', '2025-10-03', '2025-09-23 18:17:37', 'awaiting_deposit_verification', 0),
 (95, 3, 2, 'สวัสดีจ้างงาน', 'สวัสดีจ้างงาน', '../uploads/draft_files/draft_95_68d2e8bab88a0_S__5423114_0.jpg', 6, '300', '2025-09-26', '2025-09-23 18:33:30', 'final_payment_verification', 0),
-(96, 5, 4, 'สวัสดีจ้างงาน', 'สวัสดีจ้างงาน', '../uploads/draft_files/draft_96_68d2f8ead7443_6.png', 2, '300', '2025-09-25', '2025-09-23 18:49:53', 'final_payment_verification', 1);
+(96, 5, 4, 'สวัสดีจ้างงาน', 'สวัสดีจ้างงาน', '../../uploads/final_files/final_96_68d323c4813f6.zip', 2, '300', '2025-09-25', '2025-09-23 18:49:53', 'completed', 1),
+(97, 5, 4, 'สวัสดีจ้างงาน1', 'สวัสดีจ้างงาน1', 'uploads/job_attachments/job_68d4161147772_1758729745.png', 4, '650', '2025-09-26', '2025-09-24 16:02:25', 'cancelled', 0),
+(98, 5, 4, 'สวัสดีจ้างงาน2', 'สวัสดีจ้างงาน2', 'uploads/job_attachments/job_68d417fb13edc_1758730235.png', 6, '700', '2025-09-27', '2025-09-24 16:10:35', 'cancelled', 0),
+(99, 5, 4, 'test', 'test', NULL, 5, '650', '2025-09-26', '2025-09-24 16:25:10', 'rejected', 0),
+(100, 5, 4, 'Test flow', 'Test flow', 'uploads/job_attachments/job_68d42a14a0ec8_1758734868.png', 4, '350', '2025-10-05', '2025-09-24 17:27:48', 'awaiting_deposit_verification', 0);
 
 -- --------------------------------------------------------
 
@@ -155,7 +159,8 @@ INSERT INTO `contracts` (`contract_id`, `request_id`, `designer_id`, `client_id`
 (23, 93, 2, 3, 6500.00, '2025-09-23', NULL, 'active', 'pending', '2025-09-23 05:42:38'),
 (24, 94, 2, 3, 65.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:18:21'),
 (25, 95, 2, 3, 350.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:34:35'),
-(26, 96, 4, 5, 350.00, '2025-09-24', NULL, 'active', 'pending', '2025-09-24 01:51:38');
+(26, 96, 4, 5, 350.00, '2025-09-24', '2025-09-24', 'completed', 'pending', '2025-09-24 01:51:38'),
+(27, 100, 4, 5, 450.00, '2025-09-25', NULL, 'pending', 'pending', '2025-09-25 00:46:55');
 
 -- --------------------------------------------------------
 
@@ -244,7 +249,10 @@ INSERT INTO `job_applications` (`application_id`, `request_id`, `designer_id`, `
 (48, 93, 2, 3, 'ส่งฉบับร่าง 2', 6500.00, '2025-09-22 22:42:07', 'accepted'),
 (49, 94, 2, 3, 'test รวมtab', 65.00, '2025-09-23 18:17:57', 'accepted'),
 (50, 95, 2, 3, 'สวัสดีจ้างงาน', 350.00, '2025-09-23 18:34:14', 'accepted'),
-(51, 96, 4, 5, 'สวัสดีจ้างงาน', 350.00, '2025-09-23 18:50:45', 'accepted');
+(51, 96, 4, 5, 'สวัสดีจ้างงาน', 350.00, '2025-09-23 18:50:45', 'accepted'),
+(52, 97, 4, 5, 'สวัสดีจ้างงาน1', 650.00, '2025-09-24 16:42:18', 'rejected'),
+(53, 98, 4, 5, 'สวัสดีจ้างงาน2', 750.00, '2025-09-24 17:02:39', 'rejected'),
+(54, 100, 4, 5, 'Test flow', 450.00, '2025-09-24 17:29:19', 'accepted');
 
 -- --------------------------------------------------------
 
@@ -1092,7 +1100,63 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (761, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 02:52:31'),
 (762, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 04:26:48'),
 (763, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 05:04:05'),
-(764, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 05:08:00');
+(764, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 05:08:00'),
+(765, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 06:10:18'),
+(766, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-24 06:11:13'),
+(767, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 06:11:34'),
+(768, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 06:26:45'),
+(769, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 06:37:41'),
+(770, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 06:47:51'),
+(771, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 06:49:21'),
+(772, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 06:50:09'),
+(773, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 06:51:38'),
+(774, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 06:52:04'),
+(775, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 06:52:22'),
+(776, NULL, 'Login Attempt Failed', 'Username not found: ิbeer888', '::1', '2025-09-24 07:04:53'),
+(777, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 07:04:58'),
+(778, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-24 21:25:12'),
+(779, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 22:00:03'),
+(780, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 22:03:50'),
+(781, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 22:05:48'),
+(782, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 22:06:30'),
+(783, 4, 'Login Attempt Failed', 'Incorrect password for: anna', '::1', '2025-09-24 22:14:10'),
+(784, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 22:14:16'),
+(785, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 22:22:39'),
+(786, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 22:25:34'),
+(787, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 22:29:05'),
+(788, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-24 22:33:33'),
+(789, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:01:48'),
+(790, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:02:44'),
+(791, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:04:40'),
+(792, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:11:11'),
+(793, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:12:44'),
+(794, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:14:37'),
+(795, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:15:52'),
+(796, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:17:23'),
+(797, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:19:02'),
+(798, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:25:36'),
+(799, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:26:35'),
+(800, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:33:12'),
+(801, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:41:11'),
+(802, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:41:32'),
+(803, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:43:14'),
+(804, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-24 23:44:15'),
+(805, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-24 23:55:43'),
+(806, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:02:25'),
+(807, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:02:47'),
+(808, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:10:15'),
+(809, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:10:47'),
+(810, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:15:22'),
+(811, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:24:06'),
+(812, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:24:44'),
+(813, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:27:10'),
+(814, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:28:22'),
+(815, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:29:38'),
+(816, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:30:47'),
+(817, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:46:25'),
+(818, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 00:49:22'),
+(819, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 00:49:48'),
+(820, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 01:02:25');
 
 -- --------------------------------------------------------
 
@@ -1411,7 +1475,12 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (318, 5, 4, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #96 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 19:29:56', 1),
 (319, 5, 4, 'ผู้ว่าจ้างขอแก้ไขงาน: \"แก้ไข1\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 19:45:15', 1),
 (320, 5, 4, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 19:46:10', 1),
-(321, 5, 4, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 19:46:22', 1);
+(321, 5, 4, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 19:46:22', 1),
+(322, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":97}', '2025-09-24 16:02:25', 1),
+(323, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e192\",\"request_id\":98}', '2025-09-24 16:10:35', 1),
+(324, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"test\",\"request_id\":99}', '2025-09-24 16:25:10', 1),
+(325, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"Test flow\",\"request_id\":100}', '2025-09-24 17:27:48', 1),
+(326, 5, 4, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #100 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-24 17:47:06', 1);
 
 -- --------------------------------------------------------
 
@@ -1493,7 +1562,9 @@ CREATE TABLE `reviews` (
 --
 
 INSERT INTO `reviews` (`review_id`, `contract_id`, `reviewer_id`, `reviewed_user_id`, `rating`, `comment`, `review_type`, `review_date`, `status`) VALUES
-(1, 1, 3, 2, 5.0, 'ออกแบบได้สวยงาม รวดเร็ว และเข้าใจความต้องการเป็นอย่างดีครับ', 'client_review_designer', '2025-06-07 15:44:37', 'active');
+(1, 1, 3, 2, 5.0, 'ออกแบบได้สวยงาม รวดเร็ว และเข้าใจความต้องการเป็นอย่างดีครับ', 'client_review_designer', '2025-06-07 15:44:37', 'active'),
+(2, 4, 3, 2, 4.0, '', 'client_review_designer', '2025-09-24 15:03:35', 'active'),
+(3, 26, 5, 4, 3.0, '', 'client_review_designer', '2025-09-24 15:04:15', 'active');
 
 -- --------------------------------------------------------
 
@@ -1557,7 +1628,8 @@ INSERT INTO `transactions` (`transaction_id`, `contract_id`, `payer_id`, `payee_
 (13, 21, 3, 2, 712.00, '2025-09-23 18:40:39', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_91_1758652839.png'),
 (14, 25, 3, 2, 280.00, '2025-09-23 18:41:49', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_95_1758652909.png'),
 (15, 26, 5, 4, 70.00, '2025-09-23 19:29:56', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_96_1758655796.png'),
-(16, 26, 5, 4, 280.00, '2025-09-23 19:46:22', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_96_1758656782.png');
+(16, 26, 5, 4, 280.00, '2025-09-23 19:46:22', 'Bank Transfer', 'pending', '../uploads/payment_slips/final_slip_96_1758656782.png'),
+(17, 27, 5, 4, 90.00, '2025-09-24 17:47:06', 'Bank Transfer', 'pending', '../uploads/payment_slips/slip_100_1758736026.png');
 
 -- --------------------------------------------------------
 
@@ -1642,9 +1714,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `is_verified`, `last_login`) VALUES
 (1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, NULL),
 (2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-09-16 23:30:42', 1, 1, NULL),
-(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 01:33:08', 1, 1, NULL),
+(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 07:11:47', 1, 1, NULL),
 (4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 0, NULL),
-(5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 02:45:22', 1, 0, NULL),
+(5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-09-25 01:02:15', 1, 1, NULL),
 (6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, 0, NULL),
 (7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, 0, NULL),
 (10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL),
@@ -1671,7 +1743,7 @@ CREATE TABLE `verification_submissions` (
 INSERT INTO `verification_submissions` (`id`, `user_id`, `document_path`, `status`, `submitted_at`) VALUES
 (1, 2, '/uploads/verification_docs/verify_designer_2_1758491828.png', 'approved', '2025-09-21 21:57:08'),
 (2, 3, '/uploads/verification_docs/verify_client_3_1758492014.png', 'approved', '2025-09-21 22:00:14'),
-(3, 5, '/uploads/verification_docs/verify_client_5_1758492212.png', 'pending', '2025-09-21 22:03:32'),
+(3, 5, '/uploads/verification_docs/verify_client_5_1758492212.png', 'approved', '2025-09-21 22:03:32'),
 (4, 2, '/uploads/verification_docs/verify_designer_2_1758539679.png', 'approved', '2025-09-22 11:14:39'),
 (5, 3, '/uploads/verification_docs/verify_client_3_1758539699.png', 'approved', '2025-09-22 11:14:59');
 
@@ -1816,13 +1888,13 @@ ALTER TABLE `verification_submissions`
 -- AUTO_INCREMENT for table `client_job_requests`
 --
 ALTER TABLE `client_job_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT for table `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `contract_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `contract_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `designer_portfolio`
@@ -1834,7 +1906,7 @@ ALTER TABLE `designer_portfolio`
 -- AUTO_INCREMENT for table `job_applications`
 --
 ALTER TABLE `job_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `job_categories`
@@ -1852,13 +1924,13 @@ ALTER TABLE `job_postings`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=765;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=821;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=322;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=327;
 
 --
 -- AUTO_INCREMENT for table `profiles`
@@ -1876,7 +1948,7 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `settings`
@@ -1888,7 +1960,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `uploaded_files`
