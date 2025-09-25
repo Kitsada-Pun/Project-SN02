@@ -259,6 +259,7 @@ include 'sidebar_menu.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จัดการข้อมูลผู้ใช้ - แอดมิน</title>
+    <link rel="icon" type="image/png" href="../dist/img/favicon.png">
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
