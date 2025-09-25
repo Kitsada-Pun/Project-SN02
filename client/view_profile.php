@@ -108,6 +108,23 @@ if ($user_id_to_view > 0) {
         $job_postings_for_profile = $stmt_job_postings->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt_job_postings->close();
     }
+    // ดึงข้อมูลคะแนนรีวิวเฉลี่ย
+    $avg_rating = 0;
+    $review_count = 0;
+    $sql_reviews = "SELECT AVG(rating) as avg_rating, COUNT(review_id) as review_count 
+                FROM reviews 
+                WHERE reviewed_user_id = ? AND review_type = 'client_review_designer'";
+    $stmt_reviews = $condb->prepare($sql_reviews);
+    if ($stmt_reviews) {
+        $stmt_reviews->bind_param("i", $user_id_to_view);
+        $stmt_reviews->execute();
+        $review_data = $stmt_reviews->get_result()->fetch_assoc();
+        if ($review_data) {
+            $avg_rating = $review_data['avg_rating'] ?? 0;
+            $review_count = $review_data['review_count'] ?? 0;
+        }
+        $stmt_reviews->close();
+    }
 }
 
 
@@ -117,7 +134,7 @@ $condb->close();
 $display_name = trim(($profile_data['first_name'] ?? '') . ' ' . ($profile_data['last_name'] ?? '')) ?: ($profile_data['username'] ?? 'ไม่ระบุชื่อ');
 $display_email = $profile_data['email'] ?? 'ไม่ระบุอีเมล';
 $display_tel = $profile_data['phone_number'] ?? 'ไม่ระบุเบอร์โทรศัพท์';
-$display_company_name = $profile_data['company_name'] ?? 'ไม่ระบุบริษัท';
+$display_company_name = $profile_data['company_name'] ?? '';
 $display_bio = $profile_data['bio'] ?? 'ยังไม่มีประวัติ';
 $display_skills = !empty($profile_data['skills']) ? explode(',', $profile_data['skills']) : [];
 
@@ -294,7 +311,32 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                         <h1 class="text-3xl sm:text-4xl font-bold text-gray-900"><?= htmlspecialchars($display_name) ?></h1>
                         <p class="text-md text-gray-600 mt-2"><i class="fas fa-envelope mr-2"></i><?= htmlspecialchars($display_email) ?></p>
                         <p class="text-md text-gray-600"><i class="fas fa-phone mr-2"></i><?= htmlspecialchars($display_tel) ?></p>
-                        <p class="text-md text-gray-600"><i class="fas fa-building mr-2"></i><?= htmlspecialchars($display_company_name) ?></p>
+                        <?php if (!empty($display_company_name)): ?>
+                            <p class="text-md text-gray-600"><i class="fas fa-building mr-2"></i><?= htmlspecialchars($display_company_name) ?></p>
+                        <?php endif; ?>
+
+                        <div class="mt-4">
+                            <?php if ($review_count > 0): ?>
+                                <div class="flex items-center space-x-2">
+                                    <div class="flex text-yellow-400 text-xl">
+                                        <?php
+                                        $full_stars = floor($avg_rating);
+                                        $half_star = ($avg_rating - $full_stars) >= 0.5;
+                                        $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
+                                        for ($i = 0; $i < $full_stars; $i++) echo '<i class="fas fa-star"></i>';
+                                        if ($half_star) echo '<i class="fas fa-star-half-alt"></i>';
+                                        for ($i = 0; $i < $empty_stars; $i++) echo '<i class="far fa-star"></i>';
+                                        ?>
+                                    </div>
+                                    <span class="font-bold text-lg text-slate-700"><?= number_format($avg_rating, 1) ?></span>
+                                    <span class="text-sm text-slate-500">(จาก <?= $review_count ?> รีวิว)</span>
+                                </div>
+                            <?php else: ?>
+                                <div class="text-sm text-slate-500">
+                                    <i class="far fa-star mr-1"></i> ยังไม่มีรีวิว
+                                </div>
+                            <?php endif; ?>
+                        </div>
 
                         <?php if ($user_id_to_view == $current_user_id): ?>
                             <div class="mt-4">
@@ -322,21 +364,28 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
                     </div>
                 <?php endif; ?>
 
-                <div class="mb-8">
-                    <h2 class="text-2xl font-semibold text-gradient mb-4">ช่องทางการติดต่อและโปรโมท</h2>
-                    <div class="space-y-2">
-                        <?php if (!empty($profile_data['facebook_url'])): ?>
-                            <p><i class="fab fa-facebook-square text-blue-600 w-6"></i> Facebook: <a href="<?= htmlspecialchars($profile_data['facebook_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['facebook_url']); ?></a></p>
-                        <?php endif; ?>
-                        <?php if (!empty($profile_data['instagram_url'])): ?>
-                            <p><i class="fab fa-instagram-square text-pink-500 w-6"></i> Instagram: <a href="<?= htmlspecialchars($profile_data['instagram_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['instagram_url']); ?></a></p>
-                        <?php endif; ?>
-                        <?php if (!empty($profile_data['tiktok_url'])): ?>
-                            <p><i class="fab fa-tiktok text-black w-6"></i> TikTok: <a href="<?= htmlspecialchars($profile_data['tiktok_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['tiktok_url']); ?></a></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php
+                // --- START: โค้ดส่วนที่แก้ไข ---
+                // ตรวจสอบว่ามีข้อมูลโซเชียลอย่างน้อยหนึ่งอย่างหรือไม่
+                $has_social_links = !empty($profile_data['facebook_url']) || !empty($profile_data['instagram_url']) || !empty($profile_data['tiktok_url']);
+                ?>
 
+                <?php if ($has_social_links): ?>
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold text-gradient mb-4">ช่องทางการติดต่อและโปรโมท</h2>
+                        <div class="space-y-2">
+                            <?php if (!empty($profile_data['facebook_url'])): ?>
+                                <p><i class="fab fa-facebook-square text-blue-600 w-6"></i> Facebook: <a href="<?= htmlspecialchars($profile_data['facebook_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['facebook_url']); ?></a></p>
+                            <?php endif; ?>
+                            <?php if (!empty($profile_data['instagram_url'])): ?>
+                                <p><i class="fab fa-instagram-square text-pink-500 w-6"></i> Instagram: <a href="<?= htmlspecialchars($profile_data['instagram_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['instagram_url']); ?></a></p>
+                            <?php endif; ?>
+                            <?php if (!empty($profile_data['tiktok_url'])): ?>
+                                <p><i class="fab fa-tiktok text-black w-6"></i> TikTok: <a href="<?= htmlspecialchars($profile_data['tiktok_url']); ?>" target="_blank" class="text-blue-500 hover:underline"><?= htmlspecialchars($profile_data['tiktok_url']); ?></a></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <?php if ($user_id_to_view == $current_user_id): ?>
                     <div class="mb-8">
                         <h2 class="text-2xl font-semibold text-gradient mb-4">ข้อมูลการชำระเงิน</h2>

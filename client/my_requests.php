@@ -376,7 +376,7 @@ function getStatusInfoClient($status)
                                         ?>
                                         <?php if (!empty($request['designer_name'])) : ?>
                                             <p><i class="fa-solid fa-user-pen w-5 text-slate-400 mr-1"></i> นักออกแบบ:
-                                                <a href="../designer/view_profile.php?user_id=<?= $request['designer_id'] ?>" class="font-semibold text-blue-600 hover:underline">
+                                                <a href="view_profile.php?user_id=<?= $request['designer_id'] ?>" class="font-semibold text-blue-600 hover:underline">
                                                     <?= htmlspecialchars($request['designer_name']) ?>
                                                 </a>
                                             </p>
