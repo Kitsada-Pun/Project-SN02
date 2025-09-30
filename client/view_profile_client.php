@@ -276,10 +276,12 @@ if (!empty($raw_pic_path)) {
             <a href="main.php">
                 <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
             </a>
-            <div class="space-x-4 flex items-center">
-                <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
-                <!-- <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a> -->
-                <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
+
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+
+                <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+
+                <a href="../logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
             </div>
         </div>
     </nav>

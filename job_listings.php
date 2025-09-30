@@ -155,8 +155,8 @@ $condb->close();
                     <a href="<?= $profile_path ?>?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
                     <a href="logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
                 <?php else : ?>
-                    <a href="login.php" class="px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700">เข้าสู่ระบบ</a>
-                    <a href="register.php" class="btn-primary text-white px-5 py-2 rounded-lg font-semibold shadow-md">สมัครสมาชิก</a>
+                    <a href="login.php" class="text-xs sm:text-base px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700 whitespace-nowrap">เข้าสู่ระบบ</a>
+                    <a href="register.php" class="btn-primary text-xs sm:text-base px-4 py-2 sm:px-5 sm:py-2 rounded-lg font-medium shadow-lg whitespace-nowrap">สมัครสมาชิก</a>
                 <?php endif; ?>
             </div>
         </div>

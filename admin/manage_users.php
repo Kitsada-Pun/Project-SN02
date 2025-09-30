@@ -826,9 +826,6 @@ include 'sidebar_menu.php';
     
     .ant-pagination-jump-prev,
     .ant-pagination-jump-next {
-        /* These are usually for ellipses (...) but Ant Design's basic pagination
-           doesn't typically show them unless there are many pages.
-           You can keep these styles if you plan to implement more complex pagination. */
         position: relative;
         margin-right: 8px;
     }
@@ -863,8 +860,52 @@ include 'sidebar_menu.php';
     .ant-pagination-jump-next:hover .ant-pagination-item-ellipsis {
         opacity: 0;
     }
+    
+    /* Responsive adjustments */
+    .table-responsive-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
+    @media (max-width: 992px) {
+        .hide-on-md {
+            display: none !important;
+        }
+    }
 
+    @media (max-width: 768px) {
+        /* Stack header controls on smaller screens */
+        .controls-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .controls-header .ant-col {
+            justify-content: flex-start !important;
+            width: 100%;
+        }
+        .search-and-actions {
+            flex-direction: column;
+            align-items: stretch !important;
+            width: 100%;
+        }
+        .search-and-actions > .input-group, 
+        .search-and-actions > a {
+            width: 100%;
+        }
+        .search-and-actions .ant-input,
+        .search-and-actions .form-control {
+            width: 100% !important;
+        }
+        .search-and-actions .btn-modern, 
+        .search-and-actions a {
+            width: 100%;
+            justify-content: center;
+        }
+        /* Hide less important columns on mobile */
+        .hide-on-sm {
+            display: none !important;
+        }
+    }
     </style>
 </head>
 
@@ -906,22 +947,18 @@ include 'sidebar_menu.php';
             </div>
             <main class="content">
                 <div class="content-container">
-                    <div class="ant-row css-ee1yud">
+                    <div class="ant-row css-ee1yud controls-header">
                         <div class="ant-col ant-col-12 css-ee1yud" style="justify-content: flex-start;">
                             <h4>รายการผู้ใช้ในระบบ</h4>
                         </div>
-                        <div class="ant-col ant-col-12 css-ee1yud"
-                            style="justify-content: flex-end; align-items: center; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <input type="text" id="userSearchInput" class="ant-input"
-                                    placeholder="ค้นหาผู้ใช้..." value="<?= htmlspecialchars($search_query) ?>"
-                                    style="width: 200px;">
+                        <div class="ant-col ant-col-12 css-ee1yud search-and-actions" style="justify-content: flex-end; align-items: center; gap: 10px;">
+                            <div class="input-group" style="display: flex; align-items: center; gap: 5px; flex-grow: 1;">
+                                <input type="text" id="userSearchInput" class="form-control" placeholder="ค้นหาผู้ใช้..." value="<?= htmlspecialchars($search_query) ?>" style="width: 200px;">
                                 <button id="applyMainFilter" class="btn-modern btn-primary-modern" style="padding: 6px 10px;">
-                                    <i class="fas fa-search"></i> ค้นหา
+                                    <i class="fas fa-search"></i> <span class="hide-on-sm">ค้นหา</span>
                                 </button>
-                                <button id="clearAllFilters" class="btn-modern btn-default-modern"
-                                    style="padding: 6px 10px;">
-                                    <i class="fas fa-times"></i> ล้างทั้งหมด
+                                <button id="clearAllFilters" class="btn-modern btn-default-modern" style="padding: 6px 10px;">
+                                    <i class="fas fa-times"></i> <span class="hide-on-sm">ล้าง</span>
                                 </button>
                             </div>
                             <a href="add_user.php" class="btn-modern btn-success-modern">
@@ -929,8 +966,7 @@ include 'sidebar_menu.php';
                             </a>
                         </div>
                     </div>
-                    <div class="ant-divider css-ee1yud ant-divider-horizontal" role="separator"
-                        style="border-color: rgb(204, 204, 204); margin-top: 0px; margin-bottom: 0px;"></div>
+                    <div class="ant-divider css-ee1yud ant-divider-horizontal" role="separator" style="border-color: rgb(204, 204, 204); margin-top: 0px; margin-bottom: 0px;"></div>
 
                     <div style="margin-top: 20px;">
                         <div class="ant-table-wrapper css-ee1yud">
@@ -938,21 +974,16 @@ include 'sidebar_menu.php';
                                 <div class="ant-spin-container">
                                     <div class="ant-table css-ee1yud">
                                         <div class="ant-table-container">
-                                            <div class="ant-table-content">
-                                                <table style="table-layout: fixed; width: 100%;">
+                                            <div class="ant-table-content table-responsive-wrapper">
+                                                <table style="table-layout: auto; width: 100%;">
                                                     <colgroup></colgroup>
                                                     <thead class="ant-table-thead">
                                                         <tr>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 12%;">ชื่อผู้ใช้</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 18%;">อีเมล</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 15%;">ชื่อจริง</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 15%;">นามสกุล</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 12%;">ชื่อผู้ใช้</th>
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 18%;">อีเมล</th>
+                                                            <th class="ant-table-cell hide-on-md" scope="col" style="text-align: center; width: 15%;">ชื่อจริง</th>
+                                                            <th class="ant-table-cell hide-on-md" scope="col" style="text-align: center; width: 15%;">นามสกุล</th>
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 10%;">
                                                                 <div class="filter-dropdown-container">
                                                                     <span role="button" tabindex="0" class="ant-dropdown-trigger ant-table-filter-trigger <?= !empty($filter_type) ? 'active' : '' ?>">
                                                                         ประเภท
@@ -977,14 +1008,10 @@ include 'sidebar_menu.php';
                                                                     </div>
                                                                 </div>
                                                             </th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">วันที่ลงทะเบียน</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">อนุมัติ</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 10%;">เข้าสู่ระบบล่าสุด</th>
-                                                            <th class="ant-table-cell" scope="col"
-                                                                style="text-align: center; width: 8%;">การจัดการ</th>
+                                                            <th class="ant-table-cell hide-on-sm" scope="col" style="text-align: center; width: 10%;">วันที่ลงทะเบียน</th>
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 10%;">อนุมัติ</th>
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 10%;">เข้าสู่ระบบล่าสุด</th>
+                                                            <th class="ant-table-cell" scope="col" style="text-align: center; width: 8%;">การจัดการ</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="ant-table-tbody">
@@ -998,10 +1025,10 @@ include 'sidebar_menu.php';
                                                                 <td class="ant-table-cell">
                                                                     <?php echo htmlspecialchars($user['email']); ?>
                                                                 </td>
-                                                                <td class="ant-table-cell">
+                                                                <td class="ant-table-cell hide-on-md">
                                                                     <?php echo htmlspecialchars($user['first_name']); ?>
                                                                 </td>
-                                                                <td class="ant-table-cell">
+                                                                <td class="ant-table-cell hide-on-md">
                                                                     <?php echo htmlspecialchars($user['last_name']); ?>
                                                                 </td>
                                                                 <td class="ant-table-cell">
@@ -1011,7 +1038,7 @@ include 'sidebar_menu.php';
                                                                         ?>
                                                                     </span>
                                                                 </td>
-                                                                <td class="ant-table-cell">
+                                                                <td class="ant-table-cell hide-on-sm">
                                                                     <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($user['registration_date']))); ?>
                                                                 </td>
                                                                 <td class="ant-table-cell">
@@ -1051,7 +1078,7 @@ include 'sidebar_menu.php';
                                                             <?php endforeach; // End of foreach for users ?>
                                                         <?php else: ?>
                                                             <tr class="ant-table-placeholder" style="display: table-row;">
-                                                                <td class="ant-table-cell" colspan="9"> <div class="css-ee1yud ant-empty ant-empty-normal">
+                                                                <td class="ant-table-cell" colspan="10"> <div class="css-ee1yud ant-empty ant-empty-normal">
                                                                         <div class="ant-empty-image">
                                                                             <svg width="64" height="41" viewBox="0 0 64 41"
                                                                                 xmlns="http://www.w3.org/2000/svg">
@@ -1085,7 +1112,6 @@ include 'sidebar_menu.php';
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     <?php if ($total_pages > 1): ?>
                         <div class="ant-row ant-row-center css-ee1yud" style="margin-top: 20px;">
@@ -1142,7 +1168,7 @@ include 'sidebar_menu.php';
                                             echo '<li title="Fast Next" class="ant-pagination-jump-next" tabindex="0">';
                                             echo '<a rel="nofollow">';
                                             echo '<span role="img" aria-label="double-right" class="anticon anticon-double-right ant-pagination-item-link-icon">';
-                                            echo '<svg viewBox="64 64 896 896" focusable="false" data-icon="double-right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M748.1 512L482.7 172.9c-4.6-5.9-1.6-14.7 7.9-14.7h21.4c9.9 0 16.7 10.8 11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4L284.9 512c4.6-5.9 1.6-14.7 7.9-14.7zM220.1 512L585.5 172.9c-4.6-5.9-1.6-14.7 7.9-14.7h21.4c9.9 0 16.7 10.8 11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H619.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H619.5c-9.9 0-16.7 10.8-11.6 19.4L284.9 512c4.6-5.9 1.6-14.7 7.9-14.7z"></path></svg>';
+                                            echo '<svg viewBox="64 64 896 896" focusable="false" data-icon="double-right" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M748.1 512L482.7 172.9c-4.6-5.9-1.6-14.7 7.9-14.7h21.4c9.9 0 16.7 10.8 11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6-14.7-7.9 14.7H492.5c-9.9 0-16.7 10.8-11.6 19.4L284.9 512c4.6-5.9 1.6-14.7 7.9-14.7zM220.1 512L585.5 172.9c-4.6-5.9-1.6-14.7 7.9-14.7h21.4c9.9 0 16.7 10.8 11.6 19.4l265.4 339.1c4.6 5.9 1.6 14.7-7.9 14.7H619.5c-9.9 0-16.7 10.8-11.6 19.4l265.4 339.1c4.6 5.9 1.6-14.7-7.9 14.7H619.5c-9.9 0-16.7 10.8-11.6 19.4L284.9 512c4.6-5.9 1.6-14.7 7.9-14.7z"></path></svg>';
                                             echo '</span>';
                                             echo '<div class="ant-pagination-item-ellipsis">•••</div>';
                                             echo '</a></li>';
@@ -1219,6 +1245,13 @@ include 'sidebar_menu.php';
                 const typeFilter = '<?= htmlspecialchars($filter_type) ?>'; // Get current filter type from PHP
                 // When applying search/filter, always go to the first page
                 window.location.href = buildUrl(searchQuery, typeFilter, 1);
+            });
+            
+            // Allow Enter key to trigger search
+            $('#userSearchInput').on('keypress', function(e) {
+                if (e.which === 13) { // 13 is the Enter key
+                    $('#applyMainFilter').click();
+                }
             });
 
             // Clear ALL filters logic (main search and type filter)
@@ -1371,7 +1404,7 @@ include 'sidebar_menu.php';
             });
         });
         </script>
-    </body>
+        </body>
 
 </html>
 <?php // Ensure there are no stray PHP opening tags at the end of the file. ?>

@@ -243,7 +243,8 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
             z-index: 10;
             border-radius: 9999px;
             position: absolute;
-            top: 40%; /* Adjust position */
+            top: 40%;
+            /* Adjust position */
             transform: translateY(-50%);
             transition: all 0.3s ease;
             width: 2.5rem;
@@ -260,6 +261,7 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
         .carousel-button.right {
             right: -1rem;
         }
+
         .btn-primary {
             background: linear-gradient(45deg, #0a5f97 0%, #0d96d2 100%);
             color: white;
@@ -304,13 +306,17 @@ if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
 
 <body class="bg-slate-100 min-h-screen flex flex-col">
 
-    <nav class="bg-white/90 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="<?= htmlspecialchars($home_link) ?>"><img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105"></a>
-            <div class="space-x-4 flex items-center">
-                <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
-                <!-- <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a> -->
-                <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
+            <a href="main.php">
+                <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
+            </a>
+
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+
+                <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+
+                <a href="../logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
             </div>
         </div>
     </nav>

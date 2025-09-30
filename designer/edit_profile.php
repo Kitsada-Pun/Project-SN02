@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $company_name = $_POST['company_name'] ?? '';
     $bio = $_POST['bio'] ?? '';
     $skills = $_POST['skills'] ?? '';
-    
+
     // --- (แก้ไข) รับข้อมูล tiktok_url แทน linkedin_url ---
     $facebook_url = $_POST['facebook_url'] ?? '';
     $instagram_url = $_POST['instagram_url'] ?? '';
@@ -115,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $error ?: "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์: " . $stmt_profiles->error;
         }
         $stmt_profiles->close();
-
     } else {
         header("Location: view_profile.php?user_id=" . $user_id . "&update_status=nochange");
         exit();
@@ -126,6 +125,7 @@ $condb->close();
 ?>
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -256,105 +256,112 @@ $condb->close();
         }
     </style>
 </head>
+
 <body class="bg-slate-100">
-<nav class="bg-white/90 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>"><img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105"></a>
-            <div class="space-x-4 flex items-center">
-                <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
-                <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
-                <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
+            <a href="main.php">
+                <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
+            </a>
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+                <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">
+                    สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!
+                </span>
+
+                <a href="view_profile.php?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ดูโปรไฟล์</a>
+                <a href="../logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
             </div>
         </div>
     </nav>
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">แก้ไขโปรไฟล์</h1>
-        
-        <?php if ($error): ?>
-            <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">แก้ไขโปรไฟล์</h1>
 
-        <form action="edit_profile.php" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <?php if ($error): ?>
+                <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
 
-            <div class="text-center">
-                <img id="profile_pic_preview" src="<?= !empty($profile['profile_picture_url']) ? '..' . htmlspecialchars($profile['profile_picture_url']) : '../dist/img/user8.jpg' ?>" alt="รูปโปรไฟล์" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white mx-auto mb-4">
-                <label for="profile_picture" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
-                    <i class="fas fa-camera mr-2"></i>เปลี่ยนรูปโปรไฟล์
-                    <input type="file" id="profile_picture" name="profile_picture" class="hidden" onchange="previewImage(event)">
-                </label>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="first_name" class="block text-gray-700 font-medium mb-2">ชื่อจริง</label>
-                    <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($profile['first_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
-                </div>
-                <div>
-                    <label for="last_name" class="block text-gray-700 font-medium mb-2">นามสกุล</label>
-                    <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($profile['last_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
-                </div>
-                <div>
-                    <label for="email" class="block text-gray-700 font-medium mb-2">อีเมล</label>
-                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($profile['email'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="phone_number" class="block text-gray-700 font-medium mb-2">เบอร์โทรศัพท์</label>
-                    <input type="text" id="phone_number" name="phone_number" value="<?= htmlspecialchars($profile['phone_number'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-            </div>
+            <form action="edit_profile.php" method="POST" enctype="multipart/form-data" class="space-y-6">
 
-            <div>
-                <label for="company_name" class="block text-gray-700 font-medium mb-2">บริษัท/สังกัด (ถ้ามี)</label>
-                <input type="text" id="company_name" name="company_name" value="<?= htmlspecialchars($profile['company_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div>
-                <label for="bio" class="block text-gray-700 font-medium mb-2">เกี่ยวกับฉัน (Bio)</label>
-                <textarea id="bio" name="bio" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($profile['bio'] ?? '') ?></textarea>
-            </div>
-            <div>
-                <label for="skills" class="block text-gray-700 font-medium mb-2">ทักษะ (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
-                <input type="text" id="skills" name="skills" value="<?= htmlspecialchars($profile['skills'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="เช่น Photoshop, Illustrator, UI/UX Design">
-            </div>
+                <div class="text-center">
+                    <img id="profile_pic_preview" src="<?= !empty($profile['profile_picture_url']) ? '..' . htmlspecialchars($profile['profile_picture_url']) : '../dist/img/user8.jpg' ?>" alt="รูปโปรไฟล์" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white mx-auto mb-4">
+                    <label for="profile_picture" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
+                        <i class="fas fa-camera mr-2"></i>เปลี่ยนรูปโปรไฟล์
+                        <input type="file" id="profile_picture" name="profile_picture" class="hidden" onchange="previewImage(event)">
+                    </label>
+                </div>
 
-            <div class="border-t pt-6">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">ลิงก์โซเชียลมีเดีย</h2>
-                <div class="space-y-4">
-                     <div>
-                        <label for="facebook_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-facebook-square text-blue-600 mr-2"></i>Facebook URL</label>
-                        <input type="url" id="facebook_url" name="facebook_url" value="<?= htmlspecialchars($profile['facebook_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.facebook.com/yourprofile">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="first_name" class="block text-gray-700 font-medium mb-2">ชื่อจริง</label>
+                        <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($profile['first_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
                     </div>
-                     <div>
-                        <label for="instagram_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-instagram-square text-pink-500 mr-2"></i>Instagram URL</label>
-                        <input type="url" id="instagram_url" name="instagram_url" value="<?= htmlspecialchars($profile['instagram_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.instagram.com/yourprofile">
+                    <div>
+                        <label for="last_name" class="block text-gray-700 font-medium mb-2">นามสกุล</label>
+                        <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($profile['last_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" readonly>
                     </div>
-                     <div>
-                        <label for="tiktok_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-tiktok text-black mr-2"></i>TikTok URL</label>
-                        <input type="url" id="tiktok_url" name="tiktok_url" value="<?= htmlspecialchars($profile['tiktok_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.tiktok.com/@yourprofile">
+                    <div>
+                        <label for="email" class="block text-gray-700 font-medium mb-2">อีเมล</label>
+                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($profile['email'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="phone_number" class="block text-gray-700 font-medium mb-2">เบอร์โทรศัพท์</label>
+                        <input type="text" id="phone_number" name="phone_number" value="<?= htmlspecialchars($profile['phone_number'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
-            </div>
 
-            <div class="flex items-center justify-end gap-4 pt-4">
-                <a href="view_profile.php?user_id=<?= $user_id ?>" class="text-gray-600 bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg font-medium text-sm transition-colors">ยกเลิก</a>
-                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
-                    <i class="fas fa-save mr-2"></i>บันทึกการเปลี่ยนแปลง
-                </button>
-            </div>
-        </form>
+                <div>
+                    <label for="company_name" class="block text-gray-700 font-medium mb-2">บริษัท/สังกัด (ถ้ามี)</label>
+                    <input type="text" id="company_name" name="company_name" value="<?= htmlspecialchars($profile['company_name'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="bio" class="block text-gray-700 font-medium mb-2">เกี่ยวกับฉัน (Bio)</label>
+                    <textarea id="bio" name="bio" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($profile['bio'] ?? '') ?></textarea>
+                </div>
+                <div>
+                    <label for="skills" class="block text-gray-700 font-medium mb-2">ทักษะ (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                    <input type="text" id="skills" name="skills" value="<?= htmlspecialchars($profile['skills'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="เช่น Photoshop, Illustrator, UI/UX Design">
+                </div>
+
+                <div class="border-t pt-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">ลิงก์โซเชียลมีเดีย</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="facebook_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-facebook-square text-blue-600 mr-2"></i>Facebook URL</label>
+                            <input type="url" id="facebook_url" name="facebook_url" value="<?= htmlspecialchars($profile['facebook_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.facebook.com/yourprofile">
+                        </div>
+                        <div>
+                            <label for="instagram_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-instagram-square text-pink-500 mr-2"></i>Instagram URL</label>
+                            <input type="url" id="instagram_url" name="instagram_url" value="<?= htmlspecialchars($profile['instagram_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.instagram.com/yourprofile">
+                        </div>
+                        <div>
+                            <label for="tiktok_url" class="block text-gray-700 font-medium mb-2"><i class="fab fa-tiktok text-black mr-2"></i>TikTok URL</label>
+                            <input type="url" id="tiktok_url" name="tiktok_url" value="<?= htmlspecialchars($profile['tiktok_url'] ?? '') ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="https://www.tiktok.com/@yourprofile">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <a href="view_profile.php?user_id=<?= $user_id ?>" class="text-gray-600 bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg font-medium text-sm transition-colors">ยกเลิก</a>
+                    <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
+                        <i class="fas fa-save mr-2"></i>บันทึกการเปลี่ยนแปลง
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function(){
-            const output = document.getElementById('profile_pic_preview');
-            output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-</script>
-<?php include '../includes/footer.php'; ?>
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('profile_pic_preview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>

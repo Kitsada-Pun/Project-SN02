@@ -90,55 +90,255 @@ $condb->close();
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
 
     <style>
-    * { font-family: 'Kanit', sans-serif; font-style: normal; font-weight: 400; }
-body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c3e50; overflow-x: hidden; }
-.navbar { background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-.btn-primary { background: linear-gradient(45deg, #0a5f97 0%, #0d96d2 100%); color: white; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(13, 150, 210, 0.3); }
-.btn-primary:hover { background: linear-gradient(45deg, #0d96d2 0%, #0a5f97 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 150, 210, 0.5); }
-.btn-secondary { background-color: #6c757d; color: white; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2); }
-.btn-secondary:hover { background-color: #5a6268; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4); }
-.text-gradient { background: linear-gradient(45deg, #0a5f97, #0d96d2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.text-gradient-light { background: linear-gradient(45deg, #87ceeb, #add8e6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
-.pixellink-logo { font-weight: 700; font-size: 2.25rem; background: linear-gradient(45deg, #0a5f97, #0d96d2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.pixellink-logo b { color: #0d96d2; }
-.card-item { background: white; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transition: all 0.3s ease; display: flex; flex-direction: column; }
-.card-item:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
-.card-image { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-top-left-radius: 1rem; border-top-right-radius: 1rem; }
-.hero-section { background-image: url('dist/img/cover.png'); background-size: cover; background-position: center; position: relative; z-index: 1; padding: 8rem 0; }
-.hero-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: -1; }
-.feature-icon { color: #0d96d2; transition: transform 0.3s ease; }
-.card-item:hover .feature-icon { transform: translateY(-3px); }
+        * {
+            font-family: 'Kanit', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+        }
 
-@media (max-width: 768px) {
-  .hero-section { padding: 6rem 0; }
-  .hero-section h1 { font-size: 2.8rem; }
-  .hero-section p { font-size: 1rem; }
-  .hero-section .space-x-0 { flex-direction: column; gap: 1rem; }
-  .hero-section .btn-primary, .hero-section .btn-secondary { width: 90%; max-width: none; font-size: 0.9rem; padding: 0.75rem 1.25rem; }
-  .pixellink-logo { font-size: 1.6rem; }
-  .navbar .px-5 { padding-left: 0.5rem; padding-right: 0.5rem; }
-  .navbar .py-2 { padding-top: 0.3rem; padding-bottom: 0.3rem; }
-  h2 { font-size: 1.8rem; }
-  .card-item { border-radius: 0.75rem; padding: 1rem; }
-  .card-image { height: 160px; }
-  .sm\:grid-cols-2 { grid-template-columns: 1fr; }
-  .flex-col.sm\:flex-row { flex-direction: column; }
-  .flex-col.sm\:flex-row>*:not(:last-child) { margin-bottom: 1rem; }
-  .md\:mb-0 { margin-bottom: 1rem; }
-  .footer-links { flex-direction: column; gap: 0.5rem; }
-}
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%);
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
 
-@media (max-width: 480px) {
-  .hero-section h1 { font-size: 2.2rem; }
-  .hero-section p { font-size: 0.875rem; }
-  .pixellink-logo { font-size: 1.4rem; }
-  h2 { font-size: 1.5rem; }
-  .container { padding-left: 1rem; padding-right: 1rem; }
-  .px-6 { padding-left: 1rem; padding-right: 1rem; }
-  .p-10 { padding: 1.5rem; }
-  .card-item { padding: 0.75rem; }
-  .card-image { height: 120px; }
-}
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #0a5f97 0%, #0d96d2 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 150, 210, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0d96d2 0%, #0a5f97 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 150, 210, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #0a5f97, #0d96d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-light {
+            background: linear-gradient(45deg, #87ceeb, #add8e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .pixellink-logo {
+            font-weight: 700;
+            font-size: 2.25rem;
+            background: linear-gradient(45deg, #0a5f97, #0d96d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pixellink-logo b {
+            color: #0d96d2;
+        }
+
+        .card-item {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .hero-section {
+            background-image: url('dist/img/cover.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            z-index: 1;
+            padding: 8rem 0;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .feature-icon {
+            color: #0d96d2;
+            transition: transform 0.3s ease;
+        }
+
+        .card-item:hover .feature-icon {
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 6rem 0;
+            }
+
+            .hero-section h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            .hero-section .space-x-0 {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero-section .btn-primary,
+            .hero-section .btn-secondary {
+                width: 90%;
+                max-width: none;
+                font-size: 0.9rem;
+                padding: 0.75rem 1.25rem;
+            }
+
+            .pixellink-logo {
+                font-size: 1.6rem;
+            }
+
+            .navbar .px-5 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .navbar .py-2 {
+                padding-top: 0.3rem;
+                padding-bottom: 0.3rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .card-item {
+                border-radius: 0.75rem;
+                padding: 1rem;
+            }
+
+            .card-image {
+                height: 160px;
+            }
+
+            .sm\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .flex-col.sm\:flex-row {
+                flex-direction: column;
+            }
+
+            .flex-col.sm\:flex-row>*:not(:last-child) {
+                margin-bottom: 1rem;
+            }
+
+            .md\:mb-0 {
+                margin-bottom: 1rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-section p {
+                font-size: 0.875rem;
+            }
+
+            .pixellink-logo {
+                font-size: 1.4rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .px-6 {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .p-10 {
+                padding: 1.5rem;
+            }
+
+            .card-item {
+                padding: 0.75rem;
+            }
+
+            .card-image {
+                height: 120px;
+            }
+        }
+
+        .pixellink-logo,
+        .pixellink-logo-footer {
+            font-weight: 700;
+            font-size: 2.25rem;
+            background: linear-gradient(45deg, #0a5f97, #0d96d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pixellink-logo b,
+        .pixellink-logo-footer b {
+            color: #0d96d2;
+        }
     </style>
 </head>
 
@@ -147,12 +347,14 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
     <nav class="navbar p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.php" class="transition duration-300 hover:opacity-80">
-                <img src="dist/img/logo.png" alt="PixelLink Logo" class="h-12"> </a>
-            <div class="space-x-2 sm:space-x-4 flex items-center">
-                <a href="login.php"
-                    class="px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700">เข้าสู่ระบบ</a>
-                <a href="register.php"
-                    class="btn-primary px-4 py-2 sm:px-5 sm:py-2 rounded-lg font-medium shadow-lg">สมัครสมาชิก</a>
+                <img src="dist/img/logo.png" alt="PixelLink Logo" class="h-12">
+            </a>
+
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+
+                <a href="login.php" class="text-xs sm:text-base px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700 whitespace-nowrap">เข้าสู่ระบบ</a>
+
+                <a href="register.php" class="btn-primary text-xs sm:text-base px-4 py-2 sm:px-5 sm:py-2 rounded-lg font-medium shadow-lg whitespace-nowrap">สมัครสมาชิก</a>
             </div>
         </div>
     </nav>
@@ -171,7 +373,7 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
                 <a href="register.php"
                     class="btn-primary px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-xl hover:scale-105 w-full sm:w-auto mb-3 sm:mb-0">เริ่มต้นใช้งาน
                     <i class="fas fa-arrow-right ml-2"></i></a>
-                <a href="#job-postings"
+                <a href="job_listings.php?type=postings"
                     class="btn-secondary px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-xl hover:scale-105 w-full sm:w-auto">ค้นหางาน
                     <i class="fas fa-search ml-2"></i></a>
             </div>
@@ -191,46 +393,46 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
             </div>
 
             <?php if (empty($job_postings)) : ?>
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative text-center">
-                <span class="block sm:inline">ยังไม่มีงานประกาศรับงานในขณะนี้</span>
-            </div>
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative text-center">
+                    <span class="block sm:inline">ยังไม่มีงานประกาศรับงานในขณะนี้</span>
+                </div>
             <?php else : ?>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <?php foreach ($job_postings as $job) : ?>
-                    <div class="card-item flex  flex-col">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <?php foreach ($job_postings as $job) : ?>
+                        <div class="card-item flex  flex-col">
 
-                        <?php
-                        $image_source = 'dist/img/pdpa02.jpg'; // รูปสำรอง
-                        if (!empty($job['job_image_path'])) {
-                            $correct_path = str_replace('../', '', $job['job_image_path']);
-                            if (file_exists(htmlspecialchars($correct_path))) {
-                                $image_source = htmlspecialchars($correct_path);
+                            <?php
+                            $image_source = 'dist/img/pdpa02.jpg'; // รูปสำรอง
+                            if (!empty($job['job_image_path'])) {
+                                $correct_path = str_replace('../', '', $job['job_image_path']);
+                                if (file_exists(htmlspecialchars($correct_path))) {
+                                    $image_source = htmlspecialchars($correct_path);
+                                }
                             }
-                        }
-                        ?>
-                        <a href="job_detail.php?id=<?= $job['post_id'] ?>&type=posting">
-                            <img src="<?= $image_source ?>" alt="ภาพประกอบงาน: <?= htmlspecialchars($job['title']) ?>" class="card-image">
-                        </a>
+                            ?>
+                            <a href="job_detail.php?id=<?= $job['post_id'] ?>&type=posting">
+                                <img src="<?= $image_source ?>" alt="ภาพประกอบงาน: <?= htmlspecialchars($job['title']) ?>" class="card-image">
+                            </a>
 
-                        <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 line-clamp-2"><?= htmlspecialchars($job['title']) ?></h3>
-                                <p class="text-sm text-gray-600 my-2">
-                                    <i class="fas fa-user mr-1 text-gray-400"></i>
-                                    <?= htmlspecialchars($job['first_name'] . ' ' . $job['last_name']) ?>
-                                </p>
-                                <p class="text-sm text-gray-500 mb-2">หมวดหมู่: <?= htmlspecialchars($job['category_name'] ?? 'ไม่ระบุ') ?></p>
-                                <p class="text-sm text-gray-700 line-clamp-3 font-light"><?= htmlspecialchars($job['description']) ?></p>
-                            </div>
-                            <div class="mt-4">
-                                <p class="text-lg font-semibold text-green-700">ราคา: <?= htmlspecialchars($job['price_range'] ?? 'สอบถาม') ?></p>
-                                <p class="text-xs text-gray-500">ประกาศเมื่อ: <?= date('d M Y', strtotime($job['posted_date'])) ?></p>
-                                <a href="job_detail.php?id=<?= $job['post_id'] ?>&type=posting" class="mt-2 inline-block btn-primary text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg w-full text-center">ดูรายละเอียด</a>
+                            <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 line-clamp-2"><?= htmlspecialchars($job['title']) ?></h3>
+                                    <p class="text-sm text-gray-600 my-2">
+                                        <i class="fas fa-user mr-1 text-gray-400"></i>
+                                        <?= htmlspecialchars($job['first_name'] . ' ' . $job['last_name']) ?>
+                                    </p>
+                                    <p class="text-sm text-gray-500 mb-2">หมวดหมู่: <?= htmlspecialchars($job['category_name'] ?? 'ไม่ระบุ') ?></p>
+                                    <p class="text-sm text-gray-700 line-clamp-3 font-light"><?= htmlspecialchars($job['description']) ?></p>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-lg font-semibold text-green-700">ราคา: <?= htmlspecialchars($job['price_range'] ?? 'สอบถาม') ?></p>
+                                    <p class="text-xs text-gray-500">ประกาศเมื่อ: <?= date('d M Y', strtotime($job['posted_date'])) ?></p>
+                                    <a href="job_detail.php?id=<?= $job['post_id'] ?>&type=posting" class="mt-2 inline-block btn-primary text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg w-full text-center">ดูรายละเอียด</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
         </div>
     </section>
@@ -283,29 +485,41 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
         </div>
     </section>
 
-    <footer class="bg-gray-900 text-gray-300 py-8">
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-auto">
         <div class="container mx-auto px-4 md:px-6 text-center">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-                <a href="index.php"
-                    class="text-2xl sm:text-3xl font-bold pixellink-logo mb-4 md:mb-0 transition duration-300 hover:opacity-80">Pixel<b>Link</b></a>
-                <div class="flex flex-wrap justify-center space-x-2 md:space-x-6 text-sm md:text-base footer-links">
-                    <a href="about.php"
-                        class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เกี่ยวกับเรา</a>
-                    <a href="contact.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">ติดต่อเรา</a>
-                    <a href="terms.php"
-                        class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เงื่อนไขการใช้งาน</a>
-                    <a href="privacy.php"
-                        class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">นโยบายความเป็นส่วนตัว</a>
+                <a href="/pixellink-assistants-main/index.php" class="text-2xl sm:text-3xl font-bold pixellink-logo-footer mb-4 md:mb-0 transition duration-300 hover:opacity-80">Pixel<b>Link</b></a>
+                <div class="flex flex-wrap justify-center space-x-2 md:space-x-6 text-sm md:text-base">
+                    <a href="/pixellink-assistants-main/about.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เกี่ยวกับเรา</a>
+                    <a href="/pixellink-assistants-main/contact.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">ติดต่อเรา</a>
+                    <a href="/pixellink-assistants-main/terms.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">เงื่อนไขการใช้งาน</a>
+                    <a href="/pixellink-assistants-main/privacy.php" class="hover:text-white transition duration-300 mb-2 md:mb-0 font-light">นโยบายความเป็นส่วนตัว</a>
                 </div>
             </div>
             <hr class="border-gray-700 my-6">
             <p class="text-xs md:text-sm font-light">&copy; <?php echo date('Y'); ?> PixelLink. All rights reserved.</p>
         </div>
     </footer>
-    
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Optional: JavaScript for smooth scrolling to sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -340,7 +554,7 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
                             'opacity 0.6s ease-out, transform 0.6s ease-out';
                         entry.target.style.opacity = '1';
                         entry.target.style.transform = 'translateY(0)';
-                    }, 200); 
+                    }, 200);
                     observer.unobserve(entry.target);
                 }
             });
@@ -350,7 +564,7 @@ body { background: linear-gradient(135deg, #f0f4f8 0%, #e8edf3 100%); color: #2c
             observer.observe(card);
         });
     });
-    </script>
+</script>
 </body>
 
 </html>

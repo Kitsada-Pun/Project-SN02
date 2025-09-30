@@ -274,35 +274,35 @@ $condb->close();
     ?>
 
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
+    <div class="container mx-auto flex justify-between items-center">
 
-            <a href="<?= htmlspecialchars($home_link) ?>">
-                <img src="dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
-            </a>
+        <a href="<?= htmlspecialchars($home_link) ?>">
+            <img src="dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
+        </a>
 
-            <div class="space-x-4 flex items-center">
-                <?php if (isset($_SESSION['user_id'])) : ?>
-                    <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+        <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+            <?php if (isset($_SESSION['user_id'])) : ?>
+                <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
 
-                    <?php
-                    $profile_url = '#'; // URL เริ่มต้น
-                    if ($_SESSION['user_type'] === 'designer') {
-                        $profile_url = 'designer/view_profile.php?user_id=' . $_SESSION['user_id'];
-                    } elseif ($_SESSION['user_type'] === 'client') {
-                        // หากมีหน้าโปรไฟล์ผู้ว่าจ้าง ให้แก้ลิงก์ตรงนี้
-                        $profile_url = 'client/view_profile.php?user_id=' . $_SESSION['user_id'];
-                    }
-                    ?>
-                    <!-- <a href="<?= htmlspecialchars($profile_url); ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a> -->
-                    <a href="logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
+                <?php
+                $profile_url = '#'; // URL เริ่มต้น
+                if ($_SESSION['user_type'] === 'designer') {
+                    $profile_url = 'designer/view_profile.php?user_id=' . $_SESSION['user_id'];
+                } elseif ($_SESSION['user_type'] === 'client') {
+                    $profile_url = 'client/view_profile.php?user_id=' . $_SESSION['user_id'];
+                }
+                ?>
+                
+                <a href="logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
 
-                <?php else : ?>
-                    <a href="login.php" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors">เข้าสู่ระบบ</a>
-                    <a href="register.php" class="btn-primary text-white px-5 py-2 rounded-lg font-semibold shadow-md">สมัครสมาชิก</a>
-                <?php endif; ?>
-            </div>
+            <?php else : ?>
+                <a href="login.php" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors text-xs sm:text-base whitespace-nowrap">เข้าสู่ระบบ</a>
+                <a href="register.php" class="btn-primary text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-semibold shadow-md whitespace-nowrap">สมัครสมาชิก</a>
+
+            <?php endif; ?>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <main class="container mx-auto px-4 py-8">
         <?php if (!empty($error_message)) : ?>

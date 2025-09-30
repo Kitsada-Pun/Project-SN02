@@ -422,6 +422,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .privacy-text:hover {
             color: #a32638; /* สี Maroon ที่สว่างขึ้นเล็กน้อย */
         }
+        /* --- Responsive Adjustments for Registration Form --- */
+@media (max-width: 767px) { /* md breakpoint in Tailwind */
+    .main-container {
+        /* On mobile, remove shadow and let it fill the space */
+        box-shadow: none;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-container {
+        padding: 1.5rem; /* p-6, reduce padding on small screens */
+    }
+    
+    .form-input-group {
+        flex-direction: column; /* Stack first name and last name vertically */
+        gap: 1rem; /* Adjust gap for vertical stacking */
+    }
+
+    .header-text {
+        font-size: 1.875rem; /* text-3xl on desktop, text-2xl on mobile */
+    }
+}/* --- Responsive Adjustments for Registration Form --- */
+@media (max-width: 767px) { /* md breakpoint in Tailwind */
+    .main-container {
+        /* On mobile, remove shadow and let it fill the space */
+        box-shadow: none;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-container {
+        padding: 1.5rem; /* p-6, reduce padding on small screens */
+    }
+    
+    .form-input-group {
+        flex-direction: column; /* Stack first name and last name vertically */
+        gap: 1rem; /* Adjust gap for vertical stacking */
+    }
+
+    .header-text {
+        font-size: 1.875rem; /* text-3xl on desktop, text-2xl on mobile */
+    }
+}
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -431,7 +474,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 class="w-full h-full object-cover object-center rounded-l-lg">
         </div>
 
-        <div class="w-full md:w-1/2 p-8 lg:p-12">
+        <div class="w-full md:w-1/2 p-8 lg:p-12 form-container">
             <div class="text-center mb-6">
                 <h1 class="text-3xl font-semibold text-gray-800 kanit-tag header-text">สมัครสมาชิก</h1>
                 <p class="text-gray-500 text-sm mt-2">สร้างบัญชีของคุณเพื่อเข้าสู่ระบบ</p>

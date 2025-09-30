@@ -137,25 +137,17 @@ $condb->close();
 <?php include '../includes/header.php'; ?>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="bg-white/90 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="../index.php"><img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105"></a>
-            <div class="space-x-4 flex items-center">
-                <?php if (isset($_SESSION['user_id'])) : ?>
-                    <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
-                    <?php
-                        // Determine the correct path to the profile page based on user type
-                        $profile_path = 'designer/view_profile.php'; // Default path
-                        if ($_SESSION['user_type'] === 'client') {
-                            $profile_path = 'client/view_profile.php';
-                        }
-                    ?>
-                    <!-- <a href="<?= $profile_path ?>?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a> -->
-                    <a href="../logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
-                <?php else : ?>
-                    <a href="../login.php" class="px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700">เข้าสู่ระบบ</a>
-                    <a href="../register.php" class="btn-primary text-white px-5 py-2 rounded-lg font-semibold shadow-md">สมัครสมาชิก</a>
-                <?php endif; ?>
+            <a href="main.php">
+                <img src="../dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
+            </a>
+
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
+
+                <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+
+                <a href="../logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
             </div>
         </div>
     </nav>

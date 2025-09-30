@@ -280,9 +280,9 @@ $condb->close();
                 <img src="dist/img/logo.png" alt="PixelLink Logo" class="h-12 transition-transform hover:scale-105">
             </a>
 
-            <div class="space-x-4 flex items-center">
+            <div class="space-x-2 sm:space-x-4 flex items-center flex-nowrap">
                 <?php if (isset($_SESSION['user_id'])) : ?>
-                    <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
+                    <span class="font-medium text-slate-700 text-xs sm:text-base whitespace-nowrap">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
 
                     <?php
                     $profile_url = '#'; // URL เริ่มต้น
@@ -290,15 +290,17 @@ $condb->close();
                         $profile_url = 'designer/view_profile.php?user_id=' . $_SESSION['user_id'];
                     } elseif ($_SESSION['user_type'] === 'client') {
                         // หากมีหน้าโปรไฟล์ผู้ว่าจ้าง ให้แก้ลิงก์ตรงนี้
-                        $profile_url = 'client/view_profile.php?user_id=' . $_SESSION['user_id'];
+                        $profile_url = 'client/view_profile_client.php?user_id=' . $_SESSION['user_id'];
                     }
                     ?>
-                    <a href="<?= htmlspecialchars($profile_url); ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
-                    <a href="logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
+
+                    <a href="<?= htmlspecialchars($profile_url); ?>" class="btn-primary text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ดูโปรไฟล์</a>
+                    <a href="logout.php" class="btn-danger text-white text-xs sm:text-base px-3 sm:px-5 py-2 rounded-lg font-medium shadow-md whitespace-nowrap">ออกจากระบบ</a>
 
                 <?php else : ?>
-                    <a href="login.php" class="font-semibold text-slate-600 hover:text-blue-600 transition-colors">เข้าสู่ระบบ</a>
-                    <a href="register.php" class="btn-primary text-white px-5 py-2 rounded-lg font-semibold shadow-md">สมัครสมาชิก</a>
+                    <a href="login.php" class="text-xs sm:text-base px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg font-medium border-2 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-300 text-gray-700 whitespace-nowrap">เข้าสู่ระบบ</a>
+                    <a href="register.php" class="btn-primary text-xs sm:text-base px-4 py-2 sm:px-5 sm:py-2 rounded-lg font-medium shadow-lg whitespace-nowrap">สมัครสมาชิก</a>
+
                 <?php endif; ?>
             </div>
         </div>
@@ -324,7 +326,7 @@ $condb->close();
                             }
                         }
                         ?>
-                            <img src="<?= $image_source ?>" alt="ภาพประกอบงาน" class="max-w-full h-auto mx-auto rounded-xl shadow-lg">
+                        <img src="<?= $image_source ?>" alt="ภาพประกอบงาน" class="max-w-full h-auto mx-auto rounded-xl shadow-lg">
                     </div>
 
                     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
