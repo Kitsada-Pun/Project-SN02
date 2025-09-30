@@ -130,3 +130,23 @@
 Stack trace:
 #0 {main}
   thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 387
+[01-Oct-2025 00:26:13 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php:107
+Stack trace:
+#0 C:\xampp\htdocs\pixellink-assistants-main\admin\main.php(107): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 107
+[01-Oct-2025 00:26:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php:107
+Stack trace:
+#0 C:\xampp\htdocs\pixellink-assistants-main\admin\main.php(107): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 107
+[01-Oct-2025 00:26:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php:107
+Stack trace:
+#0 C:\xampp\htdocs\pixellink-assistants-main\admin\main.php(107): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 107
+[01-Oct-2025 00:26:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: mysqli_stmt object is already closed in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php:107
+Stack trace:
+#0 C:\xampp\htdocs\pixellink-assistants-main\admin\main.php(107): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 107

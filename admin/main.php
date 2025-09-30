@@ -84,18 +84,26 @@ try {
     }
     $stmt->close();
 
-    // --- 3. Job Applications by Status ---
-    $stmt = $condb->prepare("SELECT status, COUNT(*) AS count FROM job_applications GROUP BY status");
+    // --- 3. [NEW] 10 หมวดหมู่งานยอดนิยม ---
+    $popular_categories_counts = [];
+    $sql_pop_cat = "SELECT jc.category_name, COUNT(jp.post_id) AS count 
+                FROM job_postings jp 
+                JOIN job_categories jc ON jp.category_id = jc.category_id 
+                WHERE jp.status = 'active'
+                GROUP BY jp.category_id 
+                ORDER BY count DESC 
+                LIMIT 10";
+    $stmt = $condb->prepare($sql_pop_cat);
     if ($stmt === false) {
-        error_log("Prepare failed for job_applications status: " . $condb->error);
-        throw new Exception("SQL Prepare Failed: job_applications status - " . $condb->error);
+        throw new Exception("SQL Prepare Failed: popular_categories - " . $condb->error);
     }
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        $application_status_counts[$row['status']] = $row['count'];
+        $popular_categories_counts[$row['category_name']] = $row['count'];
     }
     $stmt->close();
+
 
     // --- 4. Contracts by Status ---
     $stmt = $condb->prepare("SELECT contract_status, COUNT(*) AS count FROM contracts GROUP BY contract_status");
@@ -560,9 +568,9 @@ include 'sidebar_menu.php';
                         </div>
                         <div class="col-lg-6 col-md-12">
                             <div class="chart-container">
-                                <h5>สถานะการสมัคร/เสนอราคา</h5>
+                                <h5>10 หมวดหมู่งานยอดนิยม</h5>
                                 <div class="chart-canvas-wrapper">
-                                    <canvas id="applicationStatusChart"></canvas>
+                                    <canvas id="popularCategoriesChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -574,7 +582,7 @@ include 'sidebar_menu.php';
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-6 col-md-12">
                             <div class="chart-container">
                                 <h5>จำนวนผู้ใช้งานตามประเภท</h5>
@@ -642,6 +650,7 @@ include 'sidebar_menu.php';
             const jobPostingStatusData = <?php echo json_encode($job_postings_status_counts); ?>;
             const clientRequestStatusData = <?php echo json_encode($client_requests_status_counts); ?>;
             const applicationStatusData = <?php echo json_encode($application_status_counts); ?>;
+            const popularCategoriesData = <?php echo json_encode($popular_categories_counts); ?>;
             const contractStatusData = <?php echo json_encode($contract_status_counts); ?>;
             const paymentStatusData = <?php echo json_encode($payment_status_counts); ?>;
             const userTypeData = <?php echo json_encode($total_users_by_type); ?>;
@@ -729,35 +738,42 @@ include 'sidebar_menu.php';
                 };
                 return statusMap[status] || status;
             });
-            
+
 
             // Chart 2: Client Request Status
-            const crLabels = Object.keys(clientRequestStatusData).map(status => {
-                const statusMap = {
-                    'open': 'เปิดรับงาน',
-                    'assigned': 'มอบหมายแล้ว',
-                    'completed': 'เสร็จสิ้น',
-                    'cancelled': 'ยกเลิกแล้ว'
-                };
-                return statusMap[status] || status;
-            });
-            const crCounts = Object.values(clientRequestStatusData);
-            const crCtx = document.getElementById('clientRequestStatusChart').getContext('2d');
-            createChart(crCtx, 'doughnut', crLabels, crCounts, 'สถานะคำของานผู้ว่าจ้าง');
+            const crLabels = [];
+            const crCounts = [];
+            const clientRequestStatusMap = {
+                'open': 'ส่งคำขอจ้างงาน',
+                'proposed': 'มีผู้ยื่นข้อเสนอ',
+                'pending_deposit': 'รอการชำระเงินมัดจำ',
+                'awaiting_deposit_verification': 'รอการตรวจสอบมัดจำ',
+                'assigned': 'กำลังดำเนินการ',
+                'draft_submitted': 'รอตรวจงาน',
+                'awaiting_final_payment': 'รอการชำระเงินส่วนที่เหลือ',
+                'final_payment_verification': 'รอการตรวจสอบยอดชำระคงเหลือ',
+                'completed': 'เสร็จสมบูรณ์',
+                'cancelled': 'ยกเลิกโดยผู้ว่าจ้าง',
+                'rejected': 'ถูกปฏิเสธ'
+            };
 
-            // Chart 3: Application Status
-            const appLabels = Object.keys(applicationStatusData).map(status => {
-                const statusMap = {
-                    'pending': 'รอดำเนินการ',
-                    'accepted': 'ยอมรับแล้ว',
-                    'rejected': 'ถูกปฏิเสธ',
-                    'cancelled': 'ยกเลิก'
-                };
-                return statusMap[status] || status;
-            });
-            const appCounts = Object.values(applicationStatusData);
-            const appCtx = document.getElementById('applicationStatusChart').getContext('2d');
-            createChart(appCtx, 'bar', appLabels, appCounts, 'สถานะการสมัคร/เสนอราคา');
+            for (const status in clientRequestStatusData) {
+                if (Object.hasOwnProperty.call(clientRequestStatusData, status) && status && status.trim() !== '') {
+                    const cleanStatus = status.trim(); // ตัดช่องว่างที่อาจติดมากับ key
+                    crLabels.push(clientRequestStatusMap[cleanStatus] || cleanStatus);
+                    crCounts.push(clientRequestStatusData[status]);
+                }
+            }
+            const crCtx = document.getElementById('clientRequestStatusChart').getContext('2d');
+            createChart(crCtx, 'doughnut', crLabels, crCounts, 'สถานะทั้งหมดของผู้ว่าจ้าง');
+
+            // Chart 3: Popular Categories
+            if (document.getElementById('popularCategoriesChart')) {
+                const categoryLabels = Object.keys(popularCategoriesData);
+                const categoryCounts = Object.values(popularCategoriesData);
+                const categoryCtx = document.getElementById('popularCategoriesChart').getContext('2d');
+                createChart(categoryCtx, 'pie', categoryLabels, categoryCounts, 'จำนวนงาน');
+            }
 
             // Chart 4: Contract Status
             const contractLabels = Object.keys(contractStatusData).map(status => {
