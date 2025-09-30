@@ -105,16 +105,37 @@ try {
     $stmt->close();
 
 
-    // --- 4. Contracts by Status ---
-    $stmt = $condb->prepare("SELECT contract_status, COUNT(*) AS count FROM contracts GROUP BY contract_status");
+    // --- 4. Monthly Revenue (Last 12 Months) ---
+    $monthly_revenue_data = [];
+    for ($i = 11; $i >= 0; $i--) {
+        $month = date('Y-m', strtotime("-$i months"));
+        $monthly_revenue_data[$month] = 0;
+    }
+
+    $sql_monthly_revenue = "SELECT
+                            DATE_FORMAT(end_date, '%Y-%m') AS month,
+                            SUM(agreed_price) AS total_revenue
+                        FROM
+                            contracts
+                        WHERE
+                            contract_status = 'completed'
+                            AND end_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+                        GROUP BY
+                            YEAR(end_date), MONTH(end_date)
+                        ORDER BY
+                            month ASC";
+
+    $stmt = $condb->prepare($sql_monthly_revenue);
     if ($stmt === false) {
-        error_log("Prepare failed for contract_status: " . $condb->error);
-        throw new Exception("SQL Prepare Failed: contract_status - " . $condb->error);
+        error_log("Prepare failed for monthly_revenue: " . $condb->error);
+        throw new Exception("SQL Prepare Failed: monthly_revenue - " . $condb->error);
     }
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        $contract_status_counts[$row['contract_status']] = $row['count'];
+        if (isset($monthly_revenue_data[$row['month']])) {
+            $monthly_revenue_data[$row['month']] = (float)$row['total_revenue'];
+        }
     }
     $stmt->close();
 
@@ -576,9 +597,9 @@ include 'sidebar_menu.php';
                         </div>
                         <div class="col-lg-6 col-md-12">
                             <div class="chart-container">
-                                <h5>สถานะสัญญาจ้างงาน</h5>
+                                <h5>รายได้รวมรายเดือน (12 เดือนล่าสุด)</h5>
                                 <div class="chart-canvas-wrapper">
-                                    <canvas id="contractStatusChart"></canvas>
+                                    <canvas id="monthlyRevenueChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -651,7 +672,6 @@ include 'sidebar_menu.php';
             const clientRequestStatusData = <?php echo json_encode($client_requests_status_counts); ?>;
             const applicationStatusData = <?php echo json_encode($application_status_counts); ?>;
             const popularCategoriesData = <?php echo json_encode($popular_categories_counts); ?>;
-            const contractStatusData = <?php echo json_encode($contract_status_counts); ?>;
             const paymentStatusData = <?php echo json_encode($payment_status_counts); ?>;
             const userTypeData = <?php echo json_encode($total_users_by_type); ?>;
             const reviewRatingData = <?php echo json_encode($reviews_rating_distribution); ?>;
@@ -775,19 +795,15 @@ include 'sidebar_menu.php';
                 createChart(categoryCtx, 'pie', categoryLabels, categoryCounts, 'จำนวนงาน');
             }
 
-            // Chart 4: Contract Status
-            const contractLabels = Object.keys(contractStatusData).map(status => {
-                const statusMap = {
-                    'pending': 'รอดำเนินการ',
-                    'active': 'กำลังดำเนินการ',
-                    'completed': 'เสร็จสิ้น',
-                    'cancelled': 'ยกเลิก'
-                };
-                return statusMap[status] || status;
-            });
-            const contractCounts = Object.values(contractStatusData);
-            const contractCtx = document.getElementById('contractStatusChart').getContext('2d');
-            createChart(contractCtx, 'bar', contractLabels, contractCounts, 'สถานะสัญญาจ้างงาน');
+            // Chart 4: Monthly Revenue (Last 12 Months)
+            // First, connect the new PHP variable
+            const monthlyRevenueData = <?php echo json_encode($monthly_revenue_data); ?>;
+
+            // Then, create the chart
+            const revenueLabels = Object.keys(monthlyRevenueData);
+            const revenueValues = Object.values(monthlyRevenueData);
+            const revenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+            createChart(revenueCtx, 'bar', revenueLabels, revenueValues, 'รายได้ (บาท)', 'rgba(75, 192, 192, 0.7)');
 
             // Chart 5: Payment Status
             const paymentLabels = Object.keys(paymentStatusData).map(status => {
