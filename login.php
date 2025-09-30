@@ -26,7 +26,8 @@ if ($condb->connect_error) {
  * @param string $action การดำเนินการ (เช่น 'Login', 'Login Attempt Failed')
  * @param string $details รายละเอียดเพิ่มเติมเกี่ยวกับการดำเนินการ
  */
-function saveLog(mysqli $condb, ?int $userId, string $action, string $details = '') {
+function saveLog(mysqli $condb, ?int $userId, string $action, string $details = '')
+{
     $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN'; // รับ IP Address ของผู้ใช้
     // ตรวจสอบให้แน่ใจว่าตาราง 'logs' มีอยู่จริงก่อนที่จะพยายามบันทึก
     // โดยทั่วไปควรสร้างตารางในฐานข้อมูลไปเลยจะดีกว่า
@@ -121,7 +122,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         } else {
                             $_SESSION["full_name"] = $userData["username"];
                         }
-
+                        // --- Update last_login timestamp ---
+                        $update_last_login_sql = "UPDATE users SET last_login = NOW() WHERE user_id = ?";
+                        $stmt_update = $condb->prepare($update_last_login_sql);
+                        if ($stmt_update) {
+                            $stmt_update->bind_param("i", $userData['user_id']);
+                            $stmt_update->execute();
+                            $stmt_update->close();
+                        }
+                        // ------------------------------------
                         saveLog($condb, $userData["user_id"], 'Login Successful', 'User logged in: ' . $personal_username);
 
                         // กำหนด URL สำหรับ Redirect ตาม user_type
