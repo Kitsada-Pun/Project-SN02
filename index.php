@@ -37,7 +37,7 @@ if (isset($_SESSION['user_id'])) {
     }
     exit();
 }
-
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0;
 // ================================================================================= //
 // ========= จุดที่ 1: แก้ไข SQL ของ $job_postings เพื่อดึง Path รูปภาพ ========= //
 // ================================================================================= //
@@ -50,6 +50,7 @@ $sql_job_postings = "SELECT
                         jp.posted_date,
                         u.first_name,
                         u.last_name,
+                        u.is_verified,
                         u.username, -- << เพิ่มบรรทัดนี้เพื่อดึง username
                         jc.category_name,
                         uf.file_path AS job_image_path
@@ -361,6 +362,18 @@ $condb->close();
             opacity: 1;
             transform: translateY(0);
         }
+
+        .verified-badge-svg {
+            width: 1.25rem;
+            /* 20px */
+            height: 1.25rem;
+            /* 20px */
+            margin-left: 0.25rem;
+            /* 4px */
+            vertical-align: middle;
+            display: inline-block;
+            /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+        }
     </style>
 </head>
 
@@ -442,6 +455,13 @@ $condb->close();
                                     <p class="text-sm text-gray-600 my-2">
                                         <i class="fas fa-user mr-1 text-gray-400"></i>
                                         <?= htmlspecialchars($job['first_name'] . ' ' . $job['last_name']) ?>
+                                        <?php if ($job['is_verified'] == 1): ?>
+                                            <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                                                <svg class="verified-badge-svg text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </span>
+                                        <?php endif; ?>
                                     </p>
                                     <p class="text-sm text-gray-500 mb-2">หมวดหมู่: <?= htmlspecialchars($job['category_name'] ?? 'ไม่ระบุ') ?></p>
                                     <p class="text-sm text-gray-700 line-clamp-3 font-light"><?= htmlspecialchars($job['description']) ?></p>

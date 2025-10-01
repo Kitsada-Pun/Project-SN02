@@ -49,7 +49,7 @@ $result_cat = $conn->query($sql_categories);
 if ($result_cat) {
     $categories = $result_cat->fetch_all(MYSQLI_ASSOC);
 }
-
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0;
 // ดึงชื่อผู้ใช้ที่ล็อกอิน
 $loggedInUserName = $_SESSION['username'] ?? '';
 if (empty($loggedInUserName)) {
@@ -70,7 +70,7 @@ if (empty($loggedInUserName)) {
 $job_postings_from_others = [];
 $sql_job_postings = "SELECT
                         jp.post_id, jp.title, jp.description, jp.price_range, jp.posted_date,
-                        u.first_name, u.last_name, jc.category_name,
+                        u.first_name, u.last_name,u.is_verified, jc.category_name,
                         uf.file_path AS job_image_path
                     FROM job_postings AS jp
                     JOIN users AS u ON jp.designer_id = u.user_id
@@ -109,6 +109,17 @@ include '../includes/header.php';
     .animate-card-appear.is-visible {
         opacity: 1;
         transform: translateY(0);
+    }
+    .verified-badge-svg {
+        width: 1.25rem;
+        /* 20px */
+        height: 1.25rem;
+        /* 20px */
+        margin-left: 0.25rem;
+        /* 4px */
+        vertical-align: middle;
+        display: inline-block;
+        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
     }
 </style>
 <main class="flex-grow">
@@ -204,8 +215,6 @@ include '../includes/header.php';
         </section>
     </div>
 
-
-
     <section id="available-jobs" class="py-12 md:py-16 bg-white">
         <div class="container mx-auto px-4 md:px-6">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
@@ -236,6 +245,13 @@ include '../includes/header.php';
                                     <p class="text-sm text-gray-600 my-2">
                                         <i class="fas fa-user mr-1 text-gray-400"></i>
                                         <?= htmlspecialchars($job['first_name'] . ' ' . $job['last_name']) ?>
+                                        <?php if ($job['is_verified'] == 1): ?>
+                                            <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                                                <svg class="verified-badge-svg text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </span>
+                                        <?php endif; ?>
                                     </p>
 
                                     <p class="text-sm text-gray-500 mb-2">หมวดหมู่: <?= htmlspecialchars($job['category_name'] ?? 'ไม่ระบุ') ?></p>

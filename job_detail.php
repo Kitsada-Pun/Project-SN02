@@ -20,7 +20,7 @@ $other_works = [];
 $error_message = '';
 $job_type = '';
 $loggedInUserName = '';
-
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0;
 // --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
 if (isset($_SESSION['user_id'])) {
     // (ส่วนนี้เหมือนเดิม)
@@ -50,7 +50,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['type']) && $_G
     // SQL หลัก: ดึงข้อมูลงานพร้อมกับข้อมูลโปรไฟล์ของ Designer
     $sql = "SELECT
                 jp.post_id AS id, jp.title, jp.description, jp.price_range, jp.posted_date,
-                u.user_id AS owner_id, u.first_name, u.last_name,
+                u.user_id AS owner_id, u.first_name, u.last_name,u.is_verified,
                 jc.category_name, 
                 uf.file_path AS job_image_path,
                 p.bio, p.skills, p.profile_picture_url
@@ -245,6 +245,18 @@ $condb->close();
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+
+        .verified-badge-svg {
+            width: 1.25rem;
+            /* 20px */
+            height: 1.25rem;
+            /* 20px */
+            margin-left: 0.25rem;
+            /* 4px */
+            vertical-align: middle;
+            display: inline-block;
+            /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+        }
     </style>
 </head>
 
@@ -384,7 +396,16 @@ $condb->close();
                             ?>
                             <img src="<?= $profile_pic ?>" alt="โปรไฟล์" class="w-16 h-16 rounded-full object-cover">
                             <div>
-                                <h3 class="text-xl font-bold text-slate-800"><?= htmlspecialchars($job_data['first_name'] . ' ' . $job_data['last_name']) ?></h3>
+                                <h3 class="text-xl font-bold text-slate-800 flex items-center">
+                                    <span><?= htmlspecialchars($job_data['first_name'] . ' ' . $job_data['last_name']) ?></span>
+                                    <?php if ($job_data['is_verified']): ?>
+                                        <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                                            <svg class="verified-badge-svg text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </span>
+                                    <?php endif; ?>
+                                </h3>
                                 <a href="designer/view_profile.php?user_id=<?= $job_data['owner_id'] ?>" class="text-sm text-blue-600 hover:underline">ดูโปรไฟล์ทั้งหมด</a>
                             </div>
                         </div>

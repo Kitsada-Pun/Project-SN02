@@ -266,7 +266,7 @@ $profile_picture = (!empty($profile_data['profile_picture_url']) && file_exists(
                         <h1 class="text-3xl font-bold text-gray-800 flex items-center">
                             <?= htmlspecialchars($profile_data['first_name'] . ' ' . $profile_data['last_name']) ?>
                             <?php if ($profile_data['is_verified']) : ?>
-                                <span class="ml-2 text-blue-500" title="ยืนยันตัวตนแล้ว"><i class="fas fa-check-circle"></i></span>
+                                <span class="ml-2 text-blue-500" title="ยืนยันตัวตนแล้ว"><i class="fas fa-check-circle text-xl"></i></span>
                             <?php endif; ?>
                         </h1>
                         <p class="text-gray-600">

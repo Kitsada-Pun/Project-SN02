@@ -13,7 +13,7 @@ if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
 $condb->set_charset("utf8mb4");
-
+$is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0;
 // --- ดึงข้อมูลพื้นฐาน ---
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
 $is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0; // <-- เพิ่มบรรทัดนี้
@@ -65,6 +65,7 @@ if ($type === 'postings') {
                 'posting' AS type,
                 u.first_name,
                 u.last_name,
+                u.is_verified,
                 jc.category_name,
                 uf.file_path AS job_image_path
             FROM job_postings AS jp
@@ -86,10 +87,9 @@ if ($type === 'postings') {
         $types .= 'i';
     }
     $sql .= " ORDER BY jp.posted_date DESC";
-
 } else { // Default to 'requests'
     $page_title = "ประกาศหางานทั้งหมด";
-     $sql = "SELECT
+    $sql = "SELECT
                 cjr.request_id AS id,
                 cjr.title,
                 cjr.description,
@@ -105,7 +105,7 @@ if ($type === 'postings') {
             JOIN users AS u ON cjr.client_id = u.user_id
             LEFT JOIN job_categories AS jc ON cjr.category_id = jc.category_id
             WHERE cjr.status = 'open'";
-    
+
     if (!empty($search_keyword)) {
         $sql .= " AND (cjr.title LIKE ? OR cjr.description LIKE ?)";
         $keyword_param = "%" . $search_keyword . "%";
@@ -118,7 +118,7 @@ if ($type === 'postings') {
         $params[] = $filter_category;
         $types .= 'i';
     }
-     $sql .= " ORDER BY cjr.posted_date DESC";
+    $sql .= " ORDER BY cjr.posted_date DESC";
 }
 
 $stmt = $condb->prepare($sql);
@@ -144,6 +144,7 @@ $condb->close();
         opacity: 0;
         transition: opacity 1.2s ease-out;
     }
+
     .animate-fade-in.is-visible {
         opacity: 1;
     }
@@ -154,12 +155,26 @@ $condb->close();
         transform: translateY(20px);
         transition: opacity 0.6s ease-out, transform 0.6s ease-out;
     }
+
     .animate-card-appear.is-visible {
         opacity: 1;
         transform: translateY(0);
     }
+
+    .verified-badge-svg {
+        width: 1.25rem;
+        /* 20px */
+        height: 1.25rem;
+        /* 20px */
+        margin-left: 0.25rem;
+        /* 4px */
+        vertical-align: middle;
+        display: inline-block;
+        /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
+    }
 </style>
 <?php include 'includes/header.php'; ?>
+
 <body class="min-h-screen flex flex-col">
 
     <nav class="bg-white/90 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
@@ -169,11 +184,11 @@ $condb->close();
                 <?php if (isset($_SESSION['user_id'])) : ?>
                     <span class="font-medium text-slate-700">สวัสดี, <?= htmlspecialchars($loggedInUserName) ?>!</span>
                     <?php
-                        // Determine the correct path to the profile page based on user type
-                        $profile_path = 'designer/view_profile.php'; // Default path
-                        if ($_SESSION['user_type'] === 'client') {
-                            $profile_path = 'client/view_profile.php';
-                        }
+                    // Determine the correct path to the profile page based on user type
+                    $profile_path = 'designer/view_profile.php'; // Default path
+                    if ($_SESSION['user_type'] === 'client') {
+                        $profile_path = 'client/view_profile.php';
+                    }
                     ?>
                     <a href="<?= $profile_path ?>?user_id=<?= $_SESSION['user_id']; ?>" class="btn-primary text-white px-5 py-2 rounded-lg font-medium shadow-md">ดูโปรไฟล์</a>
                     <a href="logout.php" class="btn-danger text-white px-5 py-2 rounded-lg font-medium shadow-md">ออกจากระบบ</a>
@@ -240,12 +255,19 @@ $condb->close();
                                 <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
                                     <div>
                                         <h3 class="text-lg font-semibold text-gray-900 line-clamp-2"><?= htmlspecialchars($job['title']) ?></h3>
-                                        
+
                                         <p class="text-sm text-gray-600 my-2">
                                             <i class="fas fa-user mr-1 text-gray-400"></i>
                                             <?= htmlspecialchars($job['first_name'] . ' ' . $job['last_name']) ?>
+                                            <?php if ($job['is_verified'] == 1): ?>
+                                                <span title="บัญชีนี้ได้รับการยืนยันตัวตนแล้ว">
+                                                    <svg class="verified-badge-svg text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </span>
+                                            <?php endif; ?>
                                         </p>
-                                        
+
                                         <p class="text-sm text-gray-500 mb-2">หมวดหมู่: <?= htmlspecialchars($job['category_name'] ?? 'ไม่ระบุ') ?></p>
                                         <p class="text-sm text-gray-700 line-clamp-3 font-light"><?= htmlspecialchars($job['description']) ?></p>
                                     </div>
@@ -262,43 +284,43 @@ $condb->close();
             </div>
         </section>
     </main>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. Animation สำหรับ Header และ Form (Fade In) ---
-        const fadeElements = document.querySelectorAll('.animate-fade-in');
-        fadeElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.classList.add('is-visible');
-            }, index * 60); // หน่วงเวลาเล็กน้อยให้แสดงผลไม่พร้อมกัน
-        });
-
-        // --- 2. Animation สำหรับ Card ที่จะปรากฏเมื่อ Scroll ---
-        const cards = document.querySelectorAll('.animate-card-appear');
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1 // เริ่มทำงานเมื่อเห็น Card 10%
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    // **จุดแก้ไข** เพิ่มการหน่วงเวลาที่นี่เพื่อให้ช้าลงเหมือนหน้า index
-                    setTimeout(() => {
-                        entry.target.classList.add('is-visible');
-                    }, index * 200); // เพิ่มค่าจาก 100 เป็น 150 (หรือมากกว่า) เพื่อให้หน่วงขึ้น
-
-                    observer.unobserve(entry.target);
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. Animation สำหรับ Header และ Form (Fade In) ---
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('is-visible');
+                }, index * 60); // หน่วงเวลาเล็กน้อยให้แสดงผลไม่พร้อมกัน
             });
-        }, observerOptions);
 
-        cards.forEach(card => {
-            observer.observe(card);
+            // --- 2. Animation สำหรับ Card ที่จะปรากฏเมื่อ Scroll ---
+            const cards = document.querySelectorAll('.animate-card-appear');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // เริ่มทำงานเมื่อเห็น Card 10%
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // **จุดแก้ไข** เพิ่มการหน่วงเวลาที่นี่เพื่อให้ช้าลงเหมือนหน้า index
+                        setTimeout(() => {
+                            entry.target.classList.add('is-visible');
+                        }, index * 200); // เพิ่มค่าจาก 100 เป็น 150 (หรือมากกว่า) เพื่อให้หน่วงขึ้น
+
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
         });
-    });
-</script>
-    
+    </script>
 
-<?php include 'includes/footer.php'; ?>
+
+    <?php include 'includes/footer.php'; ?>
