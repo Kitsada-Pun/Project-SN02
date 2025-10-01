@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 01, 2025 at 01:34 PM
+-- Generation Time: Oct 01, 2025 at 09:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -307,20 +307,21 @@ CREATE TABLE `job_postings` (
 --
 
 INSERT INTO `job_postings` (`post_id`, `designer_id`, `title`, `description`, `category_id`, `price_range`, `posted_date`, `status`, `client_id`, `main_image_id`) VALUES
-(1, 2, 'รับงาน UI/UX Design', 'ออกแบบเว็บไซต์และแอปพลิเคชันที่ใช้งานง่ายและสวยงาม', 2, '10,000-25,000 บาท', '2025-06-07 15:44:37', 'active', 0, 53),
-(2, 2, 'บริการออกแบบโลโก้', 'ออกแบบโลโก้สำหรับธุรกิจขนาดเล็กและสตาร์ทอัพ', 4, '3,000-8,000 บาท', '2025-06-07 15:44:37', 'active', 0, 54),
-(3, 4, 'รับวาดภาพประกอบดิจิทัล', 'รับงานภาพประกอบสำหรับหนังสือ, โฆษณา, เกม', 5, '5,000-15,000 บาท', '2025-06-07 15:44:37', 'active', 0, 59),
-(4, 7, 'รับออกแบบโปสเตอร์สินค้า', 'ออกแบบโปสเตอร์โฆษณาสินค้าแบบมืออาชีพ สะดุดตา', 1, '2,500–6,000 บาท', '2025-07-10 16:34:16', 'active', 0, 59),
-(14, 10, 'ทำอินโฟกราฟิกนำเสนอ', 'ออกแบบภาพอินโฟกราฟิกสำหรับพรีเซนต์หรือโซเชียลมีเดีย', 1, '3,000–8,000 บาท', '2025-07-10 16:40:37', 'active', 0, 58),
-(15, 10, 'วาดภาพประกอบนิทาน', 'วาดภาพประกอบแนวเด็กน่ารักสดใส สำหรับหนังสือนิทาน', 2, '5,000–12,000 บาท', '2025-07-10 16:43:43', 'active', 0, 53),
-(16, 4, 'วาดตัวละครแนวแฟนตาซี', 'รับวาดคาแรคเตอร์สไตล์เกม/อนิเมะแฟนตาซี', 2, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 66),
-(17, 7, 'ออกแบบโลโก้แบรนด์แฟชั่น', 'สร้างโลโก้สำหรับแบรนด์เสื้อผ้าหรือแฟชั่นสมัยใหม่', 3, '4,000–10,000 บาท', '2025-07-10 16:43:43', 'active', 0, 55),
-(18, 7, 'โลโก้ธุรกิจท้องถิ่น', 'โลโก้เรียบง่าย เหมาะสำหรับร้านอาหาร คาเฟ่ และ SME', 3, '2,000–5,000 บาท', '2025-07-10 16:43:43', 'active', 0, 54),
-(19, 4, 'ถ่ายภาพโปรไฟล์', 'รับถ่ายภาพโปรไฟล์สำหรับใช้ในงานหรือโซเชียลมีเดีย', 4, '1,500–4,000 บาท', '2025-07-10 16:43:43', 'active', 0, 65),
-(20, 10, 'ถ่ายสินค้าเพื่อขายออนไลน์', 'ถ่ายภาพสินค้าพร้อมแต่งภาพ เหมาะกับตลาดออนไลน์', 4, '3,000–7,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
-(21, 2, 'ออกแบบ UI เว็บไซต์', 'ดีไซน์หน้าเว็บให้สวยงาม น่าใช้งาน และตอบโจทย์ UX', 5, '10,000–25,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
-(22, 4, 'พัฒนาเว็บไซต์ด้วย HTML/CSS', 'รับสร้างเว็บไซต์พื้นฐานด้วย HTML/CSS ตามแบบที่ลูกค้าต้องการ', 6, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 58),
-(23, 2, 'ออกแบบป้าย', 'รับออกแบบป้าย ทันสมัย,สีสันสดสวย,คุ้มราคา100%', 1, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 67);
+(1, 2, 'รับพัฒนาเว็บไซต์ | งานด่วน งานเร่ง ทักเลย! (Front-end, Back-end, Full-Stack Development)', 'เปลี่ยนไอเดียให้เป็นเว็บไซต์ที่ใช้งานได้จริง ด้วยทีมพัฒนาครบวงจร!\r\nเราคือผู้เชี่ยวชาญด้านการ พัฒนาเว็บไซต์แบบครบวงจร (Full-Stack) ที่พร้อมส่งมอบเว็บไซต์คุณภาพสูง ปลอดภัย และตอบโจทย์ธุรกิจของคุณ\r\n', 3, '10,000-25,000 บาท', '2025-06-07 15:44:37', 'active', 0, 70),
+(2, 2, 'รับออกแบบกราฟิกครบวงจร: โลโก้, สื่อสิ่งพิมพ์, โซเชียลมีเดีย (ใช้ Canva, Ai, Ps)', '✨ ยกระดับภาพลักษณ์แบรนด์ให้โดดเด่น ด้วยงานออกแบบมืออาชีพ\r\nเราคือทีมงาน/นักออกแบบอิสระ ที่ให้บริการ ออกแบบกราฟิกแบบครบวงจร ครอบคลุมทุกความต้องการด้านสื่อสารการตลาดของคุณ\r\n', 1, '3,000-8,000 บาท', '2025-06-07 15:44:37', 'active', 0, 71),
+(3, 4, 'รับออกแบบกราฟิกและสร้างแบรนด์! (Logo, Poster, Social Media) ตรงกับสไตล์ธุรกิจคุณ', 'เราคือนักออกแบบอิสระ ที่เข้าใจว่างานกราฟิกที่ดีต้องไม่แค่สวย แต่ต้อง ตรงกับเอกลักษณ์ของแบรนด์ และ เข้าถึงกลุ่มลูกค้าเป้าหมาย ได้อย่างมีประสิทธิภาพ', 1, '5,000-15,000 บาท', '2025-06-07 15:44:37', 'active', 0, 75),
+(16, 4, 'รับงานแล้ววันนี้! ออกแบบกราฟิก โลโก้ และโพสต์โปรโมตสุดปัง (พร้อมลุยงานด่วน!)', 'พร้อมรับบรีฟ! ใครที่กำลังมองหานักออกแบบกราฟิกคุณภาพ ทักมาจองคิวได้เลย\r\nเรายินดีให้บริการออกแบบกราฟิกหลากหลายรูปแบบ เพื่อช่วยให้แบรนด์และธุรกิจของคุณโดดเด่นในโลกออนไลน์และออฟไลน์', 1, '5,000–10,000 บาท', '2025-07-10 16:43:43', 'active', 0, 72),
+(19, 4, 'รับออกแบบโลโก้ร้านอาหารและคาเฟ่ (สไตล์คลาสสิก, น่ารัก, มินิมอล)', 'อยากให้ร้านอาหารของคุณโดดเด่นและน่าจดจำ เริ่มต้นด้วยโลโก้ที่ใช่!\r\nเราคือผู้เชี่ยวชาญด้านการออกแบบโลโก้สำหรับธุรกิจอาหารและเครื่องดื่มโดยเฉพาะผลงานจากภาพประกอบ', 4, '1,500–4,000 บาท', '2025-07-10 16:43:43', 'active', 0, 73),
+(21, 2, 'รับออกแบบ UX/UI (Website & Mobile App) ด้วย Figma - พร้อมส่งต่องานโค้ดดิ้งแบบมืออาชีพ', 'สร้างผลิตภัณฑ์ดิจิทัลที่สวยงามและใช้งานง่าย (Design that works!)\r\nเรามีความเชี่ยวชาญในการออกแบบ UX/UI สำหรับ เว็บไซต์ (Web Design) และ แอปพลิเคชันมือถือ (Mobile Application) ทุกแพลตฟอร์ม โดยมุ่งเน้นที่การสร้างประสบการณ์ผู้ใช้ (UX) ที่ราบรื่นและหน้าตา (UI) ที่น่าดึงดูดและทันสมัย\r\n', 2, '10,000–25,000 บาท', '2025-07-10 16:43:43', 'active', 0, 69),
+(22, 4, 'รับออกแบบกราฟิกครบวงจร | เนรมิตทุกไอเดียให้เป็นภาพที่น่าทึ่ง (Branding, Social, Web)', 'หยุดคิด... แล้วมาเริ่มลงมือทำ! เราช่วย \"เปลี่ยนความคิดของคุณให้กลายเป็นภาพที่น่าทึ่ง\"\r\nเราพร้อมเป็นพาร์ทเนอร์ในการสร้างสรรค์งานกราฟิกคุณภาพสูง เพื่อเสริมสร้างภาพลักษณ์และยอดขายให้กับธุรกิจของคุณ', 1, '2,000–10,000 บาท', '2025-07-10 16:43:43', 'active', 0, 74),
+(23, 2, 'รับออกแบบโลโก้สไตล์คาแรกเตอร์/มาสคอตน่ารัก (Logo & Mascot Design)', '✨ ยกระดับแบรนด์ของคุณให้น่าจดจำ ด้วยโลโก้ที่แตกต่าง!\r\nลโก้สไตล์คาแรกเตอร์, มาสคอต, และลายเส้นน่ารัก ที่ช่วยเสริมภาพลักษณ์ให้แบรนด์ของคุณเข้าถึงง่ายและเป็นกันเอง', 4, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 68),
+(48, 15, 'รับวาดภาพประกอบ (Illustration) สไตล์ ART STUDIO | งานลายเส้น, Engraving, หรือ Conceptual Art', 'เราคือ ART STUDIO ที่หลงใหลในศิลปะลายเส้นและความงามแบบคลาสสิก (ตามตัวอย่างภาพประกอบ) หากคุณกำลังมองหาภาพประกอบที่ไม่ใช่แค่รูปวาด แต่คือ งานศิลปะที่มีความหมาย เราพร้อมเปลี่ยนไอเดียของคุณให้เป็นภาพที่น่าทึ่ง!', 5, '500–3000 บาท', '2025-10-01 15:52:23', 'active', 0, 76),
+(49, 15, 'ART DESIGN STUDIO: รับวาดภาพประกอบลายเส้นเฉพาะทาง และงานศิลปะเพื่อการสร้างแบรนด์', 'ART DESIGN STUDIO ผู้เชี่ยวชาญในการสร้างสรรค์ งานภาพประกอบ (Illustration) ที่มีเอกลักษณ์ เราให้ความสำคัญกับลายเส้นแบบคลาสสิกและเทคนิคการวาดที่เน้นรายละเอียด (แบบเดียวกับภาพตัวอย่างที่เราแนบมา)\\r\\n\\r\\nงานของเราไม่ใช่แค่การวาดรูปให้เสร็จไป แต่คือการสร้างสรรค์ \\\"งานศิลปะ\\\" ที่จะมาช่วยเล่าเรื่องราวของแบรนด์คุณได้อย่างลึกซึ้ง', 5, '500–3000 บาท', '2025-10-01 15:58:31', 'active', 0, 77),
+(50, 16, 'EXCLUSIVE PHOTOGRAPHY: ถ่ายภาพผลิตภัณฑ์ งานแต่งงาน และจัดฉากคอนเซ็ปต์ | บันทึกทุกรายละเอียดและอารมณ์', 'ทีมงานผู้เปี่ยมด้วยความมุ่งมั่นและใส่ใจในรายละเอียด เราไม่ได้บันทึกแค่ภาพ แต่บันทึกทั้งอารมณ์และเรื่องราวต่าง ๆ\\r\\n\\r\\nEXCLUSIVE PHOTOGRAPHY ขอนำเสนอบริการถ่ายภาพคุณภาพสูงที่พร้อมยกระดับภาพลักษณ์และบันทึกช่วงเวลาสำคัญของคุณด้วยมุมมองระดับมืออาชีพ', 6, '7,500–25,000 บาท', '2025-10-01 16:07:42', 'active', 0, 78),
+(51, 16, 'รับถ่ายภาพผลิตภัณฑ์ และจัดฉากสร้างเรื่องราว!', 'กำลังมองหาช่างภาพที่ถ่ายทอดงานออกมาได้ สวย คมชัด และมีชีวิตชีวา อยู่ใช่ไหม? เราคือทีมช่างภาพ DIGITAL PHOTOGRAPHY SERVICES ที่พร้อมจะบันทึกทุกโมเมนต์สำคัญและสร้างสรรค์ภาพถ่ายสุดปังให้กับคุณ!', 6, '7,500–25,000 บาท', '2025-10-01 16:11:19', 'active', 0, 79),
+(52, 17, 'รับวาด Storyboarding (ภาพร่างลำดับฉาก) สำหรับงาน Production, โฆษณา และวิดีโอ', 'เราคือทีมงานผู้เชี่ยวชาญด้าน Storyboard ที่พร้อมช่วยคุณ วาดภาพลำดับฉากเพื่อสื่อสารเรื่องราว มุมกล้อง การเคลื่อนไหว และจังหวะของงาน ให้ทีมงานทั้งหมดเห็นภาพตรงกันก่อนเริ่ม Production', 6, '500–2,000 บาท', '2025-10-01 16:45:17', 'active', 0, 80),
+(53, 17, 'รับวาดภาพประกอบแฟชั่น (Fashion Illustration) และ Digital Painting | สร้างสรรค์งานวาดคุณภาพด้วย iPad', 'เราคือผู้เชี่ยวชาญด้าน Illustration ที่ผสมผสานเทคนิคการวาดแบบดั้งเดิมเข้ากับการทำงานดิจิทัลสมัยใหม่ เพื่อส่งมอบภาพประกอบคุณภาพสูงที่ตอบโจทย์งานออกแบบและสื่อสารแบรนด์ของคุณ', 6, '1000–3000 บาท', '2025-10-01 16:47:03', 'active', 0, 81),
+(54, 17, 'รับพัฒนาเว็บไซต์ครบวงจร (Website Development Service) | สร้างเว็บสวย ทันสมัย ตอบโจทย์ธุรกิจ!', 'เราคือทีมงานผู้เชี่ยวชาญด้าน Website Development ที่พร้อมเปลี่ยนความต้องการและวิสัยทัศน์ของคุณให้กลายเป็นเว็บไซต์ที่ ใช้งานง่าย, ดีไซน์สวยงาม, และทำงานได้อย่างรวดเร็ว บนทุกอุปกรณ์ (Responsive Design)', 3, '10,000–20,000 บาท', '2025-10-01 16:52:05', 'active', 0, 82);
 
 -- --------------------------------------------------------
 
@@ -366,8 +367,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (22, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:33:15'),
 (23, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 13:33:36'),
 (24, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:34:04'),
-(25, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-06-24 13:34:19'),
-(26, 7, 'Login Attempt Failed', 'Invalid user type: designer for user pakawat.in', '::1', '2025-06-24 13:34:19'),
 (27, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:36:13'),
 (28, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-06-24 13:36:34'),
 (29, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:38:45'),
@@ -375,7 +374,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (31, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 13:46:19'),
 (32, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-06-24 13:46:27'),
 (33, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:47:01'),
-(34, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-06-24 13:49:33'),
 (35, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-06-24 13:49:42'),
 (36, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 13:49:52'),
 (37, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-06-24 13:50:18'),
@@ -385,8 +383,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (41, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 13:52:22'),
 (42, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 13:56:22'),
 (43, 8, 'Login Attempt Failed', 'Account not approved: chalida', '::1', '2025-06-24 13:56:36'),
-(44, 7, 'Login Attempt Failed', 'Incorrect password for: pakawat.in', '::1', '2025-06-24 13:57:34'),
-(45, 7, 'Login Attempt Failed', 'Account not approved: pakawat.in', '::1', '2025-06-24 13:57:41'),
 (46, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:57:49'),
 (47, 2, 'Login Attempt Failed', 'Inactive account: khoapun', '::1', '2025-06-24 13:58:07'),
 (48, 3, 'Login Attempt Failed', 'Account not approved: beer888', '::1', '2025-06-24 13:58:22'),
@@ -399,7 +395,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (55, 2, 'Login Attempt Failed', 'Account not approved: khoapun', '::1', '2025-06-24 14:00:05'),
 (56, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-24 14:00:09'),
 (57, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-06-24 14:00:23'),
-(58, 7, 'Login Attempt Failed', 'Account not approved: pakawat.in', '::1', '2025-06-24 14:00:41'),
 (59, 8, 'Login Attempt Failed', 'Account not approved: chalida', '::1', '2025-06-24 14:00:45'),
 (60, 9, 'Login Attempt Failed', 'Account not approved: party', '::1', '2025-06-24 14:53:24'),
 (61, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-06-24 14:53:32'),
@@ -426,22 +421,14 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (82, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-30 21:29:33'),
 (83, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-06-30 22:40:26'),
 (84, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-03 15:43:27'),
-(85, 7, 'Login Attempt Failed', 'Incorrect password for: pakawat.in', '::1', '2025-07-03 15:51:11'),
-(86, 7, 'Login Attempt Failed', 'Account not approved: pakawat.in', '::1', '2025-07-03 15:51:24'),
 (87, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-03 15:51:34'),
-(88, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-03 15:52:42'),
 (89, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-03 15:53:32'),
 (90, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-03 15:55:30'),
-(91, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-03 15:55:46'),
-(92, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-03 15:56:48'),
-(93, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-03 15:57:26'),
-(94, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-03 16:04:11'),
 (95, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-03 16:05:04'),
 (96, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-07-03 16:05:44'),
 (97, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-07-07 16:25:23'),
 (98, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-07-07 17:44:12'),
 (99, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-07-07 17:47:09'),
-(100, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-07 17:47:19'),
 (101, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-07 17:47:28'),
 (102, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-07 17:49:05'),
 (103, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-07 17:49:51'),
@@ -463,7 +450,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (119, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:02:56'),
 (120, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:04:01'),
 (121, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:14:58'),
-(122, 7, 'Login Successful', 'User logged in: pakawat.in', '::1', '2025-07-10 22:16:08'),
 (123, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:17:44'),
 (124, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:20:19'),
 (125, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-10 22:20:56'),
@@ -574,9 +560,7 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (230, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-16 23:52:18'),
 (231, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-23 23:02:23'),
 (232, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-23 23:52:03'),
-(233, 10, 'Login Attempt Failed', 'Account not approved: party888', '::1', '2025-07-24 00:38:34'),
 (234, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-24 00:38:42'),
-(235, 10, 'Login Successful', 'User logged in: party888', '::1', '2025-07-24 00:38:59'),
 (236, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-24 00:42:01'),
 (237, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-24 00:43:24'),
 (238, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-24 01:19:10'),
@@ -613,7 +597,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (269, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-30 16:13:00'),
 (270, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-30 16:17:28'),
 (271, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-30 16:21:25'),
-(272, 10, 'Login Successful', 'User logged in: party888', '::1', '2025-07-30 16:21:47'),
 (273, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-07-30 16:22:07'),
 (274, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-07-30 16:22:44'),
 (275, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-07-30 16:27:32'),
@@ -921,8 +904,7 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (577, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 01:21:04'),
 (578, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 01:26:34'),
 (579, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 01:27:03'),
-(580, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 01:43:05');
-INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `timestamp`) VALUES
+(580, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 01:43:05'),
 (581, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 01:44:03'),
 (582, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 01:46:17'),
 (583, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 01:47:52'),
@@ -936,14 +918,13 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (591, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 03:32:08'),
 (592, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 03:36:53'),
 (593, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-18 03:38:03'),
-(594, 7, 'Login Successful', 'User logged in: kitsada.in', '::1', '2025-09-18 03:39:55'),
-(595, 10, 'Login Successful', 'User logged in: party888', '::1', '2025-09-18 03:40:28'),
 (596, 5, 'Login Attempt Failed', 'Account not approved: tech_corp', '::1', '2025-09-18 03:42:26'),
 (597, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-18 03:42:35'),
 (598, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-18 03:42:55'),
 (599, 6, 'Login Successful', 'User logged in: krit.ti', '::1', '2025-09-18 03:43:20'),
 (600, 12, 'Login Attempt Failed', 'Incorrect password for: TESTTTTT', '::1', '2025-09-18 03:43:41'),
-(601, 12, 'Login Successful', 'User logged in: TESTTTTT', '::1', '2025-09-18 03:43:54'),
+(601, 12, 'Login Successful', 'User logged in: TESTTTTT', '::1', '2025-09-18 03:43:54');
+INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `timestamp`) VALUES
 (602, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-18 03:46:04'),
 (603, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-18 03:48:42'),
 (604, 2, 'Login Attempt Failed', 'Incorrect password for: khoapun', '::1', '2025-09-18 04:32:35'),
@@ -1006,7 +987,6 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (661, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 04:31:57'),
 (662, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-22 04:33:20'),
 (663, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 04:59:09'),
-(664, 10, 'Login Successful', 'User logged in: party888', '::1', '2025-09-22 05:02:32'),
 (665, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-22 05:03:06'),
 (666, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-22 05:04:13'),
 (667, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-09-22 05:28:17'),
@@ -1289,7 +1269,27 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (944, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:41:11'),
 (945, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:41:41'),
 (946, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:42:47'),
-(947, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:57:55');
+(947, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:57:55'),
+(948, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 18:40:20'),
+(949, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 18:47:11'),
+(950, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 18:48:30'),
+(951, 13, 'Login Successful', 'User logged in: kitsada_bu', '::1', '2025-10-01 18:49:35'),
+(952, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 19:20:37'),
+(953, 14, 'Login Successful', 'User logged in: Tanapat_Mu', '::1', '2025-10-01 19:21:22'),
+(954, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 19:50:24'),
+(956, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 19:51:51'),
+(957, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 20:01:25'),
+(958, 17, 'Login Successful', 'User logged in: kittipong_tu', '::1', '2025-10-01 20:02:19'),
+(959, 15, 'Login Successful', 'User logged in: Rachata_Pu', '::1', '2025-10-01 20:03:19'),
+(960, 17, 'Login Successful', 'User logged in: kittipong_tu', '::1', '2025-10-01 20:13:23'),
+(961, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 20:14:16'),
+(962, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 20:37:02'),
+(963, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 22:19:41'),
+(964, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 22:20:29'),
+(965, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 22:23:06'),
+(966, 15, 'Login Successful', 'User logged in: Rachata_Pu', '::1', '2025-10-01 22:29:17'),
+(967, 16, 'Login Successful', 'User logged in: Greakchai_Nu', '::1', '2025-10-01 23:00:39'),
+(968, 17, 'Login Successful', 'User logged in: kittipong_tu', '::1', '2025-10-01 23:42:34');
 
 -- --------------------------------------------------------
 
@@ -1842,7 +1842,22 @@ INSERT INTO `uploaded_files` (`file_id`, `contract_id`, `job_post_id`, `uploader
 (64, NULL, NULL, 4, 'job_img_68d46b58463801758751576.png', '../uploads/job_images/job_img_68d46b58463801758751576.png', '2025-09-24 22:06:16', 287932, NULL, 'image/png', '2025-09-25 05:06:16'),
 (65, NULL, NULL, 4, 'job_img_68d46df1c2b501758752241.png', '../uploads/job_images/job_img_68d46df1c2b501758752241.png', '2025-09-24 22:17:21', 571371, NULL, 'image/png', '2025-09-25 05:17:21'),
 (66, NULL, NULL, 4, 'job_img_68d46e083a8121758752264.png', '../uploads/job_images/job_img_68d46e083a8121758752264.png', '2025-09-24 22:17:44', 55987, NULL, 'image/png', '2025-09-25 05:17:44'),
-(67, NULL, NULL, 2, 'job_img_68d90e5abebc61759055450.png', '../uploads/job_images/job_img_68d90e5abebc61759055450.png', '2025-09-28 10:30:50', 287932, NULL, 'image/png', '2025-09-28 17:30:50');
+(67, NULL, NULL, 2, 'job_img_68d90e5abebc61759055450.png', '../uploads/job_images/job_img_68d90e5abebc61759055450.png', '2025-09-28 10:30:50', 287932, NULL, 'image/png', '2025-09-28 17:30:50'),
+(68, NULL, NULL, 2, 'job_img_68dd2b21c43e61759324961.png', '../uploads/job_images/job_img_68dd2b21c43e61759324961.png', '2025-10-01 13:22:41', 215593, NULL, 'image/png', '2025-10-01 20:22:41'),
+(69, NULL, NULL, 2, 'job_img_68dd2c50b83af1759325264.png', '../uploads/job_images/job_img_68dd2c50b83af1759325264.png', '2025-10-01 13:27:44', 140746, NULL, 'image/png', '2025-10-01 20:27:44'),
+(70, NULL, NULL, 2, 'job_img_68dd2d24eb6d61759325476.png', '../uploads/job_images/job_img_68dd2d24eb6d61759325476.png', '2025-10-01 13:31:16', 287932, NULL, 'image/png', '2025-10-01 20:31:16'),
+(71, NULL, NULL, 2, 'job_img_68dd2df2ef32f1759325682.png', '../uploads/job_images/job_img_68dd2df2ef32f1759325682.png', '2025-10-01 13:34:42', 1116147, NULL, 'image/png', '2025-10-01 20:34:42'),
+(72, NULL, NULL, 4, 'job_img_68dd2f524aab41759326034.png', '../uploads/job_images/job_img_68dd2f524aab41759326034.png', '2025-10-01 13:40:34', 431342, NULL, 'image/png', '2025-10-01 20:40:34'),
+(73, NULL, NULL, 4, 'job_img_68dd444bea5b91759331403.png', '../uploads/job_images/job_img_68dd444bea5b91759331403.png', '2025-10-01 15:10:03', 178893, NULL, 'image/png', '2025-10-01 22:10:03'),
+(74, NULL, NULL, 4, 'job_img_68dd44f2204261759331570.png', '../uploads/job_images/job_img_68dd44f2204261759331570.png', '2025-10-01 15:12:50', 370937, NULL, 'image/png', '2025-10-01 22:12:50'),
+(75, NULL, NULL, 4, 'job_img_68dd4624ad3561759331876.png', '../uploads/job_images/job_img_68dd4624ad3561759331876.png', '2025-10-01 15:17:56', 784660, NULL, 'image/png', '2025-10-01 22:17:56'),
+(76, NULL, NULL, 15, 'job_img_68dd4e37ea5ba1759333943.png', '../uploads/job_images/job_img_68dd4e37ea5ba1759333943.png', '2025-10-01 15:52:23', 731083, NULL, 'image/png', '2025-10-01 22:52:23'),
+(77, NULL, NULL, 15, 'job_img_68dd4fa78d3641759334311.png', '../uploads/job_images/job_img_68dd4fa78d3641759334311.png', '2025-10-01 15:58:31', 207416, NULL, 'image/png', '2025-10-01 22:58:31'),
+(78, NULL, NULL, 16, 'job_img_68dd51ce9309e1759334862.png', '../uploads/job_images/job_img_68dd51ce9309e1759334862.png', '2025-10-01 16:07:42', 564416, NULL, 'image/png', '2025-10-01 23:07:42'),
+(79, NULL, NULL, 16, 'job_img_68dd52a79bb411759335079.png', '../uploads/job_images/job_img_68dd52a79bb411759335079.png', '2025-10-01 16:11:19', 326731, NULL, 'image/png', '2025-10-01 23:11:19'),
+(80, NULL, NULL, 17, 'job_img_68dd5a9d9c8b81759337117.png', '../uploads/job_images/job_img_68dd5a9d9c8b81759337117.png', '2025-10-01 16:45:17', 1009003, NULL, 'image/png', '2025-10-01 23:45:17'),
+(81, NULL, NULL, 17, 'job_img_68dd5b078c5ab1759337223.png', '../uploads/job_images/job_img_68dd5b078c5ab1759337223.png', '2025-10-01 16:47:03', 1151513, NULL, 'image/png', '2025-10-01 23:47:03'),
+(82, NULL, NULL, 17, 'job_img_68dd5c3509f3d1759337525.png', '../uploads/job_images/job_img_68dd5c3509f3d1759337525.png', '2025-10-01 16:52:05', 387470, NULL, 'image/png', '2025-10-01 23:52:05');
 
 -- --------------------------------------------------------
 
@@ -1872,14 +1887,17 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `is_verified`, `last_login`) VALUES
-(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, '2025-09-30 23:35:19'),
-(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-10-01 16:15:25', 1, 1, '2025-10-01 10:42:47'),
+(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, '2025-10-01 15:23:06'),
+(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-10-01 16:15:25', 1, 1, '2025-10-01 13:14:16'),
 (3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-25 18:02:49', 1, 1, '2025-10-01 07:14:55'),
-(4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 1, '2025-10-01 08:51:05'),
+(4, 'anna', '1234', 'anna@portfolio.net', 'แอนนา', 'ลี', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 1, '2025-10-01 13:37:02'),
 (5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-10-01 17:42:38', 1, 1, '2025-10-01 10:57:55'),
 (6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, 0, NULL),
-(7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, 0, NULL),
-(10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL);
+(13, 'Kitsada_Bu', '1234', 'kitsada.bu@rmuti.ac.th', 'กฤษดา', 'บุญจันดา', '0950472491', 'client', '2025-10-01 11:41:57', 1, NULL, 1, 0, '2025-10-01 11:49:35'),
+(14, 'Tanapat_Mu', '1234', 'tanapat.mu@rmuti.ac.th', 'ธนพัฒน์', 'เมืองทอง', '0984752634', 'client', '2025-10-01 12:20:23', 1, NULL, 1, 0, '2025-10-01 12:21:22'),
+(15, 'Rachata_Pu', '1234', 'rachata.pu@rmuti.ac.th', 'รชตะ', 'ปุ่นโพธิ์', '0442532255', 'designer', '2025-10-01 12:46:54', 1, NULL, 1, 0, '2025-10-01 15:29:17'),
+(16, 'Greakchai_Nu', '1234', 'greakchai_nu@rmuti.ac.th', 'เกริกชัย', 'หนูจักร', '0636688757', 'designer', '2025-10-01 12:48:25', 1, NULL, 1, 0, '2025-10-01 16:00:39'),
+(17, 'Kittipong_tu', '1234', 'kittipong.tu@rmuti.ac.th', 'กิตติพงศ์', 'เถื่อนกลาง', '0998019287', 'designer', '2025-10-01 13:01:19', 1, NULL, 1, 0, '2025-10-01 16:42:34');
 
 -- --------------------------------------------------------
 
@@ -2078,13 +2096,13 @@ ALTER TABLE `job_categories`
 -- AUTO_INCREMENT for table `job_postings`
 --
 ALTER TABLE `job_postings`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=948;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=969;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -2126,13 +2144,13 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `uploaded_files`
 --
 ALTER TABLE `uploaded_files`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `verification_submissions`
