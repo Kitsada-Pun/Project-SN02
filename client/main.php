@@ -86,7 +86,31 @@ if ($result_job_postings) {
 
 // 5. เรียกใช้ Header
 include '../includes/header.php';
+
 ?>
+<style>
+    /* --- Animation Styles --- */
+
+    /* 1. สำหรับ Header (ค่อยๆ ปรากฏขึ้น) */
+    .animate-fade-in {
+        opacity: 0;
+        transition: opacity 1.2s ease-out;
+    }
+    .animate-fade-in.is-visible {
+        opacity: 1;
+    }
+
+    /* 2. สำหรับ Card ต่างๆ (ค่อยๆ ปรากฏขึ้นและเลื่อนขึ้น) */
+    .animate-card-appear {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .animate-card-appear.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
 <main class="flex-grow">
     <nav class="bg-white/80 backdrop-blur-sm p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
@@ -105,7 +129,7 @@ include '../includes/header.php';
 
     <header class="hero-section flex-grow flex items-center justify-center text-white py-16 relative overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('../dist/img/cover.png');"></div>
-        <div class="text-center text-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl relative z-10 mx-4">
+        <div class="text-center text-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl relative z-10 mx-4 animate-fade-in">
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-extralight mb-4 md:mb-6 leading-tight">ค้นหาฟรีแลนซ์มืออาชีพ</h1>
             <p class="text-base sm:text-lg md:text-xl mb-6 md:mb-8 leading-relaxed opacity-90 font-light">เปลี่ยนไอเดียของคุณให้เป็นจริง กับนักออกแบบกว่าพันคนบน PixelLink</p>
             <form action="../job_listings.php" method="GET" class="mt-8 max-w-2xl mx-auto">
@@ -124,7 +148,7 @@ include '../includes/header.php';
     <div class="container mx-auto px-4 md:px-6 -mt-20">
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300">
+            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300 animate-card-appear">
                 <div class="bg-blue-100 text-blue-600 p-4 rounded-full"><i class="fas fa-tasks fa-lg"></i></div>
                 <div>
                     <h3 class="font-bold text-gray-800">จัดการคำขอจ้างงานของคุณ</h3>
@@ -141,7 +165,7 @@ include '../includes/header.php';
             </div>
 
 
-            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300 relative">
+            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300 animate-card-appear">
                 <div class="bg-green-100 text-green-600 p-4 rounded-full"><i class="fas fa-comments fa-lg"></i></div>
                 <div>
                     <h3 class="font-bold text-gray-800">กล่องข้อความ</h3>
@@ -156,7 +180,7 @@ include '../includes/header.php';
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300">
+            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4 hover:shadow-xl transition-shadow duration-300 animate-card-appear">
                 <div class="bg-purple-100 text-purple-600 p-4 rounded-full"><i class="fas fa-user-circle fa-lg"></i></div>
                 <div>
                     <h3 class="font-bold text-gray-800">โปรไฟล์ของคุณ</h3>
@@ -171,7 +195,7 @@ include '../includes/header.php';
                 $icons = ['fas fa-palette', 'fas fa-vector-square', 'fas fa-desktop', 'fas fa-camera-retro', 'fas fa-pen-nib', 'fas fa-bullhorn'];
                 $i = 0;
                 foreach ($categories as $cat): ?>
-                    <a href="job_listings_client.php?type=postings&category=<?= $cat['category_id'] ?>" class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
+                    <a href="job_listings_client.php?type=postings&category=<?= $cat['category_id'] ?>" class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center animate-card-appear">
                         <i class="<?= $icons[$i++] ?? 'fas fa-star' ?> fa-2x text-blue-500 mb-2"></i>
                         <span class="font-semibold text-gray-700 text-sm"><?= htmlspecialchars($cat['category_name']) ?></span>
                     </a>
@@ -196,7 +220,7 @@ include '../includes/header.php';
             <?php else: ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     <?php foreach ($job_postings_from_others as $job): ?>
-                        <div class="card-item flex flex-col">
+                        <div class="card-item flex flex-col animate-card-appear">
                             <?php
                             $image_path = str_replace('', '', $job['job_image_path']);
                             $image_source = (!empty($image_path) && file_exists($image_path)) ? htmlspecialchars($image_path) : '../dist/img/pdpa02.jpg';
@@ -231,7 +255,55 @@ include '../includes/header.php';
     </section>
     </div>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Animation สำหรับ Header ---
+        const heroContent = document.querySelector('.animate-fade-in');
+        if (heroContent) {
+            // หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่าหน้าเว็บพร้อมแสดงผล
+            setTimeout(() => {
+                heroContent.classList.add('is-visible');
+            }, 100);
+        }
 
+        // --- 2. Animation สำหรับ Card ที่จะปรากฏเมื่อ Scroll ---
+        const cards = document.querySelectorAll('.animate-card-appear');
+
+        // ตั้งค่าตัวตรวจจับ
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // เริ่มทำงานเมื่อเห็น Card 10%
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    // หน่วงเวลาให้แต่ละ Card ปรากฏไม่พร้อมกันเพื่อความสวยงาม
+                    setTimeout(() => {
+                        entry.target.classList.add('is-visible');
+                    }, index * 100);
+
+                    // หยุดตรวจจับ Card ที่แสดงผลไปแล้ว
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // เริ่มตรวจจับทุก Card
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
 <?php
 include '../includes/footer.php';
 ?>

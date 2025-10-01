@@ -134,6 +134,29 @@ if ($stmt) {
 
 $condb->close();
 ?>
+<style>
+    /* --- Animation Styles --- */
+
+    /* 1. สำหรับ Header และ Form (ค่อยๆ ปรากฏขึ้น) */
+    .animate-fade-in {
+        opacity: 0;
+        transition: opacity 1.2s ease-out;
+    }
+    .animate-fade-in.is-visible {
+        opacity: 1;
+    }
+
+    /* 2. สำหรับ Card ต่างๆ (ค่อยๆ ปรากฏขึ้นและเลื่อนขึ้น) */
+    .animate-card-appear {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .animate-card-appear.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
 <?php include '../includes/header.php'; ?>
 <body class="min-h-screen flex flex-col">
 
@@ -156,12 +179,12 @@ $condb->close();
         <section id="job-listings" class="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-gray-50">
             <div class="container mx-auto px-4 md:px-6">
 
-                <div class="text-center mb-12">
+                <div class="text-center mb-12 animate-fade-in">
                     <h1 class="text-4xl md:text-5xl font-bold text-gradient"><?= htmlspecialchars($page_title) ?></h1>
                     <p class="mt-4 text-lg text-slate-600">ค้นหางานที่ใช่ หรือนักออกแบบที่โดนใจคุณได้ที่นี่</p>
                 </div>
 
-                <form action="job_listings_client.php" method="GET" class="mb-12 p-6 bg-white rounded-xl shadow-lg">
+                <form action="job_listings_client.php" method="GET" class="mb-12 p-6 bg-white rounded-xl shadow-lg animate-fade-in">
                     <input type="hidden" name="type" value="<?= htmlspecialchars($type) ?>">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                         <div class="col-span-1 md:col-span-2">
@@ -191,7 +214,7 @@ $condb->close();
                 <?php else: ?>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         <?php foreach ($jobs as $job): ?>
-                            <div class="card-item flex flex-col">
+                            <div class="card-item flex flex-col animate-card-appear">
                                 <?php
                                 $image_source = '../dist/img/pdpa02.jpg'; // Default image
                                 if (!empty($job['job_image_path'])) {
@@ -229,7 +252,45 @@ $condb->close();
             </div>
         </section>
     </main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Animation สำหรับ Header และ Form (Fade In) ---
+        const fadeElements = document.querySelectorAll('.animate-fade-in');
+        fadeElements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add('is-visible');
+            }, index * 150); // หน่วงเวลาเล็กน้อยให้แสดงผลไม่พร้อมกัน
+        });
 
+        // --- 2. Animation สำหรับ Card ที่จะปรากฏเมื่อ Scroll ---
+        const cards = document.querySelectorAll('.animate-card-appear');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // เริ่มทำงานเมื่อเห็น Card 10%
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    // หน่วงเวลาให้แต่ละ Card ปรากฏไม่พร้อมกัน
+                    setTimeout(() => {
+                        entry.target.classList.add('is-visible');
+                    }, index * 150);
+
+                    // หยุดตรวจจับ Card ที่แสดงผลไปแล้ว
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // เริ่มตรวจจับทุก Card
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
     
 
 <?php include '../includes/footer.php'; ?>

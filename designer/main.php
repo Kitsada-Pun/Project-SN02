@@ -148,6 +148,27 @@ $condb->close();
         display: inline-block;
         /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
     }
+    /*
+     Class นี้จะใช้สำหรับควบคุมสถานะเริ่มต้นและการเปลี่ยนผ่านของ Animation
+     เราจะใช้ JavaScript ในการควบคุม opacity และ transform
+    */
+    .animate-fade-in {
+        opacity: 0;
+        transition: opacity 1.2s ease-out, transform 1s ease-out;
+    }
+
+    .animate-fade-in.is-visible {
+        opacity: 1;
+    }
+    .animate-card-appear {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .animate-card-appear.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
 </style>
 
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -179,14 +200,11 @@ $condb->close();
 
     <header class="hero-section flex-grow flex items-center justify-center text-white py-16 relative overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('../dist/img/cover.png');"></div>
-        <div class="text-center text-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl relative z-10 mx-4">
+        <div class="text-center text-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl relative z-10 mx-4 animate-fade-in">
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-extralight mb-4 md:mb-6 leading-tight">พื้นที่ทำงานนักออกแบบ</h1>
             <p class="text-base sm:text-lg md:text-xl mb-6 md:mb-8 leading-relaxed opacity-90 font-light">จัดการโครงการของคุณ, ค้นหางานใหม่, และนำเสนอผลงานสู่ผู้ว่าจ้าง</p>
 
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-4 flex-wrap">
-                <!-- <a href="#available-jobs" class="bg-blue-500 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto mb-3 sm:mb-0 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 whitespace-nowrap">
-                    <i class="fas fa-search mr-2"></i> หางานใหม่
-                </a> -->
                 <a href="create_job_post.php" class="bg-purple-600 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto mb-3 sm:mb-0 hover:bg-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-300 whitespace-nowrap">
                     <i class="fas fa-bullhorn mr-2"></i> โพสต์บริการ
                 </a>
@@ -225,7 +243,7 @@ $condb->close();
             <?php else: ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     <?php foreach ($job_postings_from_others as $job): ?>
-                        <div class="card-item flex flex-col">
+                        <div class="card-item flex flex-col animate-card-appear">
                             <?php
                             // [จุดที่แก้ไข] แก้ไข path รูปภาพให้ถูกต้อง
                             $image_path = !empty($job['job_image_path']) ? str_replace('', '', $job['job_image_path']) : '';
@@ -261,8 +279,54 @@ $condb->close();
     <?php include '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // ... (JavaScript เดิมของคุณไม่ต้องแก้ไข) ...
-    </script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Animation สำหรับ Header (ค่อยๆ ปรากฏ) ---
+        const heroContent = document.querySelector('.animate-fade-in');
+        if (heroContent) {
+            setTimeout(() => {
+                heroContent.classList.add('is-visible');
+            }, 100);
+        }
+
+        // --- 2. Animation สำหรับ Card (ปรากฏเมื่อ Scroll) ---
+        const cardsToAnimate = document.querySelectorAll('.animate-card-appear');
+
+        // ตั้งค่าตัวตรวจจับการมองเห็น
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // เริ่มทำงานเมื่อเห็น Card 10%
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry, index) => {
+                // ถ้า Card เข้ามาในหน้าจอ
+                if (entry.isIntersecting) {
+                    // หน่วงเวลาให้แต่ละ Card ปรากฏไม่พร้อมกัน
+                    setTimeout(() => {
+                        entry.target.classList.add('is-visible');
+                    }, index * 100);
+
+                    // หยุดตรวจจับ Card ที่แสดงผลไปแล้ว
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // เริ่มตรวจจับทุก Card ที่มี class '.animate-card-appear'
+        cardsToAnimate.forEach(card => {
+            observer.observe(card);
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

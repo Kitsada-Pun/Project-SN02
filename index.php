@@ -339,6 +339,28 @@ $condb->close();
         .pixellink-logo-footer b {
             color: #0d96d2;
         }
+
+        /* 1. สำหรับ Header (ค่อยๆ ปรากฏขึ้น) */
+        .animate-fade-in {
+            opacity: 0;
+            transition: opacity 1.2s ease-out;
+        }
+
+        .animate-fade-in.is-visible {
+            opacity: 1;
+        }
+
+        /* 2. สำหรับ Card ต่างๆ (ค่อยๆ ปรากฏขึ้นและเลื่อนขึ้น) */
+        .animate-card-appear {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .animate-card-appear.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -399,7 +421,7 @@ $condb->close();
             <?php else : ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     <?php foreach ($job_postings as $job) : ?>
-                        <div class="card-item flex  flex-col">
+                        <div class="card-item flex  flex-col animate-card-appear">
 
                             <?php
                             $image_source = 'dist/img/pdpa02.jpg'; // รูปสำรอง
@@ -444,7 +466,7 @@ $condb->close();
             <h2 class="text-3xl md:text-4xl font-semibold mb-8 md:mb-12 text-gradient">PixelLink:
                 พันธมิตรทางธุรกิจของคุณ</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-                <div class="card-item p-6 md:p-8 flex flex-col items-center">
+                <div class="card-item p-6 md:p-8 flex flex-col items-center animate-card-appear">
                     <i class="fas fa-search fa-3x feature-icon mb-4 md:mb-6"></i>
                     <h3 class="text-xl md:text-2xl font-semibold mb-2 md:mb-4 text-gray-800">ค้นหานักออกแบบที่เหมาะสม
                     </h3>
@@ -452,7 +474,7 @@ $condb->close();
                         เข้าถึงเครือข่ายนักออกแบบผู้เชี่ยวชาญจากหลากหลายสาขา พร้อมโปรไฟล์และผลงานที่เชื่อถือได้
                         เพื่อคัดเลือกบุคลากรที่ตรงกับความต้องการของคุณ</p>
                 </div>
-                <div class="card-item p-6 md:p-8 flex flex-col items-center">
+                <div class="card-item p-6 md:p-8 flex flex-col items-center animate-card-appear">
                     <i class="fas fa-lightbulb fa-3x feature-icon mb-4 md:mb-6" style="color: #0d96d2;"></i>
                     <h3 class="text-xl md:text-2xl font-semibold mb-2 md:mb-4 text-gray-800">สร้างสรรค์นวัตกรรมดีไซน์
                     </h3>
@@ -460,7 +482,7 @@ $condb->close();
                         แพลตฟอร์มที่สนับสนุนการทำงานร่วมกันอย่างมีประสิทธิภาพระหว่างผู้ว่าจ้างและนักออกแบบ
                         เพื่อสร้างสรรค์ผลงานที่โดดเด่นและตอบโจทย์ธุรกิจ</p>
                 </div>
-                <div class="card-item p-6 md:p-8 flex flex-col items-center">
+                <div class="card-item p-6 md:p-8 flex flex-col items-center animate-card-appear">
                     <i class="fas fa-handshake fa-3x feature-icon mb-4 md:mb-6" style="color: #28a745;"></i>
                     <h3 class="text-xl md:text-2xl font-semibold mb-2 md:mb-4 text-gray-800">ความร่วมมือที่โปร่งใส</h3>
                     <p class="text-sm md:text-base text-gray-600 font-light">ระบบจัดการโครงการ, การสื่อสาร,
@@ -520,24 +542,18 @@ $condb->close();
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Animation สำหรับ Header ---
         const heroContent = document.querySelector('.animate-fade-in');
-        heroContent.style.opacity = '0';
-        setTimeout(() => {
-            heroContent.style.transition = 'opacity 1s ease-out';
-            heroContent.style.opacity = '1';
-        }, 100);
+        if (heroContent) {
+            setTimeout(() => {
+                heroContent.classList.add('is-visible');
+            }, 100);
+        }
 
+        // --- 2. Animation สำหรับ Card ที่จะปรากฏเมื่อ Scroll ---
         const cards = document.querySelectorAll('.animate-card-appear');
+
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -545,16 +561,13 @@ $condb->close();
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
+            entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '0';
-                    entry.target.style.transform = 'translateY(20px)';
+                    // หน่วงเวลาให้แต่ละ Card ปรากฏไม่พร้อมกัน
                     setTimeout(() => {
-                        entry.target.style.transition =
-                            'opacity 0.6s ease-out, transform 0.6s ease-out';
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, 200);
+                        entry.target.classList.add('is-visible');
+                    }, index * 100);
+
                     observer.unobserve(entry.target);
                 }
             });
@@ -562,6 +575,16 @@ $condb->close();
 
         cards.forEach(card => {
             observer.observe(card);
+        });
+
+        // Optional: JavaScript for smooth scrolling to sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
         });
     });
 </script>

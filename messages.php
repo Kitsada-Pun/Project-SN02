@@ -396,6 +396,26 @@ if (isset($_SESSION['user_id'])) {
             background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
+
+        #chat-header a.chat-header-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            /* เอาขีดเส้นใต้เริ่มต้นออก */
+            color: inherit;
+            /* ใช้สีตัวอักษรเดียวกับ parent */
+            transition: opacity 0.2s;
+        }
+
+        #chat-header a.chat-header-link:hover {
+            opacity: 0.8;
+            /* ทำให้โปร่งใสเล็กน้อยเมื่อชี้ */
+        }
+
+        #chat-header a.chat-header-link:hover strong {
+            text-decoration: underline;
+            /* เพิ่มขีดเส้นใต้เฉพาะชื่อเมื่อชี้ */
+        }
     </style>
 </head>
 
@@ -432,9 +452,23 @@ if (isset($_SESSION['user_id'])) {
                             $chat_partner_pic = htmlspecialchars($correct_path);
                         }
                     }
+
+                    // --- [จุดแก้ไข] สร้าง URL สำหรับลิงก์ไปยังโปรไฟล์ ---
+                    $profile_url = '#'; // ค่าเริ่มต้น
+                    if (isset($to_user_info['user_type'])) {
+                        if ($to_user_info['user_type'] === 'designer') {
+                            $profile_url = 'designer/view_client_profile.php?user_id=' . $to_user_id;
+                        } elseif ($to_user_info['user_type'] === 'client') {
+                            $profile_url = 'client/view_profile.php?user_id=' . $to_user_id;
+                        }
+                    }
+                    // --- [สิ้นสุดจุดแก้ไข] ---
                     ?>
-                    <img src="<?= $chat_partner_pic; ?>" alt="User Avatar">
-                    <strong><?php echo htmlspecialchars($to_user_info['username']); ?></strong>
+
+                    <a href="<?= $profile_url ?>" target="_blank" class="chat-header-link">
+                        <img src="<?= $chat_partner_pic; ?>" alt="User Avatar">
+                        <strong><?php echo htmlspecialchars($to_user_info['username']); ?></strong>
+                    </a>
                 </div>
                 <div id="chat-box"></div>
                 <div id="chat-input">
