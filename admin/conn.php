@@ -15,7 +15,7 @@ if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
 
-// *** เพิ่มบรรทัดนี้เพื่อตั้งค่า Charset เป็น utf8mb4 ***
-$condb->set_charset("utf8mb4");
+// *** เพิ่มบรรทัดนี้เพื่อตั้งค่า Charset เป็น utf8 ***
+$condb->set_charset("utf8");
 
 ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 25, 2025 at 01:57 AM
+-- Generation Time: Oct 01, 2025 at 01:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -31,14 +31,14 @@ CREATE TABLE `client_job_requests` (
   `request_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
   `designer_id` int(11) DEFAULT NULL,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `attachment_path` varchar(255) DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `attachment_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `category_id` int(11) DEFAULT NULL,
-  `budget` varchar(100) DEFAULT NULL,
+  `budget` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `deadline` date DEFAULT NULL,
   `posted_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('open','proposed','awaiting_deposit_verification','assigned','draft_submitted','awaiting_final_payment','final_payment_verification','completed','cancelled','rejected','pending_deposit') DEFAULT 'open',
+  `status` enum('open','proposed','awaiting_deposit_verification','assigned','draft_submitted','awaiting_final_payment','final_payment_verification','completed','cancelled','rejected','pending_deposit') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'open',
   `revision_count` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -126,8 +126,8 @@ CREATE TABLE `contracts` (
   `agreed_price` decimal(10,2) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date DEFAULT NULL,
-  `contract_status` enum('pending','active','awaiting_final_payment','completed','cancelled') DEFAULT 'pending',
-  `payment_status` enum('pending','paid','partially_paid','refunded') DEFAULT 'pending',
+  `contract_status` enum('pending','active','awaiting_final_payment','completed','cancelled') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'pending',
+  `payment_status` enum('pending','paid','partially_paid','refunded') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'pending',
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -175,10 +175,10 @@ INSERT INTO `contracts` (`contract_id`, `request_id`, `designer_id`, `client_id`
 CREATE TABLE `designer_portfolio` (
   `portfolio_id` int(11) NOT NULL,
   `designer_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `image_url` varchar(255) NOT NULL,
-  `project_url` varchar(255) DEFAULT NULL
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `image_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `project_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -192,10 +192,10 @@ CREATE TABLE `job_applications` (
   `request_id` int(11) NOT NULL,
   `designer_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
-  `proposal_text` text DEFAULT NULL,
+  `proposal_text` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `offered_price` decimal(10,2) DEFAULT NULL,
   `application_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('pending','accepted','rejected','cancelled') DEFAULT 'pending'
+  `status` enum('pending','accepted','rejected','cancelled') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -268,7 +268,7 @@ INSERT INTO `job_applications` (`application_id`, `request_id`, `designer_id`, `
 
 CREATE TABLE `job_categories` (
   `category_id` int(11) NOT NULL,
-  `category_name` varchar(100) NOT NULL
+  `category_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -292,12 +292,12 @@ INSERT INTO `job_categories` (`category_id`, `category_name`) VALUES
 CREATE TABLE `job_postings` (
   `post_id` int(11) NOT NULL,
   `designer_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `category_id` int(11) DEFAULT NULL,
-  `price_range` varchar(100) DEFAULT NULL,
+  `price_range` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `posted_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('active','inactive','completed') DEFAULT 'active',
+  `status` enum('active','inactive','completed') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'active',
   `client_id` int(11) NOT NULL,
   `main_image_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -320,7 +320,7 @@ INSERT INTO `job_postings` (`post_id`, `designer_id`, `title`, `description`, `c
 (20, 10, 'ถ่ายสินค้าเพื่อขายออนไลน์', 'ถ่ายภาพสินค้าพร้อมแต่งภาพ เหมาะกับตลาดออนไลน์', 4, '3,000–7,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (21, 2, 'ออกแบบ UI เว็บไซต์', 'ดีไซน์หน้าเว็บให้สวยงาม น่าใช้งาน และตอบโจทย์ UX', 5, '10,000–25,000 บาท', '2025-07-10 16:43:43', 'active', 0, 52),
 (22, 4, 'พัฒนาเว็บไซต์ด้วย HTML/CSS', 'รับสร้างเว็บไซต์พื้นฐานด้วย HTML/CSS ตามแบบที่ลูกค้าต้องการ', 6, '8,000–20,000 บาท', '2025-07-10 16:43:43', 'active', 0, 58),
-(23, 2, 'ออกแบบป้าย', 'รับออกแบบป้าย ทันสมัย,สีสันสดสวย,คุ้มราคา100%', 1, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 61);
+(23, 2, 'ออกแบบป้าย', 'รับออกแบบป้าย ทันสมัย,สีสันสดสวย,คุ้มราคา100%', 1, '500–3000 บาท', '2025-07-23 17:24:13', 'active', 0, 67);
 
 -- --------------------------------------------------------
 
@@ -331,9 +331,9 @@ INSERT INTO `job_postings` (`post_id`, `designer_id`, `title`, `description`, `c
 CREATE TABLE `logs` (
   `log_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `action` varchar(255) NOT NULL,
-  `details` text DEFAULT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
+  `action` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `details` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1196,7 +1196,100 @@ INSERT INTO `logs` (`log_id`, `user_id`, `action`, `details`, `ip_address`, `tim
 (851, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:00:52'),
 (852, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:35:27'),
 (853, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 06:35:43'),
-(854, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:42:11');
+(854, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 06:42:11'),
+(855, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 08:24:29'),
+(856, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 08:26:28'),
+(857, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 08:31:52'),
+(858, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-09-25 17:48:49'),
+(859, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 17:48:54'),
+(860, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 17:49:54'),
+(861, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 17:51:46'),
+(862, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 17:53:10'),
+(863, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 17:55:46'),
+(864, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 17:58:44'),
+(865, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 18:00:38'),
+(866, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-09-25 18:02:16'),
+(867, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-09-25 18:03:41'),
+(868, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 18:04:32'),
+(869, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 18:09:44'),
+(870, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 21:43:35'),
+(871, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-25 22:52:10'),
+(872, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-25 23:14:27'),
+(873, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 23:21:22'),
+(874, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-25 23:31:09'),
+(875, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-28 16:30:51'),
+(876, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-28 17:03:13'),
+(877, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-28 17:17:29'),
+(878, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-28 17:31:02'),
+(879, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-09-28 17:31:49'),
+(880, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-09-28 17:37:09'),
+(881, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-09-28 18:06:25'),
+(882, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-10-01 02:03:36'),
+(883, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 02:03:42'),
+(884, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 02:33:18'),
+(885, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 02:33:45'),
+(886, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 02:34:06'),
+(887, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 02:43:19'),
+(888, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 03:09:09'),
+(889, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 03:09:25'),
+(890, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 03:09:50'),
+(891, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 03:10:16'),
+(892, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:13:18'),
+(893, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 03:17:47'),
+(894, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:18:01'),
+(895, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 03:26:07'),
+(896, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:29:17'),
+(897, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 03:29:47'),
+(898, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:31:17'),
+(899, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 03:34:27'),
+(900, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:35:45'),
+(901, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 03:53:04'),
+(902, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 03:54:19'),
+(903, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 04:00:41'),
+(904, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 04:01:51'),
+(905, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 04:02:54'),
+(906, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 04:06:18'),
+(907, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 04:09:24'),
+(908, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-10-01 04:17:30'),
+(909, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 04:17:38'),
+(910, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 05:31:51'),
+(911, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 06:35:04'),
+(912, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-10-01 06:35:14'),
+(913, 1, 'Login Successful', 'User logged in: admin', '::1', '2025-10-01 06:35:19'),
+(914, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 06:39:16'),
+(915, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 06:51:08'),
+(916, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 06:55:57'),
+(917, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 07:09:44'),
+(918, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:03:14'),
+(919, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:06:11'),
+(920, 3, 'Login Successful', 'User logged in: beer888', '::1', '2025-10-01 14:14:55'),
+(921, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 14:23:24'),
+(922, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 14:24:12'),
+(923, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:25:54'),
+(924, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 14:26:21'),
+(925, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:29:58'),
+(926, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 14:32:03'),
+(927, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 14:32:19'),
+(928, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:34:57'),
+(929, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 14:45:32'),
+(930, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 14:45:45'),
+(931, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 15:06:26'),
+(932, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 15:06:38'),
+(933, 4, 'Login Successful', 'User logged in: anna', '::1', '2025-10-01 15:51:05'),
+(934, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 15:51:41'),
+(935, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 16:15:09'),
+(936, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 16:16:08'),
+(937, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 16:17:09'),
+(938, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 16:44:59'),
+(939, 1, 'Login Attempt Failed', 'Incorrect password for: admin', '::1', '2025-10-01 17:01:02'),
+(940, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:04:19'),
+(941, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:23:07'),
+(942, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:26:50'),
+(943, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:40:11'),
+(944, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:41:11'),
+(945, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:41:41'),
+(946, 2, 'Login Successful', 'User logged in: khoapun', '::1', '2025-10-01 17:42:47'),
+(947, 5, 'Login Successful', 'User logged in: tech_corp', '::1', '2025-10-01 17:57:55');
 
 -- --------------------------------------------------------
 
@@ -1208,7 +1301,7 @@ CREATE TABLE `messages` (
   `message_id` int(11) NOT NULL,
   `from_user_id` int(11) NOT NULL,
   `to_user_id` int(11) NOT NULL,
-  `message` text NOT NULL,
+  `message` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_read` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0=unread, 1=read'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -1348,17 +1441,17 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (128, 3, 2, 'ด', '2025-09-13 10:43:24', 1),
 (129, 3, 2, 'ได้ยื่นข้อเสนอ: \'ไำพไำพไำพ\' เรียบร้อยแล้ว', '2025-09-13 10:48:25', 1),
 (130, 3, 2, 'ได้ยื่นข้อเสนอ: \'sdfdfs\' เรียบร้อยแล้ว', '2025-09-13 10:50:03', 1),
-(131, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> sdfdfs<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> fsdfsdf<br><b>งบประมาณ:</b> 50000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-26', '2025-09-13 10:50:03', 1),
+(131, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> sdfdfs<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> fsdfsdf<br><b>งบประมาณ:</b> 50000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-26', '2025-09-13 10:50:03', 1),
 (132, 3, 2, 'ได้ยื่นข้อเสนอ: \'tttttt\' เรียบร้อยแล้ว', '2025-09-13 10:50:26', 1),
-(133, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> tttttt<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> sdfdsf<br><b>งบประมาณ:</b> 5000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-21', '2025-09-13 10:50:26', 1),
+(133, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> tttttt<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> sdfdsf<br><b>งบประมาณ:</b> 5000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-21', '2025-09-13 10:50:26', 1),
 (134, 3, 2, 'ได้ยื่นข้อเสนอ: \'werwerwer\' เรียบร้อยแล้ว', '2025-09-13 10:51:04', 1),
-(135, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> werwerwer<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> asdasdasd<br><b>งบประมาณ:</b> 35000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-20', '2025-09-13 10:51:04', 1),
+(135, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> werwerwer<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> asdasdasd<br><b>งบประมาณ:</b> 35000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-20', '2025-09-13 10:51:04', 1),
 (136, 3, 2, 'ได้ยื่นข้อเสนอ: \'ewrwerwer\' เรียบร้อยแล้ว', '2025-09-13 10:53:04', 1),
-(137, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> ewrwerwer<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> sdfsdf<br><b>งบประมาณ:</b> 6000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-20', '2025-09-13 10:53:04', 1),
+(137, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> ewrwerwer<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> sdfsdf<br><b>งบประมาณ:</b> 6000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-20', '2025-09-13 10:53:04', 1),
 (138, 3, 2, 'ได้ยื่นข้อเสนอ: \'rrrrrr\' เรียบร้อยแล้ว', '2025-09-13 10:56:21', 1),
-(139, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> rrrrrr<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> rrrrrrrrrrrrrrr<br><b>งบประมาณ:</b> 60000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-27', '2025-09-13 10:56:21', 1),
+(139, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> rrrrrr<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> rrrrrrrrrrrrrrr<br><b>งบประมาณ:</b> 60000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-27', '2025-09-13 10:56:21', 1),
 (140, 3, 2, 'ได้ยื่นข้อเสนอ: \'หกดหกด\' เรียบร้อยแล้ว', '2025-09-13 10:57:19', 1),
-(141, 3, 2, '<b>📄 ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> หกดหกด<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> หกดหกดหกด<br><b>งบประมาณ:</b> 6000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-16', '2025-09-13 10:57:19', 1),
+(141, 3, 2, '<b>???? ใบเสนอราคาจ้างงาน</b><br><b>ชื่องาน/โปรเจกต์:</b> หกดหกด<br><b>ประเภทงาน:</b> -- กรุณาเลือกประเภทงาน --<br><b>รายละเอียด:</b> หกดหกดหกด<br><b>งบประมาณ:</b> 6000 บาท<br><b>ส่งมอบงานภายในวันที่:</b> 2025-09-16', '2025-09-13 10:57:19', 1),
 (142, 3, 2, 'กไ', '2025-09-13 10:57:40', 1),
 (143, 2, 3, '615', '2025-09-13 10:58:02', 1),
 (144, 2, 3, '56465', '2025-09-13 10:58:03', 1),
@@ -1496,21 +1589,21 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (299, 3, 2, '4565465', '2025-09-23 11:02:28', 1),
 (300, 2, 3, '5645645', '2025-09-23 11:02:49', 1),
 (301, 3, 2, 'ผู้ว่าจ้างขอแก้ไขงาน: \"อยากให้แก้ไขเพิ่ม\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 17:16:55', 1),
-(302, 3, 2, 'ผู้ว่าจ้างขอแก้ไขงาน: \"5555\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 17:18:22', 0),
-(303, 3, 2, 'ผู้ว่าจ้างขอแก้ไขงาน: \"65656\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 17:19:13', 0),
-(304, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 17:19:52', 0),
-(305, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 17:45:18', 0),
-(306, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 17:45:51', 0),
-(307, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"test \\u0e23\\u0e27\\u0e21tab\",\"request_id\":94}', '2025-09-23 18:17:37', 0),
-(308, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:18:27', 0),
-(309, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:22:15', 0),
-(310, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:22:22', 0),
-(311, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":95}', '2025-09-23 18:33:30', 0),
-(312, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #95 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:35:33', 0),
-(313, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:37:44', 0),
-(314, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:40:14', 0),
-(315, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:40:39', 0),
-(316, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:41:49', 0),
+(302, 3, 2, 'ผู้ว่าจ้างขอแก้ไขงาน: \"5555\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 17:18:22', 1),
+(303, 3, 2, 'ผู้ว่าจ้างขอแก้ไขงาน: \"65656\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 17:19:13', 1),
+(304, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 17:19:52', 1),
+(305, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 17:45:18', 1),
+(306, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 17:45:51', 1),
+(307, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"test \\u0e23\\u0e27\\u0e21tab\",\"request_id\":94}', '2025-09-23 18:17:37', 1),
+(308, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:18:27', 1),
+(309, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:22:15', 1),
+(310, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #94 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:22:22', 1),
+(311, 3, 2, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":95}', '2025-09-23 18:33:30', 1),
+(312, 3, 2, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #95 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 18:35:33', 1),
+(313, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:37:44', 1),
+(314, 3, 2, 'ผู้ว่าจ้างได้ยอมรับงานฉบับร่างแล้ว และกำลังจะชำระเงินส่วนที่เหลือ', '2025-09-23 18:40:14', 1),
+(315, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:40:39', 1),
+(316, 3, 2, 'ผู้ว่าจ้างได้ชำระเงินส่วนที่เหลือแล้ว กรุณาตรวจสอบและส่งมอบไฟล์งานสุดท้าย', '2025-09-23 18:41:49', 1),
 (317, 5, 4, 'SYSTEM_JOB_OFFER::{\"type\":\"job_offer\",\"title\":\"\\u0e2a\\u0e27\\u0e31\\u0e2a\\u0e14\\u0e35\\u0e08\\u0e49\\u0e32\\u0e07\\u0e07\\u0e32\\u0e19\",\"request_id\":96}', '2025-09-23 18:49:53', 1),
 (318, 5, 4, 'ผู้ว่าจ้างได้ส่งหลักฐานการชำระเงินสำหรับงาน Request ID: #96 แล้ว กรุณาตรวจสอบและยืนยันเพื่อเริ่มงาน', '2025-09-23 19:29:56', 1),
 (319, 5, 4, 'ผู้ว่าจ้างขอแก้ไขงาน: \"แก้ไข1\"กรุณาตรวจสอบและดำเนินการแก้ไข', '2025-09-23 19:45:15', 1),
@@ -1546,17 +1639,17 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 CREATE TABLE `profiles` (
   `profile_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `address` text DEFAULT NULL,
-  `company_name` varchar(255) DEFAULT NULL,
-  `bio` text DEFAULT NULL,
-  `skills` text DEFAULT NULL,
-  `profile_picture_url` varchar(255) DEFAULT NULL,
-  `facebook_url` varchar(255) DEFAULT NULL,
-  `instagram_url` varchar(255) DEFAULT NULL,
-  `tiktok_url` varchar(255) DEFAULT NULL,
-  `payment_qr_code_url` varchar(255) DEFAULT NULL,
-  `bank_name` varchar(100) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL
+  `address` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `company_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `bio` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `skills` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `profile_picture_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `facebook_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `instagram_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `tiktok_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `payment_qr_code_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `bank_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `account_number` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1580,10 +1673,10 @@ CREATE TABLE `reports` (
   `reporter_id` int(11) NOT NULL,
   `reported_user_id` int(11) DEFAULT NULL,
   `reported_post_id` int(11) DEFAULT NULL,
-  `report_type` varchar(100) NOT NULL,
-  `description` text NOT NULL,
+  `report_type` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `report_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('pending','resolved','rejected') DEFAULT 'pending'
+  `status` enum('pending','resolved','rejected') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1606,10 +1699,10 @@ CREATE TABLE `reviews` (
   `reviewer_id` int(11) NOT NULL,
   `reviewed_user_id` int(11) NOT NULL,
   `rating` decimal(2,1) DEFAULT NULL CHECK (`rating` >= 1.0 and `rating` <= 5.0),
-  `comment` text DEFAULT NULL,
-  `review_type` enum('designer_review_client','client_review_designer') DEFAULT NULL,
+  `comment` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `review_type` enum('designer_review_client','client_review_designer') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `review_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(50) NOT NULL DEFAULT 'active'
+  `status` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1631,9 +1724,9 @@ INSERT INTO `reviews` (`review_id`, `contract_id`, `reviewer_id`, `reviewed_user
 
 CREATE TABLE `settings` (
   `id` int(11) NOT NULL,
-  `setting_key` varchar(255) NOT NULL,
-  `setting_value` text DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `setting_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `setting_value` text CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1660,9 +1753,9 @@ CREATE TABLE `transactions` (
   `payee_id` int(11) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `transaction_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `payment_method` varchar(50) DEFAULT NULL,
-  `status` enum('pending','completed','failed','refunded') DEFAULT 'pending',
-  `slip_path` varchar(255) DEFAULT NULL
+  `payment_method` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `status` enum('pending','completed','failed','refunded') CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'pending',
+  `slip_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1703,12 +1796,12 @@ CREATE TABLE `uploaded_files` (
   `contract_id` int(11) DEFAULT NULL,
   `job_post_id` int(11) DEFAULT NULL,
   `uploader_id` int(11) NOT NULL,
-  `file_name` varchar(255) NOT NULL,
-  `file_path` varchar(255) NOT NULL,
+  `file_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `file_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `file_size` int(11) DEFAULT NULL,
   `uploaded_by_user_id` int(11) DEFAULT NULL,
-  `file_type` varchar(255) DEFAULT NULL,
+  `file_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `uploaded_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1748,7 +1841,8 @@ INSERT INTO `uploaded_files` (`file_id`, `contract_id`, `job_post_id`, `uploader
 (63, NULL, NULL, 4, 'job_img_68d4661a65ed31758750234.png', '../uploads/job_images/job_img_68d4661a65ed31758750234.png', '2025-09-24 21:43:54', 143688, NULL, 'image/png', '2025-09-25 04:43:54'),
 (64, NULL, NULL, 4, 'job_img_68d46b58463801758751576.png', '../uploads/job_images/job_img_68d46b58463801758751576.png', '2025-09-24 22:06:16', 287932, NULL, 'image/png', '2025-09-25 05:06:16'),
 (65, NULL, NULL, 4, 'job_img_68d46df1c2b501758752241.png', '../uploads/job_images/job_img_68d46df1c2b501758752241.png', '2025-09-24 22:17:21', 571371, NULL, 'image/png', '2025-09-25 05:17:21'),
-(66, NULL, NULL, 4, 'job_img_68d46e083a8121758752264.png', '../uploads/job_images/job_img_68d46e083a8121758752264.png', '2025-09-24 22:17:44', 55987, NULL, 'image/png', '2025-09-25 05:17:44');
+(66, NULL, NULL, 4, 'job_img_68d46e083a8121758752264.png', '../uploads/job_images/job_img_68d46e083a8121758752264.png', '2025-09-24 22:17:44', 55987, NULL, 'image/png', '2025-09-25 05:17:44'),
+(67, NULL, NULL, 2, 'job_img_68d90e5abebc61759055450.png', '../uploads/job_images/job_img_68d90e5abebc61759055450.png', '2025-09-28 10:30:50', 287932, NULL, 'image/png', '2025-09-28 17:30:50');
 
 -- --------------------------------------------------------
 
@@ -1758,13 +1852,13 @@ INSERT INTO `uploaded_files` (`file_id`, `contract_id`, `job_post_id`, `uploader
 
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `first_name` varchar(100) NOT NULL,
-  `last_name` varchar(100) NOT NULL,
-  `phone_number` varchar(20) NOT NULL,
-  `user_type` enum('admin','designer','client') NOT NULL,
+  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `first_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `last_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `phone_number` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `user_type` enum('admin','designer','client') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `registration_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_approved` tinyint(1) DEFAULT 0,
   `last_activity` datetime DEFAULT NULL,
@@ -1778,15 +1872,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `phone_number`, `user_type`, `registration_date`, `is_approved`, `last_activity`, `is_active`, `is_verified`, `last_login`) VALUES
-(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, NULL),
-(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-09-16 23:30:42', 1, 1, NULL),
-(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-24 07:11:47', 1, 1, NULL),
-(4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 0, NULL),
-(5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-09-25 03:33:03', 1, 1, NULL),
+(1, 'admin', '12345678', 'admin@pixellink.com', 'กฤษดา', 'บุญจันดา', '0901234567', 'admin', '2025-06-07 15:44:37', 1, NULL, 1, 1, '2025-09-30 23:35:19'),
+(2, 'khoapun', '1234', 'jane@example.com', 'ศิขริน', 'คอมิธิน', '0812345678', 'designer', '2025-06-07 15:44:37', 1, '2025-10-01 16:15:25', 1, 1, '2025-10-01 10:42:47'),
+(3, 'beer888', '1234', 'bob@company.com', 'เบียร์', 'สมิท', '0987654321', 'client', '2025-06-07 15:44:37', 1, '2025-09-25 18:02:49', 1, 1, '2025-10-01 07:14:55'),
+(4, 'anna', '1234', 'anna@portfolio.net', 'Anna', 'Lee', '0891112222', 'designer', '2025-06-07 15:44:37', 1, '2025-09-09 09:49:42', 1, 1, '2025-10-01 08:51:05'),
+(5, 'tech_corp', '1234', 'hr@techcorp.com', 'Tech', 'Corp HR', '029998888', 'client', '2025-06-07 15:44:37', 1, '2025-10-01 17:42:38', 1, 1, '2025-10-01 10:57:55'),
 (6, 'krit.ti', '12345678', 'krit.ti@rmuti.ac.th', 'Krit', 'T.siriwattana', '0000000000', 'admin', '2025-06-08 11:16:59', 1, NULL, 1, 0, NULL),
 (7, 'kitsada.in', '1234', 'pakawat.in@gmail.com', 'kitsada', 'Ariyawatkul\r\n', '0000000000', 'designer', '2025-06-09 07:58:49', 1, NULL, 1, 0, NULL),
-(10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL),
-(12, 'TESTTTTT', 'Test_lll123456789@', 'KKKKKKK@gmail.com', 'TEST12332', 'PROJECT1', '0999999999', 'designer', '2025-07-07 14:54:31', 1, NULL, 1, 0, NULL);
+(10, 'party888', '1234', 'kkiii@gmail.com', 'กิตติพงศ์', 'เถื่อนกลาง', '0555555555', 'designer', '2025-06-24 09:38:07', 1, NULL, 1, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -1797,8 +1890,8 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `
 CREATE TABLE `verification_submissions` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `document_path` varchar(255) NOT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `document_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `status` enum('pending','approved','rejected') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'pending',
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1811,7 +1904,8 @@ INSERT INTO `verification_submissions` (`id`, `user_id`, `document_path`, `statu
 (2, 3, '/uploads/verification_docs/verify_client_3_1758492014.png', 'approved', '2025-09-21 22:00:14'),
 (3, 5, '/uploads/verification_docs/verify_client_5_1758492212.png', 'approved', '2025-09-21 22:03:32'),
 (4, 2, '/uploads/verification_docs/verify_designer_2_1758539679.png', 'approved', '2025-09-22 11:14:39'),
-(5, 3, '/uploads/verification_docs/verify_client_3_1758539699.png', 'approved', '2025-09-22 11:14:59');
+(5, 3, '/uploads/verification_docs/verify_client_3_1758539699.png', 'approved', '2025-09-22 11:14:59'),
+(6, 4, '/uploads/verification_docs/verify_designer_4_1759260814.png', 'approved', '2025-09-30 19:33:34');
 
 --
 -- Indexes for dumped tables
@@ -1990,7 +2084,7 @@ ALTER TABLE `job_postings`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=855;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=948;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -2032,7 +2126,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `uploaded_files`
 --
 ALTER TABLE `uploaded_files`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -2044,7 +2138,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `verification_submissions`
 --
 ALTER TABLE `verification_submissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

@@ -13,7 +13,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // --- ตรวจสอบสิทธิ์ Admin ---
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {

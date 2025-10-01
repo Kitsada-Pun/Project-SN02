@@ -20,7 +20,7 @@ $password = "";
 $dbname = "pixellink";
 $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) { die("Connection Failed: " . $condb->connect_error); }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 $post_id_to_delete = (int)$_GET['id'];
 $designer_id = $_SESSION['user_id'];

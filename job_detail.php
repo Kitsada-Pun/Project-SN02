@@ -11,7 +11,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // --- ตัวแปรเริ่มต้น ---
 $job_data = null;

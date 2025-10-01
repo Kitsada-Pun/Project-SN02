@@ -19,6 +19,6 @@ if ($conn->connect_error) {
 }
 
 // --- ตั้งค่า charset เป็น utf8mb4 เพื่อรองรับภาษาไทย ---
-$conn->set_charset("utf8mb4");
+$conn->set_charset("utf8");
 
 ?>

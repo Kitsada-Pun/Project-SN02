@@ -17,7 +17,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection Failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 $designer_id = $_SESSION['user_id'];
 $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

@@ -21,7 +21,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';

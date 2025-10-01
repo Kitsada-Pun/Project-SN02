@@ -14,7 +14,7 @@ if ($condb->connect_error) {
     error_log("Connection failed: " . $condb->connect_error);
     die("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล");
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // ตรวจสอบว่าล็อกอินอยู่แล้วหรือไม่ และ redirect ไปยังหน้า main ของ user type นั้นๆ
 if (isset($_SESSION['user_id'])) {

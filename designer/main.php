@@ -19,7 +19,7 @@ if ($condb->connect_error) {
     error_log("Connection failed: " . $condb->connect_error);
     die("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล");
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // ดึงข้อมูลผู้ใช้ปัจจุบัน
 $designer_id = $_SESSION['user_id'];

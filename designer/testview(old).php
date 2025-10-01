@@ -43,7 +43,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 // ดึง user_id จาก URL และ Session
 $user_id_to_view = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;

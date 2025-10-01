@@ -38,7 +38,7 @@ if (isset($_SESSION['user_id'])) {
         }
     }
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 
 $message = '';
 $error = '';

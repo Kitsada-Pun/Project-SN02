@@ -12,7 +12,7 @@ $condb = new mysqli($servername, $username, $password, $dbname);
 if ($condb->connect_error) {
     die("Connection failed: " . $condb->connect_error);
 }
-$condb->set_charset("utf8mb4");
+$condb->set_charset("utf8");
 $is_logged_in_user_verified = $_SESSION['is_verified'] ?? 0;
 // --- ดึงข้อมูลพื้นฐาน ---
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
