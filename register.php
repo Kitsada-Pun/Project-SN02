@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
 
         if ($stmt->execute()) {
-            $success_message = "บัญชีผู้ใช้ของคุณถูกสร้างสำเร็จแล้ว คุณสามารถเข้าสู่ระบบได้ทันที";
+            $success_message = "บัญชีผู้ใช้ของคุณถูกสร้างสำเร็จแล้ว โปรดรอการตรวจสอบข้อมูลจากผู้ดูแลระบบ จึงจะสามารถเข้าสู่ระบบได้";
             // เคลียร์ค่าฟอร์มหลังจากสมัครสำเร็จ
             $username = $first_name_th = $last_name_th = $email = $phone = $user_type = $password = $confirm_password = '';
         } else {

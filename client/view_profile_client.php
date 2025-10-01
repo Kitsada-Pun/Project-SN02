@@ -127,7 +127,7 @@ $registration_date = isset($profile_data['registration_date']) ? date("j F Y", s
 $is_verified = $profile_data['is_verified'] ?? 0;
 
 $raw_pic_path = $profile_data['profile_picture_url'] ?? '';
-$display_profile_pic = '../dist/img/user8.jpg';
+$display_profile_pic = '../dist/img/logo.png';
 if (!empty($raw_pic_path)) {
     $correct_path = ltrim($raw_pic_path, '/');
     if (file_exists('../' . $correct_path)) {

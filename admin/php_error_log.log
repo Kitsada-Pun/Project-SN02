@@ -150,3 +150,6 @@ Stack trace:
 #0 C:\xampp\htdocs\pixellink-assistants-main\admin\main.php(107): mysqli_stmt->execute()
 #1 {main}
   thrown in C:\xampp\htdocs\pixellink-assistants-main\admin\main.php on line 107
+[01-Oct-2025 14:52:03 Europe/Berlin] Manage Users (Delete): Error executing delete statement for UserID 10: Cannot delete or update a parent row: a foreign key constraint fails (`pixellink`.`job_postings`, CONSTRAINT `job_postings_ibfk_1` FOREIGN KEY (`designer_id`) REFERENCES `users` (`user_id`))
+[01-Oct-2025 14:52:24 Europe/Berlin] Manage Users (Delete): Error executing delete statement for UserID 10: Cannot delete or update a parent row: a foreign key constraint fails (`pixellink`.`job_postings`, CONSTRAINT `job_postings_ibfk_1` FOREIGN KEY (`designer_id`) REFERENCES `users` (`user_id`))
+[01-Oct-2025 14:52:30 Europe/Berlin] Manage Users (Delete): Error executing delete statement for UserID 10: Cannot delete or update a parent row: a foreign key constraint fails (`pixellink`.`job_postings`, CONSTRAINT `job_postings_ibfk_1` FOREIGN KEY (`designer_id`) REFERENCES `users` (`user_id`))

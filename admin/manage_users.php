@@ -26,73 +26,105 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $userIdToDelete = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
     if ($userIdToDelete === false || $userIdToDelete <= 0) {
-        $_SESSION['message'] = [
-            'type' => 'error',
-            'text' => 'รหัสผู้ใช้ที่ต้องการลบไม่ถูกต้อง!'
-        ];
-        header('Location: manage_users.php'); // Redirect back to list
-        exit();
-    }
-
-    // Optional: Prevent deleting the currently logged-in user or critical admin users
-    if ($userIdToDelete == $_SESSION['user_id']) {
-        $_SESSION['message'] = [
-            'type' => 'error',
-            'text' => 'ไม่สามารถลบบัญชีผู้ใช้ของคุณเองได้!'
-        ];
+        $_SESSION['message'] = ['type' => 'error', 'text' => 'รหัสผู้ใช้ที่ต้องการลบไม่ถูกต้อง!'];
         header('Location: manage_users.php');
         exit();
     }
 
-    // Prepare to fetch user_type of the user being deleted
+    if ($userIdToDelete == $_SESSION['user_id']) {
+        $_SESSION['message'] = ['type' => 'error', 'text' => 'ไม่สามารถลบบัญชีผู้ใช้ของคุณเองได้!'];
+        header('Location: manage_users.php');
+        exit();
+    }
+
     $stmt_check_type = $condb->prepare("SELECT user_type FROM users WHERE user_id = ?");
     if ($stmt_check_type) {
         $stmt_check_type->bind_param("i", $userIdToDelete);
         $stmt_check_type->execute();
-        $result_check_type = $stmt_check_type->get_result();
-        $userToDeleteData = $result_check_type->fetch_assoc();
+        $userToDeleteData = $stmt_check_type->get_result()->fetch_assoc();
         $stmt_check_type->close();
 
-        // Prevent deleting other admins (optional but recommended)
-        if ($userToDeleteData && $userToDeleteData['user_type'] == 'admin' && $userIdToDelete != $_SESSION['user_id']) {
-            $_SESSION['message'] = [
-                'type' => 'error',
-                'text' => 'ไม่สามารถลบบัญชีผู้ดูแลระบบท่านอื่นได้!'
-            ];
+        if ($userToDeleteData && $userToDeleteData['user_type'] == 'admin') {
+            $_SESSION['message'] = ['type' => 'error', 'text' => 'ไม่สามารถลบบัญชีผู้ดูแลระบบได้!'];
             header('Location: manage_users.php');
             exit();
         }
     }
 
+    // Start transaction for safe deletion
+    $condb->begin_transaction();
 
-    $stmt_delete = $condb->prepare("DELETE FROM users WHERE user_id = ?");
+    try {
+        // Step 1: ลบข้อมูลที่ขึ้นต่อกันเป็นทอดๆ จากล่างขึ้นบน
+        // - ลบ Reviews และ Transactions ที่ผูกกับ Contracts ของผู้ใช้
+        $stmt = $condb->prepare("DELETE FROM reviews WHERE contract_id IN (SELECT contract_id FROM contracts WHERE client_id = ? OR designer_id = ?)");
+        $stmt->bind_param("ii", $userIdToDelete, $userIdToDelete);
+        $stmt->execute();
+        $stmt->close();
 
-    if ($stmt_delete === false) {
-        error_log("Manage Users (Delete): Error preparing delete statement: " . $condb->error);
-        $_SESSION['message'] = [
-            'type' => 'error',
-            'text' => 'ระบบไม่สามารถเตรียมการลบข้อมูลได้ กรุณาลองใหม่ภายหลัง.'
+        $stmt = $condb->prepare("DELETE FROM transactions WHERE contract_id IN (SELECT contract_id FROM contracts WHERE client_id = ? OR designer_id = ?)");
+        $stmt->bind_param("ii", $userIdToDelete, $userIdToDelete);
+        $stmt->execute();
+        $stmt->close();
+        
+        // - ลบ Reports ที่ผูกกับ Job Postings ของผู้ใช้
+        $stmt = $condb->prepare("DELETE FROM reports WHERE reported_post_id IN (SELECT post_id FROM job_postings WHERE designer_id = ?)");
+        $stmt->bind_param("i", $userIdToDelete);
+        $stmt->execute();
+        $stmt->close();
+
+        // Step 2: ลบข้อมูลจากตารางที่อ้างอิงถึง user_id โดยตรง
+        $tables_to_delete_from = [
+            'contracts' => ['client_id', 'designer_id'],
+            'job_applications' => ['client_id', 'designer_id'],
+            'messages' => ['from_user_id', 'to_user_id'],
+            'reports' => ['reporter_id', 'reported_user_id'],
+            'job_postings' => ['designer_id'],
+            'designer_portfolio' => ['designer_id'],
+            'client_job_requests' => ['client_id'], // designer_id มี ON DELETE SET NULL ไม่ต้องลบ
+            'uploaded_files' => ['uploader_id'],
+            'profiles' => ['user_id'],
+            'logs' => ['user_id']
+            // 'verification_submissions' ไม่ต้องลบเพราะมี ON DELETE CASCADE
         ];
-        header('Location: manage_users.php'); // Redirect back to list
-        exit();
+
+        foreach ($tables_to_delete_from as $table => $columns) {
+            if (count($columns) > 1) {
+                $sql = "DELETE FROM `$table` WHERE `{$columns[0]}` = ? OR `{$columns[1]}` = ?";
+                $stmt = $condb->prepare($sql);
+                $stmt->bind_param("ii", $userIdToDelete, $userIdToDelete);
+            } else {
+                $sql = "DELETE FROM `$table` WHERE `{$columns[0]}` = ?";
+                $stmt = $condb->prepare($sql);
+                $stmt->bind_param("i", $userIdToDelete);
+            }
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        // Step 3: ลบผู้ใช้ออกจากตาราง users
+        $stmt_delete_user = $condb->prepare("DELETE FROM users WHERE user_id = ?");
+        $stmt_delete_user->bind_param("i", $userIdToDelete);
+        $stmt_delete_user->execute();
+        $affected_rows = $stmt_delete_user->affected_rows;
+        $stmt_delete_user->close();
+        
+        if ($affected_rows === 0) {
+            throw new Exception("ไม่พบผู้ใช้ที่ต้องการลบ หรือการลบไม่สำเร็จ");
+        }
+
+        // Step 4: ถ้าทุกอย่างสำเร็จ ให้ commit transaction
+        $condb->commit();
+        $_SESSION['message'] = ['type' => 'success', 'text' => 'ลบข้อมูลผู้ใช้และข้อมูลที่เกี่ยวข้องทั้งหมดสำเร็จ!'];
+
+    } catch (mysqli_sql_exception $e) {
+        // Step 5: หากเกิดข้อผิดพลาด ให้ rollback transaction
+        $condb->rollback();
+        error_log("Manage Users (Delete): Transaction failed for UserID " . $userIdToDelete . ": " . $e->getMessage());
+        $_SESSION['message'] = ['type' => 'error', 'text' => 'เกิดข้อผิดพลาดในการลบข้อมูลผู้ใช้: ' . htmlspecialchars($e->getMessage())];
     }
-
-    $stmt_delete->bind_param("i", $userIdToDelete);
-
-    if ($stmt_delete->execute()) {
-        $_SESSION['message'] = [
-            'type' => 'success',
-            'text' => 'ลบข้อมูลผู้ใช้สำเร็จ!'
-        ];
-    } else {
-        error_log("Manage Users (Delete): Error executing delete statement for UserID " . $userIdToDelete . ": " . $stmt_delete->error);
-        $_SESSION['message'] = [
-            'type' => 'error',
-            'text' => 'เกิดข้อผิดพลาดในการลบข้อมูลผู้ใช้: ' . htmlspecialchars($stmt_delete->error)
-        ];
-    }
-    $stmt_delete->close();
-    header('Location: manage_users.php'); // Redirect back to list
+    
+    header('Location: manage_users.php');
     exit();
 }
 

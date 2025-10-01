@@ -77,12 +77,13 @@ $verification_status = 'not_submitted';
 
 if ($user_id_to_view > 0) {
     // ========== (แก้ไข) เปลี่ยน linkedin_url เป็น tiktok_url ==========
-    $sql_profile = "SELECT p.*, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.is_verified,
-                           p.facebook_url, p.instagram_url, p.tiktok_url,
-                           p.payment_qr_code_url, p.bank_name, p.account_number
-                      FROM profiles p
-                      JOIN users u ON p.user_id = u.user_id
-                      WHERE p.user_id = ?";
+    $sql_profile = "SELECT u.first_name, u.last_name, u.email, u.phone_number, u.username, u.is_verified,
+                       p.bio, p.skills, p.profile_picture_url, p.company_name,
+                       p.facebook_url, p.instagram_url, p.tiktok_url,
+                       p.payment_qr_code_url, p.bank_name, p.account_number
+                FROM users u
+                LEFT JOIN profiles p ON u.user_id = p.user_id
+                WHERE u.user_id = ?";
     $stmt_profile = $condb->prepare($sql_profile);
     if ($stmt_profile) {
         $stmt_profile->bind_param("i", $user_id_to_view);
@@ -155,9 +156,13 @@ $display_skills = !empty($profile_data['skills']) ? explode(',', $profile_data['
 
 // ========== (แก้ไข) ตรรกะการแสดงรูปโปรไฟล์ ==========
 $raw_pic_path = $profile_data['profile_picture_url'] ?? '';
-$display_profile_pic = '../dist/img/user8.jpg'; // Default image
-if (!empty($raw_pic_path) && file_exists('..' . $raw_pic_path)) {
-    $display_profile_pic = '..' . $raw_pic_path;
+$display_profile_pic = '../dist/img/logo.png'; // เปลี่ยนเป็นรูปโลโก้
+if (!empty($raw_pic_path)) {
+    // แก้ไขการตรวจสอบ path ให้ถูกต้อง
+    $correct_path = ltrim($raw_pic_path, '/'); 
+    if (file_exists('../' . $correct_path)) {
+        $display_profile_pic = '../' . htmlspecialchars($correct_path);
+    }
 }
 
 ?>

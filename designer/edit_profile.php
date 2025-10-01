@@ -284,7 +284,7 @@ $condb->close();
             <form action="edit_profile.php" method="POST" enctype="multipart/form-data" class="space-y-6">
 
                 <div class="text-center">
-                    <img id="profile_pic_preview" src="<?= !empty($profile['profile_picture_url']) ? '..' . htmlspecialchars($profile['profile_picture_url']) : '../dist/img/user8.jpg' ?>" alt="รูปโปรไฟล์" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white mx-auto mb-4">
+                    <img id="profile_pic_preview" src="<?= !empty($profile['profile_picture_url']) ? '..' . htmlspecialchars($profile['profile_picture_url']) : '../dist/img/logo.png' ?>" alt="รูปโปรไฟล์" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white mx-auto mb-4">
                     <label for="profile_picture" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-md transition-colors">
                         <i class="fas fa-camera mr-2"></i>เปลี่ยนรูปโปรไฟล์
                         <input type="file" id="profile_picture" name="profile_picture" class="hidden" onchange="previewImage(event)">
