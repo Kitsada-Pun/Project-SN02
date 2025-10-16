@@ -636,6 +636,7 @@ include 'sidebar_menu.php';
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <script>
         $(document).ready(function() {
@@ -678,6 +679,9 @@ include 'sidebar_menu.php';
 
             // --- Chart Utility Function ---
             function createChart(ctx, type, labels, data, title, backgroundColor) {
+                // Register the plugin globally for all charts
+                Chart.register(ChartDataLabels);
+
                 new Chart(ctx, {
                     type: type,
                     data: {
@@ -710,6 +714,46 @@ include 'sidebar_menu.php';
                         responsive: true,
                         maintainAspectRatio: false, // Allows flexible height based on container
                         plugins: {
+                            // --- CONFIGURATION FOR DATALABELS PLUGIN ---
+                            datalabels: {
+                                formatter: (value, context) => {
+                                    // Don't show a label if the value is 0
+                                    if (value === 0) {
+                                        return '';
+                                    }
+                                    // For Pie/Doughnut, show percentage
+                                    if (type === 'pie' || type === 'doughnut') {
+                                        const total = context.chart.getDatasetMeta(0).total;
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '';
+                                        return percentage;
+                                    }
+                                    // For other charts, show the raw value
+                                    return value;
+                                },
+                                color: (context) => {
+                                    // For pie/doughnut slices, use white text
+                                    if (type === 'pie' || type === 'doughnut') {
+                                        return '#ffffff';
+                                    }
+                                    // For bars, use a dark color
+                                    return '#333333';
+                                },
+                                font: {
+                                    family: 'Kanit',
+                                    weight: '500',
+                                    size: 12
+                                },
+                                // Positioning for bar charts (inside the bar, at the top)
+                                anchor: 'end',
+                                align: 'end',
+                                // Add a semi-transparent background for better readability on pie charts
+                                backgroundColor: (context) => {
+                                    return (type === 'pie' || type === 'doughnut') ? 'rgba(0, 0, 0, 0.5)' : null;
+                                },
+                                borderRadius: 4,
+                                padding: 4
+                            },
+                            // --- END OF DATALABELS CONFIGURATION ---
                             legend: {
                                 position: type === 'doughnut' || type === 'pie' ? 'right' : 'top',
                                 labels: {
