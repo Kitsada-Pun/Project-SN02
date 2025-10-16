@@ -194,10 +194,14 @@ $conn->close();
             /* ทำให้จัดตำแหน่งได้ง่ายขึ้น */
         }
 
+        /* โค้ด CSS ใหม่ (สำหรับดาวเต็มดวง) */
         .rating-stars {
-            display: inline-flex;
+            display: flex;
             flex-direction: row-reverse;
-            justify-content: flex-end;
+            /* สำคัญมากสำหรับ hover effect */
+            justify-content: center;
+            gap: 8px;
+            /* เพิ่มช่องว่างระหว่างดาว */
         }
 
         .rating-stars input {
@@ -205,62 +209,35 @@ $conn->close();
         }
 
         .rating-stars label {
-            position: relative;
-            padding: 0;
-            font-size: 40px;
-            color: #d1d5db;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        /* Half star styling */
-        .rating-stars label:nth-of-type(odd)::before {
-            content: '\f089';
-            /* FontAwesome star icon */
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            position: absolute;
-            left: 0;
-            width: 50%;
-            overflow: hidden;
-            color: #f59e0b;
-            opacity: 0;
-            transition: opacity 0.2s;
+            font-size: 40px;
+            color: #e5e7eb;
+            /* สีเทาอ่อน */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease-out;
         }
 
-        .rating-stars label:nth-of-type(even) {
-            margin-right: -18px;
-            /* Adjust overlap for half star */
+        .rating-stars label::before {
+            content: '\f005';
+            /* ไอคอนดาวเต็มจาก FontAwesome */
         }
 
-        /* Hover effect */
-        .rating-stars:hover label {
-            color: #f59e0b;
-        }
-
+        /* เอฟเฟกต์เมื่อ hover และเมื่อเลือกแล้ว */
+        .rating-stars input:checked~label,
+        .rating-stars label:hover,
         .rating-stars label:hover~label {
-            color: #d1d5db;
+            color: #ffc107;
+            /* สีเหลืองทอง */
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.7);
+            /* เพิ่มเงาเรืองแสง */
+            transform: scale(1.1);
         }
 
-        .rating-stars:hover label:nth-of-type(odd):hover::before {
-            opacity: 1;
-        }
-
-        .rating-stars:hover label:nth-of-type(odd):hover~label::before {
-            opacity: 0;
-        }
-
-        /* Checked state */
-        .rating-stars input:checked~label {
-            color: #f59e0b;
-        }
-
-        .rating-stars input:checked~label:nth-of-type(odd)::before {
-            opacity: 0;
-        }
-
-        .rating-stars input:checked+label:nth-of-type(odd)::before {
-            opacity: 1;
+        /* ทำให้ดาวที่กำลัง hover ขยายใหญ่ขึ้นอีก */
+        .rating-stars label:hover {
+            transform: scale(1.25) !important;
         }
     </style>
 </head>
@@ -296,16 +273,11 @@ $conn->close();
                     <label class="block text-gray-700 text-lg font-bold mb-2">คะแนนความพึงพอใจ</label>
                     <div class="flex items-center justify-end space-x-4">
                         <div class="rating-stars">
-                            <input type="radio" id="star5" name="rating" value="5" class="hidden" required /><label for="star5" title="5 stars">★</label>
-                            <input type="radio" id="star4.5" name="rating" value="4.5" class="hidden" /><label for="star4.5" title="4.5 stars">★</label>
-                            <input type="radio" id="star4" name="rating" value="4" class="hidden" /><label for="star4" title="4 stars">★</label>
-                            <input type="radio" id="star3.5" name="rating" value="3.5" class="hidden" /><label for="star3.5" title="3.5 stars">★</label>
-                            <input type="radio" id="star3" name="rating" value="3" class="hidden" /><label for="star3" title="3 stars">★</label>
-                            <input type="radio" id="star2.5" name="rating" value="2.5" class="hidden" /><label for="star2.5" title="2.5 stars">★</label>
-                            <input type="radio" id="star2" name="rating" value="2" class="hidden" /><label for="star2" title="2 stars">★</label>
-                            <input type="radio" id="star1.5" name="rating" value="1.5" class="hidden" /><label for="star1.5" title="1.5 stars">★</label>
-                            <input type="radio" id="star1" name="rating" value="1" class="hidden" /><label for="star1" title="1 star">★</label>
-                            <input type="radio" id="star0.5" name="rating" value="0.5" class="hidden" /><label for="star0.5" title="0.5 stars">★</label>
+                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars"></label>
+                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"></label>
+                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"></label>
+                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"></label>
+                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"></label>
                         </div>
                         <div class="font-bold text-xl text-amber-500 w-16 text-center" id="rating-value">0.0</div>
                     </div>
@@ -334,7 +306,7 @@ $conn->close();
             const rating = $(this).val();
             $('#rating-value').text(parseFloat(rating).toFixed(1));
         });
-        
+
         $('#review-form').on('submit', function(e) {
             e.preventDefault(); // ป้องกันการส่งฟอร์มแบบปกติ
 
