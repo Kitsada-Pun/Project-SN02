@@ -114,7 +114,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         }
 
         // Step 4: ถ้าทุกอย่างสำเร็จ ให้ commit transaction
-        $condb->commit();
+        $condb->commit();   
         $_SESSION['message'] = ['type' => 'success', 'text' => 'ลบข้อมูลผู้ใช้และข้อมูลที่เกี่ยวข้องทั้งหมดสำเร็จ!'];
 
     } catch (mysqli_sql_exception $e) {
