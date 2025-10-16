@@ -103,10 +103,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // --- (แก้ไข) อัปเดต tiktok_url แทน linkedin_url ---
-        $sql_profiles = "UPDATE profiles SET company_name = ?, bio = ?, skills = ?, profile_picture_url = ?, facebook_url = ?, instagram_url = ?, tiktok_url = ? WHERE user_id = ?";
-        $stmt_profiles = $condb->prepare($sql_profiles);
-        $stmt_profiles->bind_param("sssssssi", $company_name, $bio, $skills, $profile_picture_path, $facebook_url, $instagram_url, $tiktok_url, $user_id);
+        // --- (แก้ไข) ตรวจสอบว่ามีโปรไฟล์อยู่แล้วหรือไม่ ถ้าไม่มีให้ INSERT ถ้ามีให้ UPDATE ---
+        $sql_check = "SELECT user_id FROM profiles WHERE user_id = ?";
+        $stmt_check = $condb->prepare($sql_check);
+        $stmt_check->bind_param("i", $user_id);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+        $stmt_check->close();
+
+        if ($result_check->num_rows > 0) {
+            // ถ้ามีข้อมูลอยู่แล้ว: อัปเดตข้อมูลเดิม
+            $sql_profiles = "UPDATE profiles SET company_name = ?, bio = ?, skills = ?, profile_picture_url = ?, facebook_url = ?, instagram_url = ?, tiktok_url = ? WHERE user_id = ?";
+            $stmt_profiles = $condb->prepare($sql_profiles);
+            // ตรวจสอบว่า profile_picture_path ไม่ใช่ค่าว่างเปล่าก่อน bind
+            $pic_path_to_bind = !empty($profile_picture_path) ? $profile_picture_path : $profile['profile_picture_url'];
+            $stmt_profiles->bind_param("sssssssi", $company_name, $bio, $skills, $pic_path_to_bind, $facebook_url, $instagram_url, $tiktok_url, $user_id);
+        } else {
+            // ถ้ายังไม่มีข้อมูล: เพิ่มข้อมูลใหม่
+            $sql_profiles = "INSERT INTO profiles (user_id, company_name, bio, skills, profile_picture_url, facebook_url, instagram_url, tiktok_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt_profiles = $condb->prepare($sql_profiles);
+            $stmt_profiles->bind_param("isssssss", $user_id, $company_name, $bio, $skills, $profile_picture_path, $facebook_url, $instagram_url, $tiktok_url);
+        }
 
         if (empty($error) && $stmt_profiles->execute()) {
             header("Location: view_profile.php?user_id=" . $user_id . "&update_status=success");
