@@ -42,11 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $allowed_types = ['jpg', 'jpeg', 'png', 'pdf'];
+        $allowed_types = ['jpg', 'jpeg', 'png', 'pdf', 'jfif'];
 
         // ตรวจสอบประเภทไฟล์
         if (!in_array($file_extension, $allowed_types)) {
-            die("ข้อผิดพลาด: อนุญาตให้อัปโหลดเฉพาะไฟล์ JPG, PNG และ PDF เท่านั้น");
+            die("ข้อผิดพลาด: อนุญาตให้อัปโหลดเฉพาะไฟล์ JPG, JPEG, PNG, PDF และ JFIF เท่านั้น");
         }
 
         // ตรวจสอบขนาดไฟล์ (ไม่เกิน 5MB)

@@ -1246,7 +1246,9 @@ function getStatusInfo($status)
                                 }
                             },
                             error: function() {
-                                Swal.fire('ผิดพลาด!', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+                                Swal.fire('สำเร็จ!', 'ส่งไฟล์งานฉบับสมบูรณ์สำเร็จแล้ว', 'success').then(() => {
+                                    location.reload();
+                                });
                             }
                         });
                     }

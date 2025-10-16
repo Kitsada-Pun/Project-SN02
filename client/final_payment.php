@@ -311,7 +311,7 @@ $remaining_amount = $total_price - $deposit_amount;
                             <label for="payment_slip" class="block text-lg font-semibold mb-2 text-gray-700">อัปโหลดสลิป</label>
                             <input type="file" name="payment_slip" id="payment_slip" required 
                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
-                            <p class="text-xs text-gray-500 mt-2">รองรับ: JPG, PNG, PDF (ไม่เกิน 5MB)</p>
+                            <p class="text-xs text-gray-500 mt-2">รองรับ: JPG, JPEG, PNG, PDF, JFIF (ไม่เกิน 5MB)</p>
                              <div class="mt-4">
                                 <img id="slip-preview" src="#" alt="ตัวอย่างสลิป" class="hidden max-w-full h-auto rounded-md border"/>
                             </div>
