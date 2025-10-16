@@ -453,16 +453,21 @@ if (isset($_SESSION['user_id'])) {
                         }
                     }
 
-                    // --- [จุดแก้ไข] สร้าง URL สำหรับลิงก์ไปยังโปรไฟล์ ---
+                    // --- [จุดแก้ไข] สร้าง URL สำหรับลิงก์ไปยังโปรไฟล์ (แก้ไข Path แล้ว) ---
                     $profile_url = '#'; // ค่าเริ่มต้น
                     if (isset($to_user_info['user_type'])) {
-                        if ($to_user_info['user_type'] === 'designer') {
-                            $profile_url = 'designer/view_client_profile.php?user_id=' . $to_user_id;
-                        } elseif ($to_user_info['user_type'] === 'client') {
+                        // ถ้าคู่สนทนาเป็น 'client'
+                        if ($to_user_info['user_type'] === 'client') {
+                            // ลบ '../' ออก เพราะ messages.php อยู่ในโฟลเดอร์หลักแล้ว
+                            // สันนิษฐานว่าไฟล์สำหรับดูโปรไฟล์ client อยู่ในโฟลเดอร์ client/
+                            $profile_url = 'client/view_profile.php?user_id=' . $to_user_id;
+                        }
+                        // ถ้าคู่สนทนาเป็น 'designer'
+                        elseif ($to_user_info['user_type'] === 'designer') {
+                            // สันนิษฐานว่าไฟล์สำหรับดูโปรไฟล์ designer อยู่ในโฟลเดอร์ designer/
                             $profile_url = 'client/view_profile.php?user_id=' . $to_user_id;
                         }
                     }
-                    // --- [สิ้นสุดจุดแก้ไข] ---
                     ?>
 
                     <a href="<?= $profile_url ?>" target="_blank" class="chat-header-link">
